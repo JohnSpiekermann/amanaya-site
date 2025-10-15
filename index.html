@@ -3,23 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Amanaya – Wir starten in Kürze</title>
+  <title>Amanaya – Asylberatung</title>
+  <meta name="description" content="Amanaya: warme, klare Orientierung im Asylverfahren – kostenlose Infos & bezahlte, individuelle PDF-Auswertung." />
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;background:#0a2a4a;color:#fff}
-    .card{max-width:680px;padding:32px;border-radius:16px;background:#0f3a6b}
-    h1{margin:0 0 8px}
-    p{line-height:1.55}
-    .badge{display:inline-block;background:#1b6acb;padding:6px 10px;border-radius:999px;font-size:12px;margin-bottom:12px}
-    a{color:#fff;text-decoration:underline}
+    :root{
+      --bg:#f6f1e7;        /* Beige Hintergrund */
+      --ink:#0a2a4a;       /* Tiefes Amanaya-Blau (Text) */
+      --brand:#0f3a6b;     /* Markenblau (Akzent) */
+      --link:#1b6acb;      /* Link-/Button-Blau */
+      --pill:#e7eef8;      /* zarte Blaufläche */
+      --card:#ffffff;      /* Kartenweiß */
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    header{display:flex;flex-direction:column;align-items:center;gap:16px;padding:36px 0 8px;text-align:center}
+    .logo{height:96px;width:auto;display:block}
+    .logo-fallback{font-weight:800;font-size:28px;color:var(--brand);letter-spacing:.5px}
+    h1{margin:0;color:var(--brand);font-size:clamp(26px,4vw,36px)}
+    p.lead{margin:6px 0 0;color:#2b4361;opacity:.95;max-width:760px}
+    nav{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:26px 0 34px}
+    nav a{display:inline-block;background:var(--pill);padding:10px 14px;border-radius:999px;color:var(--brand);text-decoration:none;font-weight:600}
+    nav a:hover{filter:brightness(0.97)}
+    .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card{background:var(--card);border-radius:16px;padding:18px 18px 20px;box-shadow:0 6px 24px rgba(10,42,74,.06)}
+    .card h3{margin:4px 0 8px;color:var(--brand)}
+    .card p{margin:0;color:#2b3a4a;line-height:1.55}
+    .cta{margin:30px auto 16px;display:flex;justify-content:center}
+    .cta a{background:var(--brand);color:#fff;text-decoration:none;padding:12px 18px;border-radius:12px;font-weight:700}
+    .cta a:hover{filter:brightness(1.06)}
+    footer{margin:42px 0 20px;text-align:center;color:#5c6672;font-size:14px}
+    footer a{color:var(--ink);text-decoration:underline}
+    .bar{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .pill{background:#efe9dc;color:#3b4b5a;border:1px solid #e3dccf;padding:6px 10px;border-radius:999px;font-size:12px}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="badge">Amanaya</div>
-    <h1>Wir starten in Kürze.</h1>
-    <p>Die Seite ist live verbunden – Inhalte werden hier in Kürze veröffentlicht.</p>
-    <p><strong>Nächster Schritt:</strong> Gratis-Inhalte (Welle 1) ins Repo legen, Vercel stellt automatisch online.</p>
-    <p style="opacity:.8">Fragen? <a href="mailto:info@amanaya.org">info@amanaya.org</a></p>
+  <div class="wrap">
+    <header>
+      <!-- Logo-Bild: /logo.png; wenn (noch) nicht vorhanden, erscheint der Text-Fallback darunter -->
+      <img src="/logo.png" alt="Amanaya Logo" class="logo" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block';" />
+      <div id="logo-fallback" class="logo-fallback" style="display:none">AMANAYA</div>
+
+      <h1>Your path. Our guidance.</h1>
+      <p class="lead">Warmer, beruhigender Auftritt – klare Information. Kostenlose Orientierung und (später) eine individuelle, bezahlte PDF-Einschätzung zu deinem Asylverfahren.</p>
+
+      <div class="bar">
+        <span class="pill">Beige&nbsp;+&nbsp;Blau&nbsp;– beruhigend &amp; vertrauensvoll</span>
+        <span class="pill">Mobil optimiert</span>
+        <span class="pill">DSGVO-freundlich gedacht</span>
+      </div>
+    </header>
+
+    <nav aria-label="Hauptnavigation">
+      <a href="/asyl.html">Dein Asylverfahren</a>
+      <a href="/dublin.html">Dublin</a>
+      <a href="/geas.html">GEAS</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/news.html">News</a>
+    </nav>
+
+    <section class="grid">
+      <article class="card">
+        <h3>Wie läuft ein Asylverfahren ab?</h3>
+        <p>Registrierung, Antrag, Anhörung, Entscheidung – verständlich, in klaren Schritten.</p>
+      </article>
+      <article class="card">
+        <h3>Dublin-Regeln einfach</h3>
+        <p>Welches EU-Land ist zuständig? EURODAC & Ausnahmen – kurz und präzise erklärt.</p>
+      </article>
+      <article class="card">
+        <h3>GEAS – die Reform</h3>
+        <p>Was ändert sich? Grenzverfahren, Verteilung, praktische Auswirkungen – wir halten dich aktuell.</p>
+      </article>
+      <article class="card">
+        <h3>Individuelle Einschätzung</h3>
+        <p>Nach Bezahlung generieren wir eine strukturierte, schriftliche PDF-Einschätzung zu deinem Fall.</p>
+      </article>
+    </section>
+
+    <div class="cta">
+      <a href="/asyl.html">Jetzt informieren</a>
+    </div>
+
+    <footer>
+      © <span id="y"></span> Amanaya · <a href="#">Impressum</a> · <a href="#">Datenschutz</a>
+    </footer>
   </div>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
