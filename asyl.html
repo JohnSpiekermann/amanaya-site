@@ -2,44 +2,286 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dein Asylverfahren – Amanaya</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Das Asylverfahren – Amanaya</title>
+
+  <!-- Montserrat optional; sonst System-UI -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:40px;line-height:1.6;background:#f6f8fa;color:#0a2a4a;max-width:800px;margin:auto}
-    h1{color:#0f3a6b}
-    h2{margin-top:1.8em;color:#1b6acb}
-    .box{background:#e8f1fa;padding:16px;border-radius:10px;margin:20px 0}
+    :root{
+      --bg: #f6f1e7;        /* Beige */
+      --text: #0a2a4a;      /* Tiefblau */
+      --accent: #0f3a6b;    /* Markenblau */
+      --soft: rgba(15,58,107,.08);
+      --line: rgba(15,58,107,.20);
+    }
+    *{box-sizing: border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height:1.5;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .page-title{
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight:800;
+      letter-spacing:.2px;
+      margin: 8px 0 6px;
+      color: var(--text);
+    }
+    .page-sub{
+      margin:0 0 18px;
+      opacity:.9;
+      font-weight:500;
+    }
+
+    /* Akkordeon (native <details>) */
+    .accordion{display:grid; gap:14px; margin-top:16px}
+    .accordion details{
+      background: #fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+      box-shadow: 0 2px 10px rgba(10,42,74,.05);
+    }
+    .accordion summary{
+      list-style:none;
+      cursor:pointer;
+      font-weight:800;
+      font-size:18px;
+      color: var(--accent);
+      display:flex; align-items:center; gap:10px;
+    }
+    .accordion summary::-webkit-details-marker{display:none}
+    .accordion details[open] summary{color: var(--text)}
+    .chev{
+      width: 10px; height: 10px; border-right:2px solid var(--accent); border-bottom:2px solid var(--accent);
+      transform: rotate(-45deg); transition: transform .2s ease;
+      margin-right: 2px;
+    }
+    details[open] .chev{ transform: rotate(45deg) }
+
+    .section{margin-top:10px}
+    .badge{
+      display:inline-block; font-size:12px; font-weight:700;
+      padding:4px 8px; border-radius:999px;
+      background: var(--soft); color: var(--accent); border:1px solid var(--line);
+      margin: 6px 0;
+    }
+    ul{margin: 8px 0 0 18px; padding:0}
+    li{margin:6px 0}
+
+    .hint{
+      background: var(--soft);
+      border:1px dashed var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size: 14px;
+      margin-top:10px;
+    }
+    a.link{color: var(--accent); text-decoration: underline; text-decoration-color: var(--line)}
+    .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+    .btn{
+      appearance:none; border:1px solid var(--accent); background: var(--accent);
+      color:#fff; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
+      text-decoration:none; display:inline-block;
+    }
+    .btn.alt{ background: transparent; color: var(--accent) }
   </style>
 </head>
 <body>
-  <h1>Dein Asylverfahren</h1>
-  <p>Hier erklären wir die wichtigsten Schritte deines Asylverfahrens – einfach und verständlich.</p>
+  <main class="wrap">
+    <header>
+      <h1 class="page-title">Das Asylverfahren</h1>
+      <p class="page-sub">Schritt für Schritt – einfach erklärt. Klicke auf die Abschnitte, um Details zu sehen.</p>
+    </header>
 
-  <h2>1. Ankunft & Registrierung</h2>
-  <ul>
-    <li>Registrierung bei der Aufnahmeeinrichtung.</li>
-    <li>Abgabe von Personalien, Foto, Fingerabdrücken.</li>
-    <li>Daten werden in EURODAC gespeichert (EU-Datenbank).</li>
-  </ul>
-  <div class="box">
-    <strong>Hinweis:</strong> Wenn du schon in einem anderen EU-Land Fingerabdrücke abgegeben hast, gilt meist das Dublin-Verfahren.
-  </div>
+    <section class="accordion">
 
-  <h2>2. Asylantrag</h2>
-  <ul>
-    <li>Der förmliche Antrag wird beim BAMF gestellt.</li>
-    <li>Schutzformen: Asylberechtigung, Flüchtlingsschutz, subsidiärer Schutz, nationales Abschiebungsverbot.</li>
-    <li>Die Schutzform entscheidet über Aufenthaltsdauer und Rechte.</li>
-  </ul>
+      <!-- 1) Ankunft & Registrierung -->
+      <details>
+        <summary><span class="chev"></span>1. Ankunft & Registrierung</summary>
+        <div class="section">
+          <span class="badge">Was passiert?</span>
+          <ul>
+            <li>Erfassung deiner <strong>persönlichen Daten</strong> (z.&nbsp;B. Name, Geburtsdatum, Herkunftsland).</li>
+            <li><strong>Fingerabdrücke</strong> (EURODAC) und <strong>Fotos</strong> werden aufgenommen; vorhandene Dokumente werden geprüft.</li>
+            <li>Du wirst einer <strong>Erstaufnahmeeinrichtung</strong> zugeteilt.</li>
+          </ul>
 
-  <h2>3. Anhörung – das Herzstück</h2>
-  <ul>
-    <li>Wichtigster Termin deines Asylverfahrens.</li>
-    <li>Deine Fluchtgeschichte wird aufgenommen – Dolmetscher*in ist dabei.</li>
-    <li>Das Protokoll der Anhörung unbedingt genau lesen und prüfen.</li>
-  </ul>
-  <div class="box">
-    <strong>Beispiel:</strong> Viele vergessen kleine Details (z.&nbsp;B. frühere Polizeikontrollen) – das BAMF prüft jedes Detail.
-  </div>
+          <span class="badge">Warum wichtig?</span>
+          <ul>
+            <li>Fingerabdrücke und Einträge können die <a class="link" href="/dublin">Dublin-Zuständigkeit</a> beeinflussen.</li>
+            <li>Es ist der <strong>erste offizielle Schritt</strong> in deinem Verfahren.</li>
+          </ul>
+
+          <span class="badge">Worauf solltest du achten?</span>
+          <ul>
+            <li><strong>Ehrliche, konsistente Angaben</strong> machen; Widersprüche schaden der Glaubwürdigkeit.</li>
+            <li>Wenn Unterlagen einbehalten werden: <strong>Nachweis/Quittung</strong> verlangen.</li>
+            <li>Alle Papiere sicher aufbewahren; <strong>Dolmetscher</strong> verlangen, wenn etwas unklar ist.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- 2) Asylantrag -->
+      <details>
+        <summary><span class="chev"></span>2. Asylantrag</summary>
+        <div class="section">
+          <p>Der Antrag wird bei der zuständigen Asylbehörde gestellt (je nach Land). Häufig wenige Tage nach der Registrierung.</p>
+
+          <span class="badge">Was passiert beim Antrag?</span>
+          <ul>
+            <li>In der Regel <strong>persönliche Antragstellung</strong> (Ausnahmen je nach nationalem Recht möglich).</li>
+            <li>Identitätsdokumente vorlegen (z.&nbsp;B. Ausweis mit Foto, Geburtsurkunde). Das stärkt deine <strong>Glaubwürdigkeit</strong>.</li>
+            <li>Du erhältst einen <strong>Ausweis für Asylsuchende</strong> (Bezeichnung je nach Land unterschiedlich).</li>
+            <li>Du bekommst einen <strong>Termin für die Anhörung</strong> (manchmal später per Post).</li>
+          </ul>
+
+          <span class="badge">Warum wichtig?</span>
+          <ul>
+            <li>Mit dem Antrag beginnt dein Verfahren offiziell.</li>
+            <li>Es wird geprüft, ob evtl. ein anderes Land <a class="link" href="/dublin">zuständig</a> ist (Dublin).</li>
+          </ul>
+
+          <span class="badge">Worauf solltest du achten?</span>
+          <ul>
+            <li><strong>Krank, schwanger, minderjährig?</strong> Sofort mitteilen.</li>
+            <li>Unterlagen und Bescheide <strong>sorgfältig aufbewahren</strong>.</li>
+            <li><strong>Adressänderungen</strong> der Asylbehörde unverzüglich melden (Form je nach Land). In Deutschland reicht oft eine E-Mail an die Behörde mit Aktenzeichen.</li>
+            <li>In seltenen Fällen findet die <a class="link" href="#anhoerung">Anhörung</a> am selben Tag statt – sei vorbereitet.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- 3) Anhörung -->
+      <details id="anhoerung">
+        <summary><span class="chev"></span>3. Anhörung</summary>
+        <div class="section">
+          <p>Die Anhörung ist das <strong>Herzstück</strong> deines Verfahrens. Deine Geschichte wird aufgenommen, Nachfragen werden gestellt.</p>
+
+          <span class="badge">Vorbereitung</span>
+          <ul>
+            <li><strong>Konsistent</strong> erzählen: zeitliche Reihenfolge, Orte, beteiligte Personen, Belege.</li>
+            <li>Wichtige <strong>Dokumente/Beweise</strong> (falls vorhanden) mitnehmen.</li>
+            <li>Dolmetscher anfordern, wenn nötig.</li>
+          </ul>
+
+          <span class="badge">Ablauf & Rechte</span>
+          <ul>
+            <li>Du schilderst deine Fluchtgründe; die Behörde stellt <strong>Nachfragen</strong>.</li>
+            <li>Du darfst <strong>Unklarheiten korrigieren</strong> und später <strong>Ergänzungen</strong> nachreichen.</li>
+          </ul>
+
+          <span class="badge">Typische Fehler vermeiden</span>
+          <ul>
+            <li>Widersprüche (Daten/Orte) nicht unkommentiert lassen.</li>
+            <li>Keine Vermutungen als Fakten darstellen – „ich weiß es nicht genau“ ist erlaubt.</li>
+          </ul>
+
+          <div class="hint">
+            <strong>Tipp:</strong> Wenn du staatliche Verfolgung in der Türkei angibst, sind <em>UYAP/E-Devlet</em>-Nachweise (z.&nbsp;B. Anklageschrift, Haftbefehl) oft entscheidend.
+          </div>
+        </div>
+      </details>
+
+      <!-- 4) Entscheidung -->
+      <details>
+        <summary><span class="chev"></span>4. Entscheidung</summary>
+        <div class="section">
+          <span class="badge">Was passiert bei der Entscheidung?</span>
+          <ul>
+            <li>Die Behörde wertet Anhörung, Belege und Länderinformationen aus.</li>
+            <li>Du erhältst einen <strong>Bescheid</strong> (schriftliche Entscheidung) per Post mit Rechtsbehelfsbelehrung.</li>
+          </ul>
+
+          <span class="badge">Welche Entscheidungen gibt es?</span>
+          <ul>
+            <li><a class="link" href="/entscheidungen/asylberechtigung">Asylberechtigung</a></li>
+            <li><a class="link" href="/entscheidungen/fluechtlingsschutz">Flüchtlingsschutz</a></li>
+            <li><a class="link" href="/entscheidungen/subsidiaerer-schutz">Subsidiärer Schutz</a></li>
+            <li><a class="link" href="/entscheidungen/nationales-abschiebungsverbot">Nationales Abschiebungsverbot</a></li>
+            <li><a class="link" href="/entscheidungen/ablehnung-unzulaessigkeit">Ablehnung / Unzulässigkeit</a></li>
+          </ul>
+
+          <span class="badge">Wann bekommst du die Entscheidung?</span>
+          <ul>
+            <li>Die Dauer ist unterschiedlich und hängt von vielen Faktoren ab.</li>
+            <li>Ab längerer Verfahrensdauer erhältst du häufig eine Benachrichtigung per Post.</li>
+            <li>EU-weit ist eine maximale Bearbeitungsdauer von <strong>21&nbsp;Monaten</strong> vorgesehen.</li>
+          </ul>
+
+          <span class="badge">Worauf solltest du achten?</span>
+          <ul>
+            <li>Bescheid <strong>sofort prüfen</strong> – Fristen für Klage/Rechtsmittel sind sehr kurz.</li>
+            <li>Bei Ablehnung: <strong>umgehend rechtlichen Rat</strong> suchen. Rechtsmittel können (je nach Land) auch über eine <em>Rechtsantragstelle</em> eingereicht werden.</li>
+            <li>Bescheid und Anlagen sicher aufbewahren.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- 5) Unterbringung & Wohnortwechsel -->
+      <details>
+        <summary><span class="chev"></span>5. Unterbringung & Wohnortwechsel</summary>
+        <div class="section">
+          <span class="badge">Wie funktioniert die Unterbringung?</span>
+          <ul>
+            <li>Zuerst Zuteilung in eine <strong>Erstaufnahmeeinrichtung</strong> (Dauer je nach Land, z.&nbsp;B. bis zu 6/18&nbsp;Monate in DE je nach Familienstatus).</li>
+            <li>Danach Zuweisung in eine Gemeinde (Gemeinschaftsunterkunft oder Wohnung).</li>
+            <li>Die Verteilung richtet sich häufig nach Quoten/Schlüsseln (z.&nbsp;B. Einwohnerzahl).</li>
+          </ul>
+
+          <span class="badge">Wann ist ein Wohnortwechsel möglich?</span>
+          <ul>
+            <li><strong>Familie:</strong> Kernfamilie (Ehegatte, minderjährige Kinder) lebt woanders.</li>
+            <li><strong>Gesundheit:</strong> Behandlung nur in anderer Stadt möglich (Atteste).</li>
+            <li><strong>Härtefälle:</strong> besondere Gefährdung/Probleme in der Unterkunft.</li>
+            <li><strong>Arbeit/Ausbildung:</strong> oft nur bei gesichertem, unbefristetem Angebot am Zielort.</li>
+          </ul>
+
+          <span class="badge">Wie beantragst du den Wechsel?</span>
+          <ul>
+            <li>Antrag bei der zuständigen Behörde/Verwaltung (je nach Land/Region).</li>
+            <li><strong>Nachweise</strong> beilegen (Atteste, Familiennachweise, Arbeits-/Schulbescheinigungen).</li>
+            <li>Schriftliche Entscheidung abwarten – ohne Genehmigung nicht eigenmächtig umziehen.</li>
+          </ul>
+
+          <span class="badge">Worauf solltest du achten?</span>
+          <ul>
+            <li>Die Hürden sind hoch – Wechsel sind meist <strong>Ausnahmen</strong>.</li>
+            <li>Antrag gut begründen und <strong>belegen</strong>.</li>
+            <li>Ohne Genehmigung riskierst du Probleme bei Leistungen/Verfahren.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- 6) Dublin (Kurzüberblick + Link) -->
+      <details>
+        <summary><span class="chev"></span>6. Dublin-Verfahren (Kurzüberblick)</summary>
+        <div class="section">
+          <ul>
+            <li>Zuständig ist in der Regel das Land, in dem du zuerst einen Antrag gestellt hast oder Fingerabdrücke abgegeben wurden.</li>
+            <li><strong>Visum/AT-Anker:</strong> Visum → Zuständigkeit bis 6&nbsp;Monate nach Ablauf; Aufenthaltstitel → Zuständigkeit bis 24&nbsp;Monate nach Ablauf.</li>
+            <li><strong>UAM:</strong> Unbegleitete Minderjährige werden in der Regel nicht überstellt.</li>
+          </ul>
+          <div class="cta-row">
+            <a class="btn" href="/dublin">Mehr zu Dublin</a>
+            <a class="btn alt" href="/faq">FAQ</a>
+          </div>
+        </div>
+      </details>
+
+    </section>
+
+    <section class="hint" style="margin-top:20px">
+      Hinweis: Diese Informationen ersetzen keine individuelle Rechtsberatung. Wenn du eine persönliche Einschätzung möchtest,
+      nutze die <a class="link" href="/start">Individuelle Befragung</a> – du erhältst eine Auswertung als PDF (innerhalb von 48&nbsp;Stunden).
+    </section>
+  </main>
 </body>
 </html>
