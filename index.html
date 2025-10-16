@@ -4,68 +4,95 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Amanaya – Asylberatung</title>
-  <meta name="description" content="Amanaya: klare Orientierung im Asylverfahren. Kostenlose Infos & individuelle Erstberatung." />
+  <meta name="description" content="Amanaya: klare Orientierung (Infos, News, FAQ) und eine individuelle Erstberatung als Hauptangebot." />
   <style>
-  :root{
-    --bg:#f6f1e7;        /* Beige */
-    --ink:#0a2a4a;       /* Tiefes Blau */
-    --brand:#0f3a6b;     /* Markenblau */
-    --link:#1b6acb;      /* Link-/Button-Blau */
-    --pill:#e7eef8;      /* zarte Blaufläche */
-    --card:#ffffff;      /* Kartenweiß (Reserviert) */
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-  .wrap{max-width:960px;margin:0 auto;padding:28px}
-  header{display:flex;flex-direction:column;align-items:center;gap:20px;padding:64px 0 12px;text-align:center}
+    :root{
+      --bg:#f6f1e7;        /* Beige */
+      --ink:#0a2a4a;       /* Tiefes Blau */
+      --brand:#0f3a6b;     /* Markenblau (Buttons) */
+      --link:#1b6acb;      /* Link-/Hover */
+      --pill:#e7eef8;      /* zarte Blaufläche */
+      --card:#ffffff;      /* Kartenweiß (Reserve) */
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
 
-  /* LOGO – präsent am Desktop, kleiner am Handy, gedeckelt am XXL-Screen */
-  .logo{
-    height: clamp(120px, 20vw, 180px);  /* min 120px, ideal ~20% der Breite, max 180px */
-    width: auto;
-    max-width: 90vw;                    /* nie breiter als 90% Viewport */
-    display: block;
-  }
-  .logo-fallback{font-weight:800;font-size:32px;color:var(--brand);letter-spacing:.5px}
+    /* Header-Layout: Logo links, Wortmarke rechts */
+    header{display:flex;align-items:center;gap:18px;padding:8px 0 6px}
+    .brand{display:flex;align-items:center;gap:16px;text-decoration:none}
+    .logo{height:clamp(50px,7vw,72px);width:auto;display:block}
+    .wordmark{margin:0;font-weight:900;letter-spacing:.6px;color:var(--ink);
+              font-size:clamp(22px,4.8vw,40px);line-height:1}
+    .tagline{margin:.25rem 0 0 0;color:#2b4361;font-size:clamp(14px,2.2vw,18px)}
+    .header-block{display:flex;flex-direction:column}
 
-  /* Handy: etwas kleiner */
-  @media (max-width: 480px){
-    .logo{ height: clamp(90px, 28vw, 140px); max-width:85vw; }
-  }
+    /* Navigation */
+    nav{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 34px}
+    .nav-link{display:inline-block;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:700}
+    .nav-link.secondary{background:var(--pill);color:var(--brand)}
+    .nav-link.secondary:hover{filter:brightness(0.97)}
+    .nav-link.primary{background:var(--brand);color:#fff}
+    .nav-link.primary:hover{filter:brightness(1.06)}
 
-  /* Große Bildschirme: leicht größer erlaubt */
-  @media (min-width: 1280px){
-    .logo{ height: 200px; }
-  }
+    /* Content placeholder cards (kannst du später nutzen) */
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 6px 24px rgba(10,42,74,.06)}
+    .card h3{margin:4px 0 8px;color:var(--brand)}
+    .card p{margin:0;color:#2b3a4a}
 
-  nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:36px 0 46px}
-  nav a{display:inline-block;background:var(--pill);padding:12px 18px;border-radius:999px;color:var(--brand);text-decoration:none;font-weight:700}
-  nav a:hover{filter:brightness(0.97)}
-  footer{margin:44px 0 20px;text-align:center;color:#5c6672;font-size:14px}
-  footer a{color:var(--ink);text-decoration:underline}
-</style>
+    footer{margin:44px 0 20px;text-align:center;color:#5c6672;font-size:14px}
+    footer a{color:var(--ink);text-decoration:underline}
+
+    /* Mobile: Logo/Wordmark umbrechen */
+    @media (max-width:600px){
+      header{align-items:flex-start}
+      .brand{gap:12px}
+      .tagline{margin-top:.4rem}
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <!-- Logo-Bild: /logo.png; der Text-Fallback erscheint nur, falls das Bild fehlt -->
-      <img src="/logo.png" alt="Amanaya Logo" class="logo"
-           onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block';" />
-      <div id="logo-fallback" class="logo-fallback" style="display:none">AMANAYA</div>
+      <a href="/" class="brand" aria-label="Amanaya Startseite">
+        <img src="/logo.png" alt="Amanaya Logo" class="logo"
+             onerror="this.style.display='none'">
+        <div class="header-block">
+          <h1 class="wordmark">AMANAYA</h1>
+          <p class="tagline">Your path. Our guidance.</p>
+        </div>
+      </a>
     </header>
 
     <nav aria-label="Hauptnavigation">
-      <a href="/asyl.html">Das Asylverfahren</a>
-      <a href="/news.html">News</a>
-      <a href="/faq.html">FAQ</a>
-      <a href="/beratung.html">Individuelle Erstberatung</a>
+      <!-- „Infos“ verlinkt weiterhin auf /asyl (Inhalte dort) -->
+      <a class="nav-link secondary" href="/asyl">Infos</a>
+      <a class="nav-link secondary" href="/news">News</a>
+      <a class="nav-link secondary" href="/faq">FAQ</a>
+      <!-- Hauptangebot: starke Primäraktion -->
+      <a class="nav-link primary" href="/beratung">Individuelle Erstberatung</a>
     </nav>
 
-   <footer>
-  © <span id="y"></span> Amanaya · 
-  <a href="/impressum.html">Impressum</a> · 
-  <a href="/datenschutz.html">Datenschutz</a>
-</footer>
+    <!-- Optionaler Teaserbereich (kannst du später füllen/entfernen) -->
+    <!--
+    <section class="grid">
+      <article class="card">
+        <h3>Was bieten die „Infos“?</h3>
+        <p>Asylverfahren verständlich erklärt: Antrag, Anhörung, Entscheidungen (inkl. Dublin).</p>
+      </article>
+      <article class="card">
+        <h3>Individuelle Erstberatung</h3>
+        <p>Bezahltes Hauptangebot: strukturierte Ersteinschätzung als PDF – klar, schnell, konkret.</p>
+      </article>
+    </section>
+    -->
+
+    <footer>
+      © <span id="y"></span> Amanaya ·
+      <a href="/impressum">Impressum</a> ·
+      <a href="/datenschutz">Datenschutz</a>
+    </footer>
   </div>
 
   <script>
