@@ -2,12 +2,15 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/entscheidungen/asylberechtigung",  "destination": "/asylberechtigung",        "permanent": false },
-    { "source": "/entscheidungen/fluechtlingsschutz", "destination": "/fluechtlingsschutz",      "permanent": false },
-    { "source": "/entscheidungen/subsidiaerer-schutz","destination": "/subsidiaerer-schutz",     "permanent": false },
-    { "source": "/entscheidungen/abschiebungsverbote","destination": "/abschiebungsverbote",     "permanent": false },
-    { "source": "/entscheidungen/dublin",             "destination": "/dublin",                  "permanent": false },
-    { "source": "/subsidiaererschutz",                "destination": "/subsidiaerer-schutz",     "permanent": false },
-    { "source": "/entscheidungen",                    "destination": "/asyl",                    "permanent": false }
+    { "source": "/entscheidungen/asylberechtigung",  "destination": "/asylberechtigung",    "permanent": false },
+    { "source": "/entscheidungen/fluechtlingsschutz", "destination": "/fluechtlingsschutz",  "permanent": false },
+    { "source": "/entscheidungen/subsidiaerer-schutz","destination": "/subsidiaerer-schutz", "permanent": false },
+    { "source": "/entscheidungen/abschiebungsverbote","destination": "/abschiebungsverbote", "permanent": false },
+    { "source": "/entscheidungen/dublin",             "destination": "/dublin",              "permanent": false },
+    { "source": "/subsidiaererschutz",                "destination": "/subsidiaerer-schutz", "permanent": false },
+    { "source": "/entscheidungen",                    "destination": "/asyl",                "permanent": false },
+
+    { "source": "/start",   "destination": "/fragen/start", "permanent": false },
+    { "source": "/fragen",  "destination": "/fragen/start", "permanent": false }
   ]
 }
