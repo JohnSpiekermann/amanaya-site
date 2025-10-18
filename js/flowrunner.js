@@ -29,7 +29,6 @@
   }
   function evalExpr(expr){
     if(!expr || typeof expr !== "string") return true;
-    // very small parser: replace tokens with JS-safe checks
     let js = expr
       .replace(/\s+and\s+|\s*\&\&\s*/gi, " && ")
       .replace(/\s+or\s+|\s*\|\|\s*/gi, " || ")
@@ -46,10 +45,7 @@
   }
 
   function recomputeVisible(){
-    visibleSteps = flow.steps.filter(st => {
-      if(!st.showIf) return true;
-      return evalExpr(st.showIf);
-    });
+    visibleSteps = flow.steps.filter(st => !st.showIf || evalExpr(st.showIf));
     if (visIndex >= visibleSteps.length) visIndex = Math.max(0, visibleSteps.length - 1);
   }
 
@@ -71,14 +67,14 @@
         : (step.options || []);
       html += opts.map(o => `
         <label><input type="radio" name="field" value="${o.value}" ${val===o.value?"checked":""}> ${o.label}</label>
-      ).join("");
+      `).join("");
     }
 
     if(step.type === "multi"){
       const sel = Array.isArray(val) ? new Set(val) : new Set();
       html += (step.options||[]).map(o => `
         <label><input type="checkbox" name="field" value="${o.value}" ${sel.has(o.value)?"checked":""}> ${o.label}</label>
-      ).join("");
+      `).join("");
     }
 
     if(step.type === "text"){
@@ -118,7 +114,6 @@
 
   function nextStep(){
     if(!collect()){ alert("Bitte fülle die Frage aus."); return; }
-    // Sichtbarkeit neu berechnen (weil Antworten Bedingungen ändern können)
     recomputeVisible();
     if(visIndex < visibleSteps.length-1){ visIndex++; saveLocal(); render(); }
     else { saveLocal(); elStep.innerHTML = "<h2>Danke!</h2><p>Du hast alle Fragen beantwortet.</p>"; elNext.disabled = true; }
@@ -131,7 +126,6 @@
   elPrev.addEventListener("click", prevStep);
   elSave.addEventListener("click", ()=>{ if(collect()){ saveLocal(); alert("Zwischengespeichert."); } });
 
-  // Flow laden
   try{
     const res = await fetch(FLOW_URL, { cache: "no-store" });
     flow = await res.json();
