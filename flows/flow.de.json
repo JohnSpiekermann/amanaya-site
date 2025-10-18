@@ -1,0 +1,55 @@
+{
+  "locale": "de",
+  "version": "2025-10-18-1",
+  "steps": [
+    {
+      "id": "country",
+      "title": "Dein Herkunftsland",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "value": "TR", "label": "Türkei" },
+        { "value": "SY", "label": "Syrien" },
+        { "value": "AF", "label": "Afghanistan" },
+        { "value": "other", "label": "Ein anderes Land" }
+      ]
+    },
+    {
+      "id": "age",
+      "title": "Wie alt bist du?",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "grounds",
+      "title": "Hauptgründe für deine Flucht",
+      "type": "multi",
+      "required": true,
+      "options": [
+        { "value": "religion", "label": "Religion" },
+        { "value": "nationality", "label": "Nationalität" },
+        { "value": "political", "label": "Politische Überzeugung" },
+        { "value": "social", "label": "Soziale Gruppe (z. B. Frauen, LGBTIQ)" },
+        { "value": "health", "label": "Gesundheitliche Gründe" }
+      ]
+    },
+    {
+      "id": "trigger",
+      "title": "Fluchtauslösendes Ereignis",
+      "description": "Wann und was ist konkret passiert?",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "state_or_private",
+      "title": "Wer verfolgt(e) dich?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "value": "state", "label": "Staat / Behörden" },
+        { "value": "private", "label": "Private / Gruppen" },
+        { "value": "unknown", "label": "Unklar" }
+      ]
+    }
+  ]
+}
