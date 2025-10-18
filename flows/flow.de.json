@@ -1,55 +1,173 @@
 {
   "locale": "de",
-  "version": "2025-10-18-1",
+  "version": "2025-10-18-2",
   "steps": [
-    {
-      "id": "country",
-      "title": "Dein Herkunftsland",
-      "type": "single",
-      "required": true,
+    { "id": "intro", "title": "Los geht's", "description": "Beantworte ein paar Fragen. Du kannst jederzeit zurückgehen und später weitermachen.", "type": "text", "required": false },
+
+    /* Block 1 – Basisdaten */
+    { "id": "country", "title": "Dein Herkunftsland", "type": "single", "required": true,
       "options": [
         { "value": "TR", "label": "Türkei" },
         { "value": "SY", "label": "Syrien" },
         { "value": "AF", "label": "Afghanistan" },
-        { "value": "other", "label": "Ein anderes Land" }
+        { "value": "IQ", "label": "Irak" },
+        { "value": "IR", "label": "Iran" },
+        { "value": "other", "label": "Anderes Land" }
       ]
     },
-    {
-      "id": "age",
-      "title": "Wie alt bist du?",
-      "type": "number",
-      "required": true
+    { "id": "age", "title": "Wie alt bist du?", "type": "number", "required": true },
+    { "id": "gender", "title": "Dein Geschlecht", "type": "single", "required": true,
+      "options": [
+        { "value": "male", "label": "Männlich" },
+        { "value": "female", "label": "Weiblich" },
+        { "value": "other", "label": "Divers / keine Angabe" }
+      ]
     },
-    {
-      "id": "grounds",
-      "title": "Hauptgründe für deine Flucht",
-      "type": "multi",
-      "required": true,
+
+    /* Block 2 – Aufenthaltsort / Zielland */
+    { "id": "current_location", "title": "Wo hältst du dich aktuell auf? (Land / Stadt)", "type": "text", "required": false },
+    { "id": "destination", "title": "In welchem Land willst du Schutz beantragen oder hast du ihn beantragt?", "type": "single", "required": true,
+      "options": [
+        { "value": "DE", "label": "Deutschland" },
+        { "value": "AT", "label": "Österreich" },
+        { "value": "SE", "label": "Schweden" },
+        { "value": "NL", "label": "Niederlande" },
+        { "value": "other", "label": "Anderes EU-Land" }
+      ]
+    },
+
+    /* Block 3 – Reiseweg */
+    { "id": "entry_mode", "title": "Wie bist du eingereist?", "type": "single", "required": true,
+      "options": [
+        { "value": "visa", "label": "Mit Visum oder Aufenthaltstitel" },
+        { "value": "no_visa", "label": "Ohne Visum" },
+        { "value": "other_eu", "label": "Aus einem anderen EU-Land weitergereist" }
+      ]
+    },
+    { "id": "visa_country", "title": "In welchem Land wurde dein Visum/Aufenthaltstitel ausgestellt?", "type": "text", "required": true,
+      "showIf": "entry_mode == 'visa'"
+    },
+    { "id": "eurosdac", "title": "Wurden deine Fingerabdrücke in einem anderen EU-Land abgenommen (EURODAC)?", "type": "yesno", "required": true },
+
+    /* Block 4 – Verfahrensstand */
+    { "id": "asylum_applied", "title": "Hast du bereits einen Asylantrag gestellt?", "type": "yesno", "required": true },
+    { "id": "hearing_done", "title": "Wurde deine Anhörung bereits durchgeführt?", "type": "yesno", "required": true,
+      "showIf": "asylum_applied == 'yes'"
+    },
+    { "id": "decision_received", "title": "Hast du schon eine Entscheidung erhalten?", "type": "yesno", "required": true,
+      "showIf": "asylum_applied == 'yes'"
+    },
+    { "id": "decision_type", "title": "Welche Entscheidung?", "type": "single", "required": true,
+      "showIf": "decision_received == 'yes'",
+      "options": [
+        { "value": "asyl", "label": "Asylberechtigung" },
+        { "value": "refugee", "label": "Flüchtlingsschutz" },
+        { "value": "subsidiary", "label": "Subsidiärer Schutz" },
+        { "value": "ban", "label": "Nationales Abschiebungsverbot" },
+        { "value": "rejected", "label": "Ablehnung / Unzulässigkeit" }
+      ]
+    },
+    { "id": "appeal_filed", "title": "Hast du gegen die Entscheidung Rechtsmittel eingelegt (Klage/Beschwerde)?", "type": "yesno", "required": true,
+      "showIf": "decision_received == 'yes'"
+    },
+
+    /* Block 5 – Fluchtgründe */
+    { "id": "grounds", "title": "Hauptgründe für deine Flucht (Mehrfachauswahl möglich)", "type": "multi", "required": true,
       "options": [
         { "value": "religion", "label": "Religion" },
         { "value": "nationality", "label": "Nationalität" },
         { "value": "political", "label": "Politische Überzeugung" },
         { "value": "social", "label": "Soziale Gruppe (z. B. Frauen, LGBTIQ)" },
-        { "value": "health", "label": "Gesundheitliche Gründe" }
+        { "value": "health", "label": "Gesundheitliche Gründe" },
+        { "value": "other", "label": "Andere Gründe" },
+
+        /* Türkei-spezifische Auswahlhilfen (dienen nur der Genauigkeit) */
+        { "value": "fetö", "label": "Gülen/FETÖ-Vorwurf (Türkei-spezifisch)" },
+        { "value": "kurdish_activism", "label": "Kurdische politische Aktivitäten / HDP (Türkei-spezifisch)" },
+        { "value": "journalism", "label": "Journalismus / Meinungsäußerung (Türkei-spezifisch)" }
       ]
     },
-    {
-      "id": "trigger",
-      "title": "Fluchtauslösendes Ereignis",
-      "description": "Wann und was ist konkret passiert?",
-      "type": "text",
-      "required": true
-    },
-    {
-      "id": "state_or_private",
-      "title": "Wer verfolgt(e) dich?",
-      "type": "single",
-      "required": true,
+    { "id": "persecutor", "title": "Wer verfolgt(e) dich hauptsächlich?", "type": "single", "required": true,
       "options": [
         { "value": "state", "label": "Staat / Behörden" },
         { "value": "private", "label": "Private / Gruppen" },
         { "value": "unknown", "label": "Unklar" }
       ]
-    }
+    },
+    { "id": "internal_protection", "title": "Hast du in deinem Land Schutz bei Polizei oder durch Umzug gesucht?", "type": "yesno", "required": true },
+    { "id": "no_internal_reason", "title": "Warum konntest du keinen Schutz finden oder suchen?", "type": "text", "required": true,
+      "showIf": "internal_protection == 'no'"
+    },
+    { "id": "trigger_date", "title": "Datum des fluchtauslösenden Ereignisses", "type": "date", "required": true },
+    { "id": "trigger_desc", "title": "Was ist konkret passiert?", "type": "text", "required": true },
+
+    /* 5.X – Türkei-spezifische Zusatzfragen (nur wenn country == TR) */
+    { "id": "tr_political_cases", "title": "Gab es Ermittlungen/Verfahren (z. B. Terrorpropaganda, Präsidentenbeleidigung)?", "type": "yesno", "required": true,
+      "showIf": "country == 'TR' && (grounds includes 'political' || grounds includes 'journalism' || grounds includes 'kurdish_activism' || grounds includes 'fetö')"
+    },
+    { "id": "tr_political_details", "title": "Falls ja: Aktenzeichen/Behörde/Zeitraum (falls bekannt)", "type": "text", "required": false,
+      "showIf": "country == 'TR' && tr_political_cases == 'yes'"
+    },
+    { "id": "tr_lgbtiq_repression", "title": "Gab es staatliche Repressionen gegen dich wegen LGBTIQ?", "type": "yesno", "required": true,
+      "showIf": "country == 'TR' && (grounds includes 'social')"
+    },
+    { "id": "tr_military", "title": "Bist du vom Wehrdienst betroffen (Pflicht/Einberufung/Verweigerung)?", "type": "yesno", "required": true,
+      "showIf": "country == 'TR' && gender == 'male'"
+    },
+
+    /* Zusatzfrage bei Visum + staatliche Verfolgung (Plausibilität) */
+    { "id": "visa_vs_trigger", "title": "Hast du das Visum vor oder nach dem fluchtauslösenden Ereignis beantragt?", "type": "single", "required": true,
+      "showIf": "entry_mode == 'visa' && persecutor == 'state'",
+      "options": [
+        { "value": "before", "label": "Vor dem Ereignis" },
+        { "value": "after", "label": "Nach dem Ereignis" },
+        { "value": "unknown", "label": "Weiß ich nicht" }
+      ]
+    },
+
+    /* Block 6 – Plausibilität / Nachfluchtverhalten */
+    { "id": "exile_activities", "title": "Hast du nach der Ausreise an Demonstrationen, Vereinen oder politischen Aktivitäten teilgenommen?", "type": "yesno", "required": true },
+    { "id": "exile_activities_desc", "title": "Welche Aktivitäten? (Ort, Zeitraum, Gruppe/Partei)", "type": "text", "required": true,
+      "showIf": "exile_activities == 'yes'"
+    },
+
+    /* Block 8 – Familie (mit Folgelogik) */
+    { "id": "family_in_eu", "title": "Leben enge Angehörige (Ehepartner, minderjährige Kinder) in der EU?", "type": "yesno", "required": true },
+    { "id": "family_has_status", "title": "Haben diese Angehörigen Asyl beantragt oder Schutz erhalten?", "type": "yesno", "required": true,
+      "showIf": "family_in_eu == 'yes'"
+    },
+    { "id": "family_decision", "title": "Welche Entscheidung liegt bei deinen Angehörigen vor?", "type": "single", "required": true,
+      "showIf": "family_in_eu == 'yes' && family_has_status == 'yes'",
+      "options": [
+        { "value": "asyl", "label": "Asylberechtigung" },
+        { "value": "refugee", "label": "Flüchtlingsschutz" },
+        { "value": "subsidiary", "label": "Subsidiärer Schutz" },
+        { "value": "ban", "label": "Nationales Abschiebungsverbot" }
+      ]
+    },
+
+    /* Block 9 – Gesundheit */
+    { "id": "health_issue", "title": "Liegt eine relevante Erkrankung vor, die im Herkunftsland schwer behandelbar wäre?", "type": "yesno", "required": true },
+    { "id": "health_details", "title": "Kurze Angaben zur Erkrankung / Behandlung / Atteste", "type": "text", "required": true,
+      "showIf": "health_issue == 'yes'"
+    },
+
+    /* Block 13 – Belege & Dokumente (TR-Zusatz) */
+    { "id": "docs", "title": "Welche Unterlagen hast du?", "type": "multi", "required": false,
+      "options": [
+        { "value": "passport", "label": "Pass / Ausweis" },
+        { "value": "party", "label": "Parteimitgliedschaft / Vereinsnachweise" },
+        { "value": "screens", "label": "Screenshots / Social Media / Fotos" },
+        { "value": "medical", "label": "Ärztliche Atteste / Befunde" },
+        { "value": "uyap", "label": "UYAP / E-Devlet (Türkei)" },
+        { "value": "other", "label": "Andere Belege" }
+      ]
+    },
+    { "id": "uyap_details", "title": "Falls UYAP/E-Devlet: Was genau liegt vor? (z. B. Anklageschrift, Haftbefehl)", "type": "text", "required": true,
+      "showIf": "country == 'TR' && docs includes 'uyap'"
+    },
+
+    /* Abschluss */
+    { "id": "final_notes", "title": "Gibt es noch etwas Wichtiges, das wir wissen sollten?", "type": "text", "required": false }
   ]
 }
