@@ -16,32 +16,17 @@ export default function StartPage() {
   }, []);
 
   if (err) {
-    return (
-      <main style={{ minHeight: "100vh", background: "#f6f1e7", color: "#0a2a4a" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: 24 }}>
-          <h1 style={{ fontFamily: "Montserrat, system-ui", marginBottom: 12 }}>Fehler</h1>
-          <p style={{ fontFamily: "Montserrat, system-ui" }}>{err}</p>
-        </div>
-      </main>
-    );
+    return <div style={{ padding: 24 }}>Fehler: {err}</div>;
   }
-
   if (!flow) {
-    return (
-      <main style={{ minHeight: "100vh", background: "#f6f1e7", color: "#0a2a4a" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: 24 }}>
-          <img src="/logo.png" alt="Amanaya" style={{ height: 30, marginBottom: 20 }} />
-          <p style={{ fontFamily: "Montserrat, system-ui" }}>Lade Fragen…</p>
-        </div>
-      </main>
-    );
+    return <div style={{ padding: 24 }}>Lade Fragen…</div>;
   }
-
+  const Flow = FlowRunner as any;
   return (
     <main style={{ minHeight: "100vh", background: "#f6f1e7", color: "#0a2a4a" }}>
       <div style={{ maxWidth: 720, margin: "0 auto", padding: 24 }}>
         <img src="/logo.png" alt="Amanaya" style={{ height: 30, marginBottom: 20 }} />
-        <FlowRunner flow={flow} logoSrc="/logo.png" />
+        <Flow flow={flow} logoSrc="/logo.png" />
       </div>
     </main>
   );
