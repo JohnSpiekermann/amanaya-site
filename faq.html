@@ -1,173 +1,108 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FAQ – Amanaya</title>
-
-  <!-- Montserrat optional; sonst System-UI -->
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
-
+  <meta name="description" content="Häufige Fragen zu Amanaya – unabhängige Online-Plattform für Asylsuchende." />
   <style>
     :root{
-      --bg:#f6f1e7;        /* Beige */
-      --text:#0a2a4a;      /* Tiefblau */
-      --accent:#0f3a6b;    /* Markenblau */
-      --soft:rgba(15,58,107,.08);
-      --line:rgba(15,58,107,.20);
+      --bg:#f6f1e7;
+      --ink:#0a2a4a;
+      --brand:#0f3a6b;
+      --pill:#e7eef8;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;background:var(--bg);color:var(--text);
-      font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      line-height:1.55;
-    }
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
-    .page-title{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:.2px;margin:8px 0 6px}
-    .page-sub{margin:0 0 18px;opacity:.9;font-weight:500}
-
-    .accordion{display:grid;gap:14px;margin-top:16px}
-    .accordion details{
-      background:#fff;border:1px solid var(--line);border-radius:16px;
-      padding:14px 16px;box-shadow:0 2px 10px rgba(10,42,74,.05)
-    }
-    .accordion summary{
-      list-style:none;cursor:pointer;font-weight:800;font-size:18px;color:var(--accent);
-      display:flex;align-items:center;gap:10px
-    }
-    .accordion summary::-webkit-details-marker{display:none}
-    .accordion details[open] summary{color:var(--text)}
-    .chev{width:10px;height:10px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);
-      transform:rotate(-45deg);transition:transform .2s ease;margin-right:2px}
-    details[open] .chev{transform:rotate(45deg)}
-    .answer{margin-top:10px}
-    .hint{background:var(--soft);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:14px;margin-top:10px}
-    a.link{color:var(--accent);text-decoration:underline;text-decoration-color:var(--line)}
-    ul{margin:8px 0 0 18px;padding:0}
-    li{margin:6px 0}
-    .badge{display:inline-block;background:var(--soft);border:1px solid var(--line);color:var(--accent);
-      border-radius:999px;font-size:12px;font-weight:800;padding:4px 10px;margin:0 0 8px}
-    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
-    .btn{appearance:none;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:12px;
-      padding:10px 14px;font-weight:700;text-decoration:none}
-    .btn.alt{background:transparent;color:var(--accent)}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+         background:var(--bg);color:var(--ink);line-height:1.55}
+    .wrap{max-width:920px;margin:0 auto;padding:32px 20px}
+    h1{color:var(--brand);font-size:clamp(26px,4vw,36px);margin-bottom:28px;text-align:center}
+    h2{color:#1b4b83;font-size:20px;margin-top:32px;margin-bottom:6px}
+    p{margin:0 0 10px 0}
+    .faq-item{background:#fff;padding:18px 22px;border-radius:12px;margin-bottom:16px;
+              box-shadow:0 4px 14px rgba(10,42,74,.06)}
+    footer{text-align:center;margin:46px 0 20px 0}
+    .footer-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-bottom:14px}
+    .btn{display:inline-block;padding:12px 22px;border-radius:999px;text-decoration:none;
+         font-weight:700;transition:.2s ease}
+    .btn.primary{background:var(--brand);color:#fff}
+    .btn.primary:hover{filter:brightness(1.1)}
+    .btn.secondary{background:var(--pill);color:var(--brand)}
+    .btn.secondary:hover{filter:brightness(0.97)}
+    footer p{font-size:14px;color:#5c6672}
+    footer a{color:var(--ink);text-decoration:underline}
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <h1 class="page-title">FAQ</h1>
-      <p class="page-sub">Kurz und klar: So hilft dir Amanaya – anonym, schnell, europaweit.</p>
-    </header>
+  <div class="wrap">
+    <h1>FAQ – Häufige Fragen</h1>
 
-    <section class="accordion">
+    <div class="faq-item">
+      <h2>Kurz und klar: So hilft dir Amanaya – anonym, schnell, weltweit.</h2>
+    </div>
 
-      <details open>
-        <summary><span class="chev"></span>Wer ist Amanaya?</summary>
-        <div class="answer">
-          Amanaya ist eine unabhängige Online-Plattform für Asylsuchende. Wir bieten
-          <strong>kostenlose Informationen</strong> zum europäischen Asylverfahren und – wenn du möchtest –
-          eine <strong>individuelle schriftliche Einschätzung</strong> als PDF.
-          <div class="hint">
-            Fokus der Pilotphase: Türkei. Weitere Länder folgen schrittweise.
-          </div>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Wer ist Amanaya?</h2>
+      <p>Amanaya ist eine unabhängige Online-Plattform für Asylsuchende. Betreiber von Amanaya ist eine deutsche Rechtsanwaltskanzlei, die seit 50 Jahren schwerpunktmäßig im Migrationsrecht tätig ist.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Wie funktioniert Amanaya?</summary>
-        <div class="answer">
-          <ul>
-            <li>Du liest die <a class="link" href="/asylverfahren">kostenlosen Inhalte</a> und bekommst einen Überblick.</li>
-            <li>Danach kannst du eine <strong>anonyme Befragung</strong> starten: verständliche Fragen, Schritt für Schritt.</li>
-            <li>Am Ende beauftragst du – wenn du willst – die <strong>PDF-Auswertung</strong> (Preis siehe unten).</li>
-            <li>Du erhältst deine Einschätzung <strong>innerhalb von 48&nbsp;Stunden</strong> per E-Mail.</li>
-          </ul>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Welchen Zweck verfolgt Amanaya?</h2>
+      <p>Wir bieten kostenlose Informationen zum europäischen Asylverfahren und – wenn du möchtest – eine individuelle schriftliche Rechtsberatung.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Brauche ich persönliche Daten für die Befragung?</summary>
-        <div class="answer">
-          <span class="badge">Anonym möglich</span>
-          Für die Befragung werden <strong>keine</strong> persönlichen Angaben wie <strong>Name</strong>, <strong>Geburtsdatum</strong> oder
-          <strong>Adresse</strong> benötigt. Wir fragen nur das, was für die Einschätzung wichtig ist
-          (z.&nbsp;B. Zuständigkeit nach Dublin, Verfahrensstand, Fluchtgründe).
-          <div class="hint">
-            Wenn du später Dokumente hinzufügen möchtest (optional), kannst du sensible Daten vorher schwärzen.
-          </div>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Wie funktioniert Amanaya?</h2>
+      <p>Du liest die kostenlosen Inhalte und bekommst einen Überblick. Bei Bedarf kannst du danach eine Rechtsberatung erhalten. Folge der anonymen Befragung und danach beauftragst du – wenn du willst – die schriftliche Rechtsberatung.</p>
+      <p>Ausgehend von deinen Angaben erstellt ein Rechtsanwalt die rechtliche Einschätzung deiner Fluchtgründe und übersendet diese innerhalb von 48 Stunden per E-Mail.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Was ist das Besondere an Amanaya?</summary>
-        <div class="answer">
-          <ul>
-            <li><strong>Rechtsberatung vor der Flucht:</strong> Du kannst dich <em>vor</em> der Einreise informieren –
-                das wird mit GEAS wichtiger, weil an den Außengrenzen <strong>Grenzverfahren</strong> mit sehr kurzen Fristen
-                stattfinden können.</li>
-            <li><strong>Früh Klarheit:</strong> Hinweise zu <strong>Zuständigkeit (Dublin)</strong>, möglichen <strong>Risiken</strong>
-                und zu <strong>Belegen</strong>, die du frühzeitig sammeln solltest (z. B. UYAP/E-Devlet bei Türkei-Fällen).</li>
-            <li><strong>Einfach & anonym:</strong> Keine langen Formulare, kein Konto nötig – du startest sofort.</li>
-          </ul>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Brauche ich persönliche Daten für die Befragung?</h2>
+      <p>Deine persönlichen Angaben wie Name, Geburtsdatum oder Adresse werden nicht benötigt. Wir fragen nur das, was für die Einschätzung wichtig ist (z.&nbsp;B. Reiseweg, Verfahrensstand, Fluchtgründe).</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Was kostet die PDF-Auswertung?</summary>
-        <div class="answer">
-          Der Preis beträgt <strong>119&nbsp;€</strong> (Einheitspreis).  
-          Die Fragen sind <strong>kostenlos</strong> – die Zahlung wird erst <strong>am Ende</strong> abgefragt.
-          <div class="hint">In der Pilotphase ist die Zahlung per <strong>PayPal</strong> vorgesehen.</div>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Was ist das Besondere an Amanaya?</h2>
+      <p>In den meisten Fällen wird ein Rechtsanwalt erst nach der Ablehnung eines Asylantrags eingeschaltet. Amanaya bietet Rechtsberatung <strong>vor</strong> der Flucht: Du kannst dich vor der Anhörung zu deinen Fluchtgründen oder sogar bereits vor der Einreise informieren – das wird mit GEAS wichtiger, weil an den Außengrenzen Grenzverfahren mit sehr kurzen Fristen stattfinden können.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Wie schnell bekomme ich meine Auswertung?</summary>
-        <div class="answer">
-          Innerhalb von <strong>48&nbsp;Stunden</strong> nach Beauftragung senden wir dir das PDF per E-Mail.
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Was kostet die individuelle Rechtsberatung?</h2>
+      <p>Der Preis beträgt 119 €. Für die Auswertung deiner Angaben werden die Kosten fällig.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Kann ich Amanaya auch außerhalb der EU nutzen?</summary>
-        <div class="answer">
-          Ja. Amanaya richtet sich ausdrücklich auch an Menschen <strong>außerhalb der EU</strong>.
-          Das ist besonders sinnvoll, wenn du eine Einreise planst und wissen möchtest,
-          <strong>welche Schritte, Belege und Entscheidungen</strong> dich erwarten können.
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Wie schnell bekomme ich meine Auswertung?</h2>
+      <p>Deine Rechtsberatung in Form einer schriftlichen Auswertung deiner Angaben erhältst du innerhalb von 48 Stunden via E-Mail.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Was passiert mit meinen Daten?</summary>
-        <div class="answer">
-          Wir verarbeiten nur die Angaben, die für deine Einschätzung erforderlich sind.
-          Nach Abschluss der Beratung werden deine Daten <strong>zeitnah gelöscht</strong>.
-          <div class="hint">
-            Die Übertragung erfolgt verschlüsselt. Serverstandort: EU.
-          </div>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Kann ich Amanaya auch außerhalb der EU nutzen?</h2>
+      <p>Ja. Amanaya richtet sich ausdrücklich auch an Menschen außerhalb der EU. Das ist besonders sinnvoll, wenn du eine Einreise planst und wissen möchtest, ob deine Angaben Asylrelevanz haben.</p>
+    </div>
 
-      <details>
-        <summary><span class="chev"></span>Wie starte ich?</summary>
-        <div class="answer">
-          <ul>
-            <li>Öffne <a class="link" href="/asylverfahren">„Das Asylverfahren“</a> für den Überblick.</li>
-            <li>Starte die <a class="link" href="/start">anonyme Befragung</a> – das dauert nur wenige Minuten.</li>
-            <li>Entscheide am Ende, ob du die <strong>PDF-Auswertung</strong> für 119&nbsp;€ beauftragen möchtest.</li>
-          </ul>
-          <div class="cta-row">
-            <a class="btn" href="/start">Anonyme Befragung starten</a>
-            <a class="btn alt" href="/asylverfahren">Das Asylverfahren lesen</a>
-          </div>
-        </div>
-      </details>
+    <div class="faq-item">
+      <h2>Was passiert mit meinen Daten?</h2>
+      <p>Wir verarbeiten nur die Angaben, die für deine Einschätzung erforderlich sind. Nach Abschluss der Beratung werden deine Daten gelöscht. Die Übertragung erfolgt verschlüsselt. Serverstandort: EU.</p>
+    </div>
 
-    </section>
+    <div class="faq-item">
+      <h2>Wie starte ich?</h2>
+      <p>Öffne <strong>„Infos“</strong> für den Überblick.  
+      Starte die anonyme Befragung – das dauert nur wenige Minuten.  
+      Entscheide am Ende, ob du die Rechtsberatung für 119 € beauftragen möchtest.</p>
+    </div>
 
-  </main>
+    <footer>
+      <div class="footer-buttons">
+        <a href="/fragen" class="btn primary">Befragung starten</a>
+        <a href="/asyl" class="btn secondary">Zu den Infos</a>
+      </div>
+      <p>© <span id="y"></span> Amanaya · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+    </footer>
+  </div>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
 </body>
 </html>
