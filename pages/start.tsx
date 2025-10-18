@@ -1,4 +1,3 @@
-// pages/start.tsx
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
@@ -15,12 +14,9 @@ export default function StartPage() {
       .catch((e) => setErr(String(e)));
   }, []);
 
-  if (err) {
-    return <div style={{ padding: 24 }}>Fehler: {err}</div>;
-  }
-  if (!flow) {
-    return <div style={{ padding: 24 }}>Lade Fragen…</div>;
-  }
+  if (err) return <div style={{ padding: 24 }}>Fehler: {err}</div>;
+  if (!flow) return <div style={{ padding: 24 }}>Lade Fragen…</div>;
+
   const Flow = FlowRunner as any;
   return (
     <main style={{ minHeight: "100vh", background: "#f6f1e7", color: "#0a2a4a" }}>
