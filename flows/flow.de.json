@@ -191,5 +191,24 @@
     },
 
     { "id": "final_notes", "title": "Gibt es noch etwas Wichtiges, das wir wissen sollten?", "type": "text" }
-  ]
+  ,
+    {
+      "id": "summary",
+      "title": "Zusammenfassung deiner Antworten",
+      "type": "summary"
+    },
+    {
+      "id": "email",
+      "title": "Möchtest du das Ergebnis per E-Mail erhalten?",
+      "type": "text",
+      "description": "Bitte gib deine E-Mail-Adresse ein.",
+      "required": true
+    },
+    {
+      "id": "done",
+      "title": "Fertig!",
+      "description": "Vielen Dank für deine Angaben. Deine Auswertung wird nun erstellt.",
+      "type": "text"
+    }
+]
 }
