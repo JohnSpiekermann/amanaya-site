@@ -210,5 +210,12 @@
       "description": "Vielen Dank für deine Angaben. Deine Auswertung wird nun erstellt.",
       "type": "text"
     }
+,
+{ 
+  "id": "done_order",
+  "title": "Danke für deine Angaben!",
+  "type": "text",
+  "description": "Du kannst jetzt deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
+}
 ]
 }
