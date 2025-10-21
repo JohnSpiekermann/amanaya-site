@@ -1,36 +1,37 @@
-{
-  "locale": "de",
-  "version": "2025-10-19-lite-1",
-  "steps": [
-    { "id": "intro_note", "title": "Anonyme Befragung", "description": "Keine persönlichen Daten nötig (kein Name, kein Geburtsdatum). Beantworte die Fragen Schritt für Schritt.", "type": "text" },
-
-    { "id": "lang", "title": "In welcher Sprache möchtest du fortfahren?", "type": "single", "required": true,
-      "options": [
-        { "value": "de", "label": "Deutsch" },
-        { "value": "tr", "label": "Türkçe" },
-        { "value": "en", "label": "English" }
-      ]
-    },
-
-    { "id": "country", "title": "Aus welchem Land kommst du?", "type": "single", "required": true,
-      "options": [
-        { "value": "TR", "label": "Türkei" },
-        { "value": "SY", "label": "Syrien" },
-        { "value": "AF", "label": "Afghanistan" },
-        { "value": "IQ", "label": "Irak" },
-        { "value": "IR", "label": "Iran" },
-        { "value": "other", "label": "Anderes Land" }
-      ]
-    },
-    { "id": "current_location", "title": "Wo befindest du dich aktuell? (Land / Stadt)", "type": "text" },
-    { "id": "destination", "title": "In welchem Land willst du Schutz beantragen oder hast du ihn beantragt?", "type": "single", "required": true,
-      "options": [
-        { "value": "DE", "label": "Deutschland" },
-        { "value": "AT", "label": "Österreich" },
-        { "value": "SE", "label": "Schweden" },
-        { "value": "NL", "label": "Niederlande" },
-        { "value": "other", "label": "Anderes EU-Land" }
-      ]
+[
+  {
+    "id": "intro",
+    "kind": "info",
+    "headline": "Deine anonyme Befragung",
+    "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation und die Ursachen deiner Flucht bitte so genau wie möglich. Je mehr Details du angibst, desto präziser kann unsere Einschätzung werden.",
+    "button": "Befragung starten",
+    "next": "herkunftsland"
+  },
+  {
+    "id": "herkunftsland",
+    "question": "Aus welchem Land stammst du oder hast du zuletzt dauerhaft gelebt?",
+    "type": "country",
+    "required": true,
+    "onAnswer": { "set": { "herkunftsland": "$value" } },
+    "next": "aufenthaltsland"
+  },
+  {
+    "id": "aufenthaltsland",
+    "question": "In welchem Land befindest du dich im Moment?",
+    "type": "country",
+    "required": true,
+    "onAnswer": { "set": { "aufenthaltsland": "$value" } },
+    "next": "zielland"
+  },
+  {
+    "id": "zielland",
+    "question": "Für welches Land möchtest du Informationen zum Asylverfahren erhalten?",
+    "type": "country-eu",
+    "required": true,
+    "onAnswer": { "set": { "zielland": "$value" } },
+    "next": "alter"
+  }
+]
     },
     { "id": "age", "title": "Wie alt bist du?", "type": "number", "required": true },
     { "id": "gender", "title": "Dein Geschlecht", "type": "single", "required": true,
