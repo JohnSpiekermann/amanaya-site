@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "outputDirectory": ".",
   "redirects": [
     { "source": "/entscheidungen/asylberechtigung",  "destination": "/asylberechtigung",    "permanent": false },
     { "source": "/entscheidungen/fluechtlingsschutz", "destination": "/fluechtlingsschutz",  "permanent": false },
