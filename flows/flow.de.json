@@ -88,7 +88,7 @@
     {
       "id": "zielland",
       "question": "Für welches Land möchtest du Informationen zum Asylverfahren erhalten?",
-      "type": "country-eu",
+      "type": "country",
       "required": true,
       "onAnswer": { "set": { "zielland": "$value" } },
       "next": "alter"
