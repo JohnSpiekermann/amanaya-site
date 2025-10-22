@@ -1,220 +1,553 @@
-[
-  {
-    "id": "intro",
-    "kind": "info",
-    "headline": "Deine anonyme Befragung",
-    "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation und die Ursachen deiner Flucht bitte so genau wie möglich. Je mehr Details du angibst, desto präziser kann unsere Einschätzung werden.",
-    "button": "Befragung starten",
-    "next": "herkunftsland"
+{
+  "version": "1.0",
+  "locale": "de",
+  "ci": {
+    "bg": "#f6f1e7",
+    "text": "#0f3a6b",
+    "accent": "#0f3a6b",
+    "font": "Montserrat"
   },
-  {
-    "id": "herkunftsland",
-    "question": "Aus welchem Land stammst du oder hast du zuletzt dauerhaft gelebt?",
-    "type": "country",
-    "required": true,
-    "onAnswer": { "set": { "herkunftsland": "$value" } },
-    "next": "aufenthaltsland"
+  "legal": {
+    "price_eur": 119,
+    "currency": "EUR",
+    "delivery_hours": 48,
+    "collects_personal_names": false,
+    "collects_birthdates": false
   },
-  {
-    "id": "aufenthaltsland",
-    "question": "In welchem Land befindest du dich im Moment?",
-    "type": "country",
-    "required": true,
-    "onAnswer": { "set": { "aufenthaltsland": "$value" } },
-    "next": "zielland"
+  "vars": {
+    "sprache": null,
+    "herkunftsland": null,
+    "aufenthaltsland": null,
+    "zielland": null,
+    "alter": null,
+    "minderjaehrig": null,
+    "unbegleitet": null,
+    "fall": null,
+    "reiseweg": null,
+    "hat_visum": null,
+    "hat_aufenthaltstitel": null,
+    "visum_aussteller": null,
+    "visum_gueltig_von": null,
+    "visum_gueltig_bis": null,
+    "visum_beantragt_am": null,
+    "aufenthaltstitel_aussteller": null,
+    "aufenthaltstitel_bis": null,
+    "fingerabdruecke_anderswo": null,
+    "asylantrag_anderswo": null,
+    "plant_asylantrag": null,
+    "asylantrag_gestellt": null,
+    "anhoerung": null,
+    "entscheidung": null,
+    "entscheidung_typ": null,
+    "fluchtgruende": [],
+    "quelle_verfolgung": null,
+    "innerstaatlicher_schutz_versucht": null,
+    "innerstaatlicher_schutz_details": null,
+    "flucht_ereignis_datum": null,
+    "flucht_ereignis_beschr": null,
+    "visum_vor_nach_ereignis": null,
+    "papiere_ort": null,
+    "beweise_vorhanden": null,
+    "beweise_zum_ausreisezeitpunkt": null,
+    "familie_im_herkunftsland": null,
+    "familie_kontakt": null,
+    "familie_nachverfolgung": null,
+    "nachfluchtverhalten": null,
+    "journalismus": null,
+    "lgbtiq": null,
+    "tr_uyap_edv_frage_noetig": null,
+    "tr_uyap_edv_zugang": null,
+    "tr_uyap_edv_dok_typen": [],
+    "email": null,
+    "zahlung_ok": null
   },
-  {
-    "id": "zielland",
-    "question": "Für welches Land möchtest du Informationen zum Asylverfahren erhalten?",
-    "type": "country-eu",
-    "required": true,
-    "onAnswer": { "set": { "zielland": "$value" } },
-    "next": "alter"
-    },
-    { "id": "age", "title": "Wie alt bist du?", "type": "number", "required": true },
-    { "id": "gender", "title": "Dein Geschlecht", "type": "single", "required": true,
-      "options": [
-        { "value": "male", "label": "Männlich" },
-        { "value": "female", "label": "Weiblich" },
-        { "value": "other", "label": "Divers / keine Angabe" }
-      ]
-    },
-    { "id": "unaccompanied", "title": "Bist du unbegleitet minderjährig?", "type": "yesno", "showIf": "age != null && age < 18" },
-
-    { "id": "in_target", "title": "Bist du bereits im Zielland?", "type": "single", "required": true,
-      "options": [
-        { "value": "A", "label": "Ja, ich bin im Zielland" },
-        { "value": "B", "label": "Nein, ich bin noch außerhalb" }
-      ]
-    },
-
-    { "id": "entry_mode", "title": "Wie bist du eingereist?", "type": "single", "required": true,
-      "showIf": "in_target == 'A'",
-      "options": [
-        { "value": "visa", "label": "Mit Visum" },
-        { "value": "permit", "label": "Mit Aufenthaltstitel eines anderen EU-Staates" },
-        { "value": "none", "label": "Ohne Visum / über Drittstaat / Sonstiges" }
-      ]
-    },
-    { "id": "visa_issuer", "title": "Welches Land hat dein Einreisevisum ausgestellt?", "type": "text", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'visa'"
-    },
-    { "id": "visa_valid_from", "title": "Visum: gültig von (Datum)", "type": "date", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'visa'"
-    },
-    { "id": "visa_valid_to", "title": "Visum: gültig bis (Datum)", "type": "date", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'visa'"
-    },
-    { "id": "visa_applied_on", "title": "Wann hast du das Visum beantragt?", "type": "date", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'visa'"
-    },
-
-    { "id": "permit_issuer", "title": "Welches Land hat deinen Aufenthaltstitel ausgestellt?", "type": "text", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'permit'"
-    },
-    { "id": "permit_valid_to", "title": "Aufenthaltstitel gültig bis (Datum)", "type": "date", "required": true,
-      "showIf": "in_target == 'A' && entry_mode == 'permit'"
-    },
-
-    { "id": "eurodac", "title": "Wurden deine Fingerabdrücke in einem anderen EU-Land abgenommen (EURODAC)?", "type": "yesno", "required": true,
-      "showIf": "in_target == 'A' || in_target == 'B'"
-    },
-    { "id": "asylum_elsewhere", "title": "Hast du in einem anderen EU-Land einen Asylantrag gestellt (auch unfreiwillig)?", "type": "yesno", "required": true,
-      "showIf": "in_target == 'A' || in_target == 'B'"
-    },
-
-    { "id": "asylum_applied", "title": "Hast du im Zielland bereits einen Asylantrag gestellt?", "type": "yesno", "required": true,
-      "showIf": "in_target == 'A'"
-    },
-    { "id": "hearing_done", "title": "Wurde deine Anhörung bereits durchgeführt?", "type": "yesno", "required": true,
-      "showIf": "in_target == 'A' && asylum_applied == 'yes'"
-    },
-    { "id": "decision_received", "title": "Gibt es bereits eine Entscheidung?", "type": "yesno", "required": true,
-      "showIf": "in_target == 'A' && asylum_applied == 'yes'"
-    },
-    { "id": "decision_type", "title": "Welche Entscheidung liegt vor?", "type": "single", "required": true,
-      "showIf": "decision_received == 'yes'",
-      "options": [
-        { "value": "asyl", "label": "Asylberechtigung" },
-        { "value": "refugee", "label": "Flüchtlingsschutz" },
-        { "value": "subsidiary", "label": "Subsidiärer Schutz" },
-        { "value": "ban", "label": "Nationales Abschiebungsverbot" },
-        { "value": "rejected", "label": "Ablehnung / Unzulässigkeit" }
-      ]
-    },
-    { "id": "appeal_filed", "title": "Hast du dagegen Rechtsmittel eingelegt (Klage/Beschwerde)?", "type": "yesno",
-      "showIf": "decision_received == 'yes'"
-    },
-
-    { "id": "grounds", "title": "Welche Gründe treffen auf dich zu? (Mehrfachauswahl)", "type": "multi", "required": true,
-      "options": [
-        { "value": "religion", "label": "Religion" },
-        { "value": "nationality", "label": "Nationalität / Ethnie" },
-        { "value": "political", "label": "Politische Überzeugung / Aktivität" },
-        { "value": "social", "label": "Soziale Gruppe (z. B. Frauen, LGBTIQ)" },
-        { "value": "health", "label": "Gesundheitliche Gründe" },
-        { "value": "wehrdienst", "label": "Wehr-/Militärdienst (Verweigerung/Verfolgung)" },
-        { "value": "other", "label": "Andere Gründe" },
-        { "value": "gulen", "label": "Gülen/FETÖ-Vorwurf (Türkei-spezifisch)" },
-        { "value": "kurdish_activism", "label": "Kurdische politische Aktivitäten / HDP (Türkei-spezifisch)" },
-        { "value": "journalism", "label": "Journalismus / Meinungsäußerung (Türkei-spezifisch)" }
-      ]
-    },
-    { "id": "trigger_desc", "title": "In deinen Worten: Was ist passiert?", "type": "text" },
-    { "id": "persecutor", "title": "Von wem geht die Verfolgung aus?", "type": "single", "required": true,
-      "options": [
-        { "value": "state", "label": "Staat / Behörden" },
-        { "value": "private", "label": "Private / Gruppen" },
-        { "value": "unknown", "label": "Unklar" }
-      ]
-    },
-    { "id": "internal_protection", "title": "Hast du innerhalb deines Landes Schutz gesucht (Polizei/Umzug)?", "type": "yesno",
-      "showIf": "persecutor == 'private' || persecutor == 'unknown'"
-    },
-    { "id": "no_internal_reason", "title": "Warum war Schutz im Land nicht möglich?", "type": "text",
-      "showIf": "internal_protection == 'no'"
-    },
-    { "id": "trigger_date", "title": "Datum des fluchtauslösenden Ereignisses", "type": "date" },
-
-    { "id": "visa_vs_trigger", "title": "Visum vor oder nach dem fluchtauslösenden Ereignis beantragt?", "type": "single",
-      "showIf": "(persecutor == 'state') && (entry_mode == 'visa' || entry_mode == 'permit')",
-      "options": [
-        { "value": "before", "label": "Vor dem Ereignis" },
-        { "value": "after", "label": "Nach dem Ereignis" },
-        { "value": "unknown", "label": "Weiß ich nicht" }
-      ]
-    },
-
-    { "id": "papiere_ort", "title": "Wo befinden sich deine Reisepässe/Ausweise?", "type": "text" },
-    { "id": "have_evidence", "title": "Hast du Belege oder Dokumente für deine Angaben?", "type": "yesno", "required": true },
-    { "id": "evidence_details", "title": "Welche Belege hast du? (z. B. Fotos, Bescheide, Chatverläufe)", "type": "text",
-      "showIf": "have_evidence == 'yes'"
-    },
-    { "id": "family_contact", "title": "Hast du Kontakt zu deiner Familie im Herkunftsland?", "type": "single", "required": true,
-      "options": [
-        { "value": "regular", "label": "Regelmäßig" },
-        { "value": "rare", "label": "Selten / unsicher" },
-        { "value": "none", "label": "Kein Kontakt" }
-      ]
-    },
-    { "id": "family_followup", "title": "Berichtet deine Familie von Nachfragen/Bedrohungen/Polizeibesuchen nach deiner Ausreise?", "type": "yesno", "required": true },
-    { "id": "exile_activities", "title": "Hast du nach der Ausreise an Demonstrationen, Vereinen oder politischen Aktivitäten teilgenommen?", "type": "yesno", "required": true },
-    { "id": "exile_activities_desc", "title": "Welche Aktivitäten? (Ort, Zeitraum, Gruppe/Partei)", "type": "text",
-      "showIf": "exile_activities == 'yes'"
-    },
-
-    { "id": "tr_cases", "title": "Gab es Ermittlungen/Verfahren (z. B. Terrorpropaganda, Präsidentenbeleidigung)?", "type": "yesno",
-      "showIf": "country == 'TR' && (grounds includes 'political' || grounds includes 'journalism' || grounds includes 'kurdish_activism' || grounds includes 'gulen')"
-    },
-    { "id": "tr_cases_details", "title": "Aktenzeichen/Behörde/Zeitraum (falls bekannt)", "type": "text",
-      "showIf": "country == 'TR' && tr_cases == 'yes'"
-    },
-    { "id": "tr_lgbtiq", "title": "Gab es staatliche Repressionen gegen dich wegen LGBTIQ?", "type": "yesno",
-      "showIf": "country == 'TR' && (grounds includes 'social')"
-    },
-    { "id": "tr_military", "title": "Bist du vom Wehrdienst betroffen (Pflicht/Einberufung/Verweigerung)?", "type": "yesno",
-      "showIf": "country == 'TR' && gender == 'male'"
-    },
-    { "id": "tr_uyap_access", "title": "Hast du Zugang zu UYAP/E-Devlet oder Dokumente daraus?", "type": "yesno",
-      "showIf": "country == 'TR' && persecutor == 'state'"
-    },
-    { "id": "tr_uyap_types", "title": "Welche UYAP/E-Devlet-Dokumente liegen vor?", "type": "multi",
-      "showIf": "country == 'TR' && tr_uyap_access == 'yes'",
-      "options": [
-        { "value": "anklageschrift", "label": "Anklageschrift / Ermittlungsakte" },
-        { "value": "durchsuchung", "label": "Durchsuchungsbeschluss" },
-        { "value": "haftbefehl", "label": "Haftbefehl" },
-        { "value": "ladung", "label": "Ladung / Vorladung" },
-        { "value": "sonstiges", "label": "Sonstiges" }
-      ]
-    },
-
-    { "id": "final_notes", "title": "Gibt es noch etwas Wichtiges, das wir wissen sollten?", "type": "text" }
-  ,
+  "flow": [
     {
-      "id": "summary",
-      "title": "Zusammenfassung deiner Antworten",
-      "type": "summary"
+      "id": "intro",
+      "kind": "info",
+      "headline": "Deine anonyme Befragung",
+      "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation und die Ursachen deiner Flucht bitte so genau wie möglich. Je mehr Details du angibst, desto präziser kann unsere Einschätzung werden.",
+      "button": "Befragung starten",
+      "next": "herkunftsland"
     },
+
     {
-      "id": "email",
-      "title": "Möchtest du das Ergebnis per E-Mail erhalten?",
+      "id": "herkunftsland",
+      "question": "Aus welchem Land stammst du oder hast du zuletzt dauerhaft gelebt?",
+      "type": "country",
+      "required": true,
+      "onAnswer": { "set": { "herkunftsland": "$value" } },
+      "next": "aufenthaltsland"
+    },
+
+    {
+      "id": "aufenthaltsland",
+      "question": "In welchem Land befindest du dich im Moment?",
+      "type": "country",
+      "required": true,
+      "onAnswer": { "set": { "aufenthaltsland": "$value" } },
+      "next": "zielland"
+    },
+
+    {
+      "id": "zielland",
+      "question": "Für welches Land möchtest du Informationen zum Asylverfahren erhalten?",
+      "type": "country-eu",
+      "required": true,
+      "onAnswer": { "set": { "zielland": "$value" } },
+      "next": "alter"
+    },
+
+    {
+      "id": "alter",
+      "question": "Wie alt bist du?",
+      "type": "number",
+      "min": 0,
+      "max": 99,
+      "required": true,
+      "onAnswer": {
+        "set": {
+          "alter": "$value",
+          "minderjaehrig": { "expr": "$value < 18" }
+        }
+      },
+      "next": { "expr": "$minderjaehrig ? 'minor_unbegleitet' : 'fall_auswahl'" }
+    },
+
+    {
+      "id": "minor_unbegleitet",
+      "question": "Reist du alleine oder mit einem Elternteil?",
+      "type": "radio",
+      "options": [
+        { "label": "Alleine (unbegleitet)", "value": "alleine" },
+        { "label": "Mit Elternteil", "value": "mit_eltern" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "unbegleitet": { "expr": "$value == 'alleine'" } } },
+      "next": "fall_auswahl"
+    },
+
+    {
+      "id": "fall_auswahl",
+      "question": "Befindest du dich bereits im Zielland?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja, ich bin im Zielland", "value": "A" },
+        { "label": "Nein, ich bin noch außerhalb", "value": "B" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "fall": "$value" } },
+      "next": { "expr": "$fall == 'A' ? 'reiseweg_A' : 'reiseweg_B_visa_plan'" }
+    },
+
+    /* ===== FALL A: bereits im Zielland ===== */
+
+    {
+      "id": "reiseweg_A",
+      "question": "Wie bist du eingereist?",
+      "type": "radio",
+      "options": [
+        { "label": "Mit Visum", "value": "visum" },
+        { "label": "Mit Aufenthaltstitel eines anderen EU-Staates", "value": "aufenthaltstitel" },
+        { "label": "Ohne Visum / über Drittstaat / Sonstiges", "value": "ohne" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "reiseweg": "$value" } },
+      "next": {
+        "expr": "$reiseweg == 'visum' ? 'visum_details_A' : ($reiseweg == 'aufenthaltstitel' ? 'aufenthaltstitel_details_A' : 'biometrie_anderswo')"
+      }
+    },
+
+    {
+      "id": "visum_details_A",
+      "question": "Welches Land hat dein Einreisevisum ausgestellt?",
+      "type": "country-eu",
+      "required": true,
+      "onAnswer": { "set": { "hat_visum": true, "visum_aussteller": "$value" } },
+      "next": "visum_zeitraum_A"
+    },
+
+    {
+      "id": "visum_zeitraum_A",
+      "question": "Gültigkeitszeitraum deines Visums",
+      "type": "date-range",
+      "labels": { "from": "Gültig von", "to": "Gültig bis" },
+      "required": true,
+      "onAnswer": { "set": { "visum_gueltig_von": "$value.from", "visum_gueltig_bis": "$value.to" } },
+      "next": "visum_beanantrag_A"
+    },
+
+    {
+      "id": "visum_beanantrag_A",
+      "question": "Wann hast du das Visum beantragt?",
+      "type": "date",
+      "required": true,
+      "onAnswer": { "set": { "visum_beantragt_am": "$value" } },
+      "next": "biometrie_anderswo"
+    },
+
+    {
+      "id": "aufenthaltstitel_details_A",
+      "question": "Welches Land hat deinen Aufenthaltstitel ausgestellt?",
+      "type": "country-eu",
+      "required": true,
+      "onAnswer": { "set": { "hat_aufenthaltstitel": true, "aufenthaltstitel_aussteller": "$value" } },
+      "next": "aufenthaltstitel_gueltigkeit"
+    },
+
+    {
+      "id": "aufenthaltstitel_gueltigkeit",
+      "question": "Bis wann ist der Aufenthaltstitel gültig?",
+      "type": "date",
+      "required": true,
+      "onAnswer": { "set": { "aufenthaltstitel_bis": "$value" } },
+      "next": "biometrie_anderswo"
+    },
+
+    {
+      "id": "biometrie_anderswo",
+      "question": "Wurden dir in einem anderen EU-Staat bereits Fingerabdrücke abgenommen?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "fingerabdruecke_anderswo": "$value" } },
+      "next": "asyl_anderswo"
+    },
+
+    {
+      "id": "asyl_anderswo",
+      "question": "Hast du in einem anderen EU-Staat bereits einen Asylantrag gestellt (auch unfreiwillig)?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "asylantrag_anderswo": "$value" } },
+      "next": "verfahrensstand_A1"
+    },
+
+    {
+      "id": "verfahrensstand_A1",
+      "question": "Hast du im Zielland bereits einen Asylantrag gestellt?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "asylantrag_gestellt": "$value" } },
+      "next": { "expr": "$asylantrag_gestellt ? 'anhoerung_A' : 'block_fluchtgruende_entry'" }
+    },
+
+    {
+      "id": "anhoerung_A",
+      "question": "Hattest du bereits eine Anhörung?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "anhoerung": "$value" } },
+      "next": { "expr": "$anhoerung ? 'entscheidung_A' : 'block_fluchtgruende_entry'" }
+    },
+
+    {
+      "id": "entscheidung_A",
+      "question": "Gibt es bereits eine Entscheidung?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein, noch nicht", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "entscheidung": "$value" } },
+      "next": { "expr": "$entscheidung ? 'entscheidung_typ' : 'block_fluchtgruende_entry'" }
+    },
+
+    {
+      "id": "entscheidung_typ",
+      "question": "Welche Entscheidung hast du erhalten?",
+      "type": "radio",
+      "options": [
+        { "label": "Asylberechtigung", "value": "asyl" },
+        { "label": "Flüchtlingsschutz", "value": "gfk" },
+        { "label": "Subsidiärer Schutz", "value": "subs" },
+        { "label": "Nationales Abschiebungsverbot", "value": "nab" },
+        { "label": "Ablehnung / Unzulässigkeit", "value": "negativ" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "entscheidung_typ": "$value" } },
+      "next": "block_fluchtgruende_entry"
+    },
+
+    /* ===== FALL B: noch außerhalb ===== */
+
+    {
+      "id": "reiseweg_B_visa_plan",
+      "question": "Beabsichtigst du mit einem Visum für das Zielland einzureisen?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja, Visum des Ziellands", "value": "ja_zielland" },
+        { "label": "Nein, anderes Land stellt das Visum aus", "value": "nein_anders" },
+        { "label": "Weiß nicht", "value": "unsicher" }
+      ],
+      "required": true,
+      "onAnswer": {
+        "set": {
+          "hat_visum": { "expr": "$value == 'ja_zielland'" },
+          "visum_aussteller": { "expr": "$value == 'ja_zielland' ? $zielland : null" }
+        }
+      },
+      "next": { "expr": "$value == 'nein_anders' ? 'reiseweg_B_aussteller' : 'block_fluchtgruende_entry'" }
+    },
+
+    {
+      "id": "reiseweg_B_aussteller",
+      "question": "Welches Land wird voraussichtlich dein Visum ausstellen?",
+      "type": "country-eu",
+      "required": true,
+      "onAnswer": { "set": { "visum_aussteller": "$value" } },
+      "next": "block_fluchtgruende_entry"
+    },
+
+    /* ===== BLOCK 5: FLUCHTGRÜNDE ===== */
+
+    {
+      "id": "block_fluchtgruende_entry",
+      "kind": "info",
+      "headline": "Deine Fluchtgründe",
+      "text": "Wähle alle Gründe, die auf dich zutreffen. Danach kannst du Details in eigenen Worten ergänzen.",
+      "next": "fluchtgruende"
+    },
+
+    {
+      "id": "fluchtgruende",
+      "question": "Welche Gründe treffen auf dich zu?",
+      "type": "checkbox",
+      "options": [
+        { "label": "Religion", "value": "religion" },
+        { "label": "Nationalität / Ethnie", "value": "nationalitaet" },
+        { "label": "Politische Überzeugung / Aktivität", "value": "politisch" },
+        { "label": "Zugehörigkeit zu einer sozialen Gruppe (z. B. Frauen, LGBTIQ)", "value": "soziale_gruppe" },
+        { "label": "Gesundheitliche Gründe", "value": "gesundheit" },
+        { "label": "Wehr-/Militärdienst (Verweigerung/Verfolgung)", "value": "wehrdienst" },
+        { "label": "Andere Gründe", "value": "andere" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "fluchtgruende": "$value" } },
+      "next": "flucht_details_freitext"
+    },
+
+    {
+      "id": "flucht_details_freitext",
+      "question": "In deinen Worten: Was ist passiert? (Details, Diagnosen, Beispiele)",
+      "type": "textarea",
+      "required": false,
+      "onAnswer": { "set": { "flucht_ereignis_beschr": "$value" } },
+      "next": "quelle_verfolgung"
+    },
+
+    {
+      "id": "quelle_verfolgung",
+      "question": "Von wem geht die Verfolgung aus?",
+      "type": "radio",
+      "options": [
+        { "label": "Staatliche Stellen (z. B. Polizei, Geheimdienst, Militär, Gerichte)", "value": "staat" },
+        { "label": "Private/Organisationen (z. B. Familie, Clan, Miliz)", "value": "privat" },
+        { "label": "Keine Angabe / Unsicher", "value": "unsicher" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "quelle_verfolgung": "$value" } },
+      "next": { "expr": "$quelle_verfolgung == 'privat' || $quelle_verfolgung == 'unsicher' ? 'innerstaatlicher_schutz_ja_nein' : 'flucht_ereignis_datum'" }
+    },
+
+    {
+      "id": "innerstaatlicher_schutz_ja_nein",
+      "question": "Hast du versucht, innerhalb deines Landes Schutz zu bekommen?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": "ja" },
+        { "label": "Nein", "value": "nein" },
+        { "label": "Weiß nicht", "value": "wd" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "innerstaatlicher_schutz_versucht": "$value" } },
+      "next": "innerstaatlicher_schutz_details"
+    },
+
+    {
+      "id": "innerstaatlicher_schutz_details",
+      "question": { "expr": "$innerstaatlicher_schutz_versucht == 'ja' ? 'Was hast du versucht?' : 'Warum war ein Schutz im Land nicht möglich?'" },
+      "type": "textarea",
+      "required": false,
+      "onAnswer": { "set": { "innerstaatlicher_schutz_details": "$value" } },
+      "next": "flucht_ereignis_datum"
+    },
+
+    {
+      "id": "flucht_ereignis_datum",
+      "question": "Wann war das fluchtauslösende Ereignis bzw. wann hast du den Entschluss zur Flucht gefasst?",
+      "type": "date",
+      "required": false,
+      "onAnswer": { "set": { "flucht_ereignis_datum": "$value" } },
+      "next": {
+        "expr": "($quelle_verfolgung == 'staat' && ($reiseweg == 'visum' || $reiseweg == 'aufenthaltstitel')) ? 'visum_vor_nach_ereignis' : 'plausi_papiere'"
+      }
+    },
+
+    {
+      "id": "visum_vor_nach_ereignis",
+      "conditions": [
+        { "expr": "$quelle_verfolgung == 'staat'"},
+        { "expr": "$visum_beantragt_am != null || $aufenthaltstitel_bis != null"}
+      ],
+      "question": "Hast du dein Einreisevisum vor oder nach dem fluchtauslösenden Ereignis beantragt?",
+      "type": "radio",
+      "options": [
+        { "label": "Vor dem Ereignis", "value": "vor" },
+        { "label": "Nach dem Ereignis", "value": "nach" },
+        { "label": "Weiß nicht", "value": "wd" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "visum_vor_nach_ereignis": "$value" } },
+      "next": "plausi_papiere",
+      "eval_hint": "Bei staatlicher Verfolgung kann 'Visum vor Ereignis' ein Glaubwürdigkeitsproblem auslösen (prüfe Zeitnähe: ±60 Tage)."
+    },
+
+    /* ===== BLOCK 6: PLAUSIBILITÄT ===== */
+
+    {
+      "id": "plausi_papiere",
+      "question": "Wo befinden sich deine Reisepässe oder Ausweise?",
       "type": "text",
-      "description": "Bitte gib deine E-Mail-Adresse ein.",
-      "required": true
+      "required": false,
+      "onAnswer": { "set": { "papiere_ort": "$value" } },
+      "next": "plausi_beweise"
     },
+
     {
-      "id": "done",
-      "title": "Fertig!",
-      "description": "Vielen Dank für deine Angaben. Deine Auswertung wird nun erstellt.",
-      "type": "text"
+      "id": "plausi_beweise",
+      "question": "Hast du Belege oder Dokumente für deine Angaben?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "beweise_vorhanden": "$value" } },
+      "next": { "expr": "$beweise_vorhanden ? 'plausi_beweise_details' : 'plausi_familie'" }
+    },
+
+    {
+      "id": "plausi_beweise_details",
+      "question": "Welche Belege hast du (z. B. Fotos, Urkunden, Bescheide, Chatverläufe)?",
+      "type": "textarea",
+      "required": false,
+      "onAnswer": { "set": { "beweise_zum_ausreisezeitpunkt": "$value" } },
+      "next": "plausi_familie"
+    },
+
+    {
+      "id": "plausi_familie",
+      "question": "Hast du Kontakt zu deiner Familie im Herkunftsland?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja, regelmäßiger Kontakt", "value": "regelmaessig" },
+        { "label": "Selten / unsicher", "value": "selten" },
+        { "label": "Kein Kontakt", "value": "kein" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "familie_kontakt": "$value" } },
+      "next": "plausi_familie_nachverfolgung"
+    },
+
+    {
+      "id": "plausi_familie_nachverfolgung",
+      "question": "Berichtet deine Familie von Nachfragen/Bedrohungen/Polizeibesuchen nach deiner Ausreise?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false },
+        { "label": "Unklar", "value": "wd" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "familie_nachverfolgung": "$value" } },
+      "next": "plausi_nachflucht"
+    },
+
+    {
+      "id": "plausi_nachflucht",
+      "question": "Lebst du Merkmale deiner Überzeugung/Identität jetzt offen aus (z. B. politische Aktivität, religiöse Praxis, LGBTIQ)?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": "ja" },
+        { "label": "Nein", "value": "nein" },
+        { "label": "Weiß nicht / noch nicht", "value": "wd" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "nachfluchtverhalten": "$value" } },
+      "next": "branch_tr_spezifisch"
+    },
+
+    /* ===== Länderspezifisch: Türkei (staatliche Verfolgung) ===== */
+
+    {
+      "id": "branch_tr_spezifisch",
+      "kind": "router",
+      "next": { "expr": "($herkunftsland == 'TR' && $quelle_verfolgung == 'staat') ? 'tr_uyap_edv' : 'done_order'" }
+    },
+
+    {
+      "id": "tr_uyap_edv",
+      "question": "Hast du Zugang zu UYAP/E-Devlet (türkisches Justiz- und Bürgerportal) oder Dokumente daraus?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja, Zugang/Dokumente vorhanden", "value": "ja" },
+        { "label": "Nein", "value": "nein" },
+        { "label": "Weiß nicht", "value": "wd" }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "tr_uyap_edv_zugang": "$value" } },
+      "next": { "expr": "$tr_uyap_edv_zugang == 'ja' ? 'tr_uyap_dok_typ' : 'done_order'" },
+      "eval_hint": "UYAP/E-Devlet-Einträge (z. B. Anklageschrift, Haftbefehl) sind zentrale Glaubhaftigkeitsbelege bei staatlicher Verfolgung."
+    },
+
+    {
+      "id": "tr_uyap_dok_typ",
+      "question": "Welche UYAP/E-Devlet-Dokumente liegen vor?",
+      "type": "checkbox",
+      "options": [
+        { "label": "Anklageschrift / Ermittlungsakte", "value": "anklageschrift" },
+        { "label": "Durchsuchungsbeschluss", "value": "durchsuchung" },
+        { "label": "Haftbefehl", "value": "haftbefehl" },
+        { "label": "Ladung / Vorladung", "value": "ladung" },
+        { "label": "Sonstiges", "value": "sonstiges" }
+      ],
+      "required": false,
+      "onAnswer": { "set": { "tr_uyap_edv_dok_typen": "$value" } },
+      "next": "done_order"
+    },
+
+    /* ===== ABSCHLUSS MIT CTA ===== */
+
+    {
+      "id": "done_order",
+      "title": "Danke für deine Angaben!",
+      "type": "text",
+      "description": "Du kannst jetzt deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
     }
-,
-{ 
-  "id": "done_order",
-  "title": "Danke für deine Angaben!",
-  "type": "text",
-  "description": "Du kannst jetzt deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
-}
-]
+  ],
+
+  "dublin_logic_notes": [
+    "Visum eines EU-Staates: Zuständigkeit dieses Staates bis 6 Monate nach Ablauf (Art. 12 Dublin III; Hinweis in Auswertung).",
+    "Aufenthaltstitel eines EU-Staates: Zuständigkeit bis 2 Jahre nach Ablauf (Art. 12 Abs. 1/2 Dublin III; Hinweis in Auswertung).",
+    "Fingerabdrücke/Ersteinreise/Asylantrag in anderem EU-Staat: mögliche Zuständigkeit dieses Staates.",
+    "Unbegleitete Minderjährige: Regel-Ausnahme – kein Dublin-Transfer; maßgeblich ist der Aufenthaltsort/Familienbezug.",
+    "Türkei-spezifisch (staatliche Verfolgung): UYAP/E-Devlet-Nachweise als starker Glaubhaftigkeitsfaktor."
+  ]
 }
