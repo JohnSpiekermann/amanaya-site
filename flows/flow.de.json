@@ -70,7 +70,6 @@
       "button": "Befragung starten",
       "next": "herkunftsland"
     },
-
     {
       "id": "herkunftsland",
       "question": "Aus welchem Land stammst du oder hast du zuletzt dauerhaft gelebt?",
@@ -79,7 +78,6 @@
       "onAnswer": { "set": { "herkunftsland": "$value" } },
       "next": "aufenthaltsland"
     },
-
     {
       "id": "aufenthaltsland",
       "question": "In welchem Land befindest du dich im Moment?",
@@ -88,7 +86,6 @@
       "onAnswer": { "set": { "aufenthaltsland": "$value" } },
       "next": "zielland"
     },
-
     {
       "id": "zielland",
       "question": "Für welches Land möchtest du Informationen zum Asylverfahren erhalten?",
@@ -97,7 +94,6 @@
       "onAnswer": { "set": { "zielland": "$value" } },
       "next": "alter"
     },
-
     {
       "id": "alter",
       "question": "Wie alt bist du?",
@@ -113,7 +109,6 @@
       },
       "next": { "expr": "$minderjaehrig ? 'minor_unbegleitet' : 'fall_auswahl'" }
     },
-
     {
       "id": "minor_unbegleitet",
       "question": "Reist du alleine oder mit einem Elternteil?",
@@ -126,7 +121,6 @@
       "onAnswer": { "set": { "unbegleitet": { "expr": "$value == 'alleine'" } } },
       "next": "fall_auswahl"
     },
-
     {
       "id": "fall_auswahl",
       "question": "Befindest du dich bereits im Zielland?",
@@ -139,9 +133,6 @@
       "onAnswer": { "set": { "fall": "$value" } },
       "next": { "expr": "$fall == 'A' ? 'reiseweg_A' : 'reiseweg_B_visa_plan'" }
     },
-
-    /* ===== FALL A: bereits im Zielland ===== */
-
     {
       "id": "reiseweg_A",
       "question": "Wie bist du eingereist?",
@@ -157,7 +148,6 @@
         "expr": "$reiseweg == 'visum' ? 'visum_details_A' : ($reiseweg == 'aufenthaltstitel' ? 'aufenthaltstitel_details_A' : 'biometrie_anderswo')"
       }
     },
-
     {
       "id": "visum_details_A",
       "question": "Welches Land hat dein Einreisevisum ausgestellt?",
@@ -166,7 +156,6 @@
       "onAnswer": { "set": { "hat_visum": true, "visum_aussteller": "$value" } },
       "next": "visum_zeitraum_A"
     },
-
     {
       "id": "visum_zeitraum_A",
       "question": "Gültigkeitszeitraum deines Visums",
@@ -176,7 +165,6 @@
       "onAnswer": { "set": { "visum_gueltig_von": "$value.from", "visum_gueltig_bis": "$value.to" } },
       "next": "visum_beanantrag_A"
     },
-
     {
       "id": "visum_beanantrag_A",
       "question": "Wann hast du das Visum beantragt?",
@@ -185,7 +173,6 @@
       "onAnswer": { "set": { "visum_beantragt_am": "$value" } },
       "next": "biometrie_anderswo"
     },
-
     {
       "id": "aufenthaltstitel_details_A",
       "question": "Welches Land hat deinen Aufenthaltstitel ausgestellt?",
@@ -194,7 +181,6 @@
       "onAnswer": { "set": { "hat_aufenthaltstitel": true, "aufenthaltstitel_aussteller": "$value" } },
       "next": "aufenthaltstitel_gueltigkeit"
     },
-
     {
       "id": "aufenthaltstitel_gueltigkeit",
       "question": "Bis wann ist der Aufenthaltstitel gültig?",
@@ -203,7 +189,6 @@
       "onAnswer": { "set": { "aufenthaltstitel_bis": "$value" } },
       "next": "biometrie_anderswo"
     },
-
     {
       "id": "biometrie_anderswo",
       "question": "Wurden dir in einem anderen EU-Staat bereits Fingerabdrücke abgenommen?",
@@ -216,7 +201,6 @@
       "onAnswer": { "set": { "fingerabdruecke_anderswo": "$value" } },
       "next": "asyl_anderswo"
     },
-
     {
       "id": "asyl_anderswo",
       "question": "Hast du in einem anderen EU-Staat bereits einen Asylantrag gestellt (auch unfreiwillig)?",
@@ -229,7 +213,6 @@
       "onAnswer": { "set": { "asylantrag_anderswo": "$value" } },
       "next": "verfahrensstand_A1"
     },
-
     {
       "id": "verfahrensstand_A1",
       "question": "Hast du im Zielland bereits einen Asylantrag gestellt?",
@@ -242,7 +225,6 @@
       "onAnswer": { "set": { "asylantrag_gestellt": "$value" } },
       "next": { "expr": "$asylantrag_gestellt ? 'anhoerung_A' : 'block_fluchtgruende_entry'" }
     },
-
     {
       "id": "anhoerung_A",
       "question": "Hattest du bereits eine Anhörung?",
@@ -255,7 +237,6 @@
       "onAnswer": { "set": { "anhoerung": "$value" } },
       "next": { "expr": "$anhoerung ? 'entscheidung_A' : 'block_fluchtgruende_entry'" }
     },
-
     {
       "id": "entscheidung_A",
       "question": "Gibt es bereits eine Entscheidung?",
@@ -268,7 +249,6 @@
       "onAnswer": { "set": { "entscheidung": "$value" } },
       "next": { "expr": "$entscheidung ? 'entscheidung_typ' : 'block_fluchtgruende_entry'" }
     },
-
     {
       "id": "entscheidung_typ",
       "question": "Welche Entscheidung hast du erhalten?",
@@ -284,9 +264,6 @@
       "onAnswer": { "set": { "entscheidung_typ": "$value" } },
       "next": "block_fluchtgruende_entry"
     },
-
-    /* ===== FALL B: noch außerhalb ===== */
-
     {
       "id": "reiseweg_B_visa_plan",
       "question": "Beabsichtigst du mit einem Visum für das Zielland einzureisen?",
@@ -305,7 +282,6 @@
       },
       "next": { "expr": "$value == 'nein_anders' ? 'reiseweg_B_aussteller' : 'block_fluchtgruende_entry'" }
     },
-
     {
       "id": "reiseweg_B_aussteller",
       "question": "Welches Land wird voraussichtlich dein Visum ausstellen?",
@@ -314,9 +290,6 @@
       "onAnswer": { "set": { "visum_aussteller": "$value" } },
       "next": "block_fluchtgruende_entry"
     },
-
-    /* ===== BLOCK 5: FLUCHTGRÜNDE ===== */
-
     {
       "id": "block_fluchtgruende_entry",
       "kind": "info",
@@ -324,7 +297,6 @@
       "text": "Wähle alle Gründe, die auf dich zutreffen. Danach kannst du Details in eigenen Worten ergänzen.",
       "next": "fluchtgruende"
     },
-
     {
       "id": "fluchtgruende",
       "question": "Welche Gründe treffen auf dich zu?",
@@ -342,7 +314,6 @@
       "onAnswer": { "set": { "fluchtgruende": "$value" } },
       "next": "flucht_details_freitext"
     },
-
     {
       "id": "flucht_details_freitext",
       "question": "In deinen Worten: Was ist passiert? (Details, Diagnosen, Beispiele)",
@@ -351,7 +322,6 @@
       "onAnswer": { "set": { "flucht_ereignis_beschr": "$value" } },
       "next": "quelle_verfolgung"
     },
-
     {
       "id": "quelle_verfolgung",
       "question": "Von wem geht die Verfolgung aus?",
@@ -365,7 +335,6 @@
       "onAnswer": { "set": { "quelle_verfolgung": "$value" } },
       "next": { "expr": "$quelle_verfolgung == 'privat' || $quelle_verfolgung == 'unsicher' ? 'innerstaatlicher_schutz_ja_nein' : 'flucht_ereignis_datum'" }
     },
-
     {
       "id": "innerstaatlicher_schutz_ja_nein",
       "question": "Hast du versucht, innerhalb deines Landes Schutz zu bekommen?",
@@ -379,7 +348,6 @@
       "onAnswer": { "set": { "innerstaatlicher_schutz_versucht": "$value" } },
       "next": "innerstaatlicher_schutz_details"
     },
-
     {
       "id": "innerstaatlicher_schutz_details",
       "question": { "expr": "$innerstaatlicher_schutz_versucht == 'ja' ? 'Was hast du versucht?' : 'Warum war ein Schutz im Land nicht möglich?'" },
@@ -388,7 +356,6 @@
       "onAnswer": { "set": { "innerstaatlicher_schutz_details": "$value" } },
       "next": "flucht_ereignis_datum"
     },
-
     {
       "id": "flucht_ereignis_datum",
       "question": "Wann war das fluchtauslösende Ereignis bzw. wann hast du den Entschluss zur Flucht gefasst?",
@@ -399,12 +366,11 @@
         "expr": "($quelle_verfolgung == 'staat' && ($reiseweg == 'visum' || $reiseweg == 'aufenthaltstitel')) ? 'visum_vor_nach_ereignis' : 'plausi_papiere'"
       }
     },
-
     {
       "id": "visum_vor_nach_ereignis",
       "conditions": [
-        { "expr": "$quelle_verfolgung == 'staat'"},
-        { "expr": "$visum_beantragt_am != null || $aufenthaltstitel_bis != null"}
+        { "expr": "$quelle_verfolgung == 'staat'" },
+        { "expr": "$visum_beantragt_am != null || $aufenthaltstitel_bis != null" }
       ],
       "question": "Hast du dein Einreisevisum vor oder nach dem fluchtauslösenden Ereignis beantragt?",
       "type": "radio",
@@ -418,9 +384,6 @@
       "next": "plausi_papiere",
       "eval_hint": "Bei staatlicher Verfolgung kann 'Visum vor Ereignis' ein Glaubwürdigkeitsproblem auslösen (prüfe Zeitnähe: ±60 Tage)."
     },
-
-    /* ===== BLOCK 6: PLAUSIBILITÄT ===== */
-
     {
       "id": "plausi_papiere",
       "question": "Wo befinden sich deine Reisepässe oder Ausweise?",
@@ -429,7 +392,6 @@
       "onAnswer": { "set": { "papiere_ort": "$value" } },
       "next": "plausi_beweise"
     },
-
     {
       "id": "plausi_beweise",
       "question": "Hast du Belege oder Dokumente für deine Angaben?",
@@ -442,7 +404,6 @@
       "onAnswer": { "set": { "beweise_vorhanden": "$value" } },
       "next": { "expr": "$beweise_vorhanden ? 'plausi_beweise_details' : 'plausi_familie'" }
     },
-
     {
       "id": "plausi_beweise_details",
       "question": "Welche Belege hast du (z. B. Fotos, Urkunden, Bescheide, Chatverläufe)?",
@@ -451,7 +412,6 @@
       "onAnswer": { "set": { "beweise_zum_ausreisezeitpunkt": "$value" } },
       "next": "plausi_familie"
     },
-
     {
       "id": "plausi_familie",
       "question": "Hast du Kontakt zu deiner Familie im Herkunftsland?",
@@ -465,7 +425,6 @@
       "onAnswer": { "set": { "familie_kontakt": "$value" } },
       "next": "plausi_familie_nachverfolgung"
     },
-
     {
       "id": "plausi_familie_nachverfolgung",
       "question": "Berichtet deine Familie von Nachfragen/Bedrohungen/Polizeibesuchen nach deiner Ausreise?",
@@ -479,7 +438,6 @@
       "onAnswer": { "set": { "familie_nachverfolgung": "$value" } },
       "next": "plausi_nachflucht"
     },
-
     {
       "id": "plausi_nachflucht",
       "question": "Lebst du Merkmale deiner Überzeugung/Identität jetzt offen aus (z. B. politische Aktivität, religiöse Praxis, LGBTIQ)?",
@@ -493,15 +451,11 @@
       "onAnswer": { "set": { "nachfluchtverhalten": "$value" } },
       "next": "branch_tr_spezifisch"
     },
-
-    /* ===== Länderspezifisch: Türkei (staatliche Verfolgung) ===== */
-
     {
       "id": "branch_tr_spezifisch",
       "kind": "router",
       "next": { "expr": "($herkunftsland == 'TR' && $quelle_verfolgung == 'staat') ? 'tr_uyap_edv' : 'done_order'" }
     },
-
     {
       "id": "tr_uyap_edv",
       "question": "Hast du Zugang zu UYAP/E-Devlet (türkisches Justiz- und Bürgerportal) oder Dokumente daraus?",
@@ -516,7 +470,6 @@
       "next": { "expr": "$tr_uyap_edv_zugang == 'ja' ? 'tr_uyap_dok_typ' : 'done_order'" },
       "eval_hint": "UYAP/E-Devlet-Einträge (z. B. Anklageschrift, Haftbefehl) sind zentrale Glaubhaftigkeitsbelege bei staatlicher Verfolgung."
     },
-
     {
       "id": "tr_uyap_dok_typ",
       "question": "Welche UYAP/E-Devlet-Dokumente liegen vor?",
@@ -532,9 +485,6 @@
       "onAnswer": { "set": { "tr_uyap_edv_dok_typen": "$value" } },
       "next": "done_order"
     },
-
-    /* ===== ABSCHLUSS MIT CTA ===== */
-
     {
       "id": "done_order",
       "title": "Danke für deine Angaben!",
@@ -542,7 +492,6 @@
       "description": "Du kannst jetzt deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
     }
   ],
-
   "dublin_logic_notes": [
     "Visum eines EU-Staates: Zuständigkeit dieses Staates bis 6 Monate nach Ablauf (Art. 12 Dublin III; Hinweis in Auswertung).",
     "Aufenthaltstitel eines EU-Staates: Zuständigkeit bis 2 Jahre nach Ablauf (Art. 12 Abs. 1/2 Dublin III; Hinweis in Auswertung).",
