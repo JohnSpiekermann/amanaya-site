@@ -30,8 +30,6 @@
     "required": true,
     "onAnswer": { "set": { "zielland": "$value" } },
     "next": "alter"
-  }
-]
     },
     { "id": "age", "title": "Wie alt bist du?", "type": "number", "required": true },
     { "id": "gender", "title": "Dein Geschlecht", "type": "single", "required": true,
