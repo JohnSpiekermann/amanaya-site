@@ -485,10 +485,10 @@
       "next": "done_order"
     },
     {
-      "id": "done_order",
-      "title": "Danke für deine Angaben!",
-      "type": "text",
-      "description": "Du kannst jetzt deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
+  "id": "done_order",
+  "kind": "info",
+  "headline": "Danke für deine Angaben!",
+  "text": "Du kannst jetzt deine individuelle PDF-Beratung bestellen.<br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
     }
   ],
   "dublin_logic_notes": [
