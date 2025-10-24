@@ -59,3 +59,16 @@
   <script src="/js/flowrunner.js"></script>
 </body>
 </html>
+<div id="flow-debug" style="margin-top:12px;font-size:12px;opacity:.7"></div>
+<script>
+  (async () => {
+    const u = window.AMANAYA_FLOW_URL || "/flows/flow.de.json";
+    const dbg = document.getElementById("flow-debug");
+    try {
+      const r = await fetch(u, { cache: "no-store" });
+      dbg.textContent = r.ok ? "Flow erreichbar: " + u : "Flow NICHT erreichbar: " + u + " (Status " + r.status + ")";
+    } catch (e) {
+      dbg.textContent = "Flow-Ladefehler bei: " + u;
+    }
+  })();
+</script>
