@@ -15,7 +15,6 @@
     "collects_birthdates": false
   },
   "vars": {
-    "sprache": null,
     "herkunftsland": null,
     "aufenthaltsland": null,
     "zielland": null,
@@ -34,7 +33,6 @@
     "aufenthaltstitel_bis": null,
     "fingerabdruecke_anderswo": null,
     "asylantrag_anderswo": null,
-    "plant_asylantrag": null,
     "asylantrag_gestellt": null,
     "anhoerung": null,
     "entscheidung": null,
@@ -49,24 +47,18 @@
     "papiere_ort": null,
     "beweise_vorhanden": null,
     "beweise_zum_ausreisezeitpunkt": null,
-    "familie_im_herkunftsland": null,
     "familie_kontakt": null,
     "familie_nachverfolgung": null,
     "nachfluchtverhalten": null,
-    "journalismus": null,
-    "lgbtiq": null,
-    "tr_uyap_edv_frage_noetig": null,
     "tr_uyap_edv_zugang": null,
-    "tr_uyap_edv_dok_typen": [],
-    "email": null,
-    "zahlung_ok": null
+    "tr_uyap_edv_dok_typen": []
   },
   "flow": [
     {
       "id": "intro",
-      "kind": "info",
+      "type": "info",
       "headline": "Deine anonyme Befragung",
-      "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation und die Ursachen deiner Flucht bitte so genau wie möglich. Je mehr Details du angibst, desto präziser kann unsere Einschätzung werden.",
+      "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation so genau wie möglich.",
       "next": "herkunftsland"
     },
     {
@@ -150,18 +142,25 @@
     {
       "id": "visum_details_A",
       "question": "Welches Land hat dein Einreisevisum ausgestellt?",
-      "type": "country-eu",
+      "type": "country",
       "required": true,
       "onAnswer": { "set": { "hat_visum": true, "visum_aussteller": "$value" } },
-      "next": "visum_zeitraum_A"
+      "next": "visum_von"
     },
     {
-      "id": "visum_zeitraum_A",
-      "question": "Gültigkeitszeitraum deines Visums",
-      "type": "date-range",
-      "labels": { "from": "Gültig von", "to": "Gültig bis" },
+      "id": "visum_von",
+      "question": "Visum gültig von",
+      "type": "date",
       "required": true,
-      "onAnswer": { "set": { "visum_gueltig_von": "$value.from", "visum_gueltig_bis": "$value.to" } },
+      "onAnswer": { "set": { "visum_gueltig_von": "$value" } },
+      "next": "visum_bis"
+    },
+    {
+      "id": "visum_bis",
+      "question": "Visum gültig bis",
+      "type": "date",
+      "required": true,
+      "onAnswer": { "set": { "visum_gueltig_bis": "$value" } },
       "next": "visum_beanantrag_A"
     },
     {
@@ -175,7 +174,7 @@
     {
       "id": "aufenthaltstitel_details_A",
       "question": "Welches Land hat deinen Aufenthaltstitel ausgestellt?",
-      "type": "country-eu",
+      "type": "country",
       "required": true,
       "onAnswer": { "set": { "hat_aufenthaltstitel": true, "aufenthaltstitel_aussteller": "$value" } },
       "next": "aufenthaltstitel_gueltigkeit"
@@ -284,14 +283,14 @@
     {
       "id": "reiseweg_B_aussteller",
       "question": "Welches Land wird voraussichtlich dein Visum ausstellen?",
-      "type": "country-eu",
+      "type": "country",
       "required": true,
       "onAnswer": { "set": { "visum_aussteller": "$value" } },
       "next": "block_fluchtgruende_entry"
     },
     {
       "id": "block_fluchtgruende_entry",
-      "kind": "info",
+      "type": "info",
       "headline": "Deine Fluchtgründe",
       "text": "Wähle alle Gründe, die auf dich zutreffen. Danach kannst du Details in eigenen Worten ergänzen.",
       "next": "fluchtgruende"
@@ -367,10 +366,6 @@
     },
     {
       "id": "visum_vor_nach_ereignis",
-      "conditions": [
-        { "expr": "$quelle_verfolgung == 'staat'" },
-        { "expr": "$visum_beantragt_am != null || $aufenthaltstitel_bis != null" }
-      ],
       "question": "Hast du dein Einreisevisum vor oder nach dem fluchtauslösenden Ereignis beantragt?",
       "type": "radio",
       "options": [
@@ -380,8 +375,7 @@
       ],
       "required": true,
       "onAnswer": { "set": { "visum_vor_nach_ereignis": "$value" } },
-      "next": "plausi_papiere",
-      "eval_hint": "Bei staatlicher Verfolgung kann 'Visum vor Ereignis' ein Glaubwürdigkeitsproblem auslösen (prüfe Zeitnähe: ±60 Tage)."
+      "next": "plausi_papiere"
     },
     {
       "id": "plausi_papiere",
@@ -448,11 +442,6 @@
       ],
       "required": true,
       "onAnswer": { "set": { "nachfluchtverhalten": "$value" } },
-      "next": "branch_tr_spezifisch"
-    },
-    {
-      "id": "branch_tr_spezifisch",
-      "kind": "router",
       "next": { "expr": "($herkunftsland == 'TR' && $quelle_verfolgung == 'staat') ? 'tr_uyap_edv' : 'done_order'" }
     },
     {
@@ -466,8 +455,7 @@
       ],
       "required": true,
       "onAnswer": { "set": { "tr_uyap_edv_zugang": "$value" } },
-      "next": { "expr": "$tr_uyap_edv_zugang == 'ja' ? 'tr_uyap_dok_typ' : 'done_order'" },
-      "eval_hint": "UYAP/E-Devlet-Einträge (z. B. Anklageschrift, Haftbefehl) sind zentrale Glaubhaftigkeitsbelege bei staatlicher Verfolgung."
+      "next": { "expr": "$tr_uyap_edv_zugang == 'ja' ? 'tr_uyap_dok_typ' : 'done_order'" }
     },
     {
       "id": "tr_uyap_dok_typ",
@@ -485,17 +473,17 @@
       "next": "done_order"
     },
     {
-  "id": "done_order",
-  "kind": "info",
-  "headline": "Danke für deine Angaben!",
-  "text": "Du kannst jetzt deine individuelle PDF-Beratung bestellen.<br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
+      "id": "done_order",
+      "type": "info",
+      "headline": "Danke für deine Angaben!",
+      "text": "Du kannst jetzt deine individuelle PDF-Beratung bestellen.<br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>"
     }
   ],
   "dublin_logic_notes": [
-    "Visum eines EU-Staates: Zuständigkeit dieses Staates bis 6 Monate nach Ablauf (Art. 12 Dublin III; Hinweis in Auswertung).",
-    "Aufenthaltstitel eines EU-Staates: Zuständigkeit bis 2 Jahre nach Ablauf (Art. 12 Abs. 1/2 Dublin III; Hinweis in Auswertung).",
+    "Visum eines EU-Staates: Zuständigkeit dieses Staates bis 6 Monate nach Ablauf (Art. 12 Dublin III).",
+    "Aufenthaltstitel: Zuständigkeit bis 2 Jahre nach Ablauf (Art. 12 Abs. 1/2 Dublin III).",
     "Fingerabdrücke/Ersteinreise/Asylantrag in anderem EU-Staat: mögliche Zuständigkeit dieses Staates.",
-    "Unbegleitete Minderjährige: Regel-Ausnahme – kein Dublin-Transfer; maßgeblich ist der Aufenthaltsort/Familienbezug.",
-    "Türkei-spezifisch (staatliche Verfolgung): UYAP/E-Devlet-Nachweise als starker Glaubhaftigkeitsfaktor."
+    "Unbegleitete Minderjährige: Regel-Ausnahme – kein Dublin-Transfer; maßgeblich Aufenthaltsort/Familie.",
+    "Türkei: UYAP/E-Devlet-Nachweise sind starke Glaubhaftigkeitsbelege."
   ]
 }
