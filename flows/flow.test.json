@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "locale": "de",
+  "vars": { "ok": null },
+  "flow": [
+    {
+      "id": "intro",
+      "type": "info",
+      "headline": "Test-Flow",
+      "text": "Wenn du diesen Bildschirm siehst, rendern HTML + Runner korrekt.",
+      "next": "frage1"
+    },
+    {
+      "id": "frage1",
+      "question": "Siehst du diese Frage?",
+      "type": "radio",
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "required": true,
+      "onAnswer": { "set": { "ok": "$value" } },
+      "next": "fertig"
+    },
+    {
+      "id": "fertig",
+      "type": "info",
+      "headline": "Funktioniert!",
+      "text": "Runner läuft. Jetzt können wir wieder deinen großen Flow einhängen.",
+      "next": null
+    }
+  ]
+}
