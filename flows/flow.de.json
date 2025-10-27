@@ -108,8 +108,6 @@
       "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" }
     },
 
-    /* ========= Pfad A: bereits im Zielland ========= */
-
     {
       "id": "reiseweg_A",
       "type": "radio",
@@ -269,8 +267,6 @@
       "next": "fluchtgruende"
     },
 
-    /* ========= Pfad B: noch außerhalb ========= */
-
     {
       "id": "reiseweg_B_visa_plan",
       "type": "radio",
@@ -337,8 +333,6 @@
       ],
       "next": "fluchtgruende"
     },
-
-    /* ========= Gemeinsamer Teil ========= */
 
     {
       "id": "fluchtgruende",
