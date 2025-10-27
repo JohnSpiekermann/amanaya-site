@@ -2,64 +2,263 @@
   "version": "1.0",
   "locale": "de",
   "flow": [
-    { "id": "intro", "type": "info",
+    {
+      "id": "intro",
+      "type": "info",
       "headline": "Deine anonyme Befragung",
-      "text": "Im Folgenden wirst du zu den Gründen deiner Flucht befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Schilder uns deine Situation bitte so genau wie möglich.",
-      "next": "herkunftsland" },
+      "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Bitte schildere Deine Situation so genau wie möglich.",
+      "next": "geschlecht"
+    },
 
-    { "id": "herkunftsland", "type": "text", "question": "Aus welchem Land stammst du (oder hast du zuletzt dauerhaft gelebt)?", "required": true, "next": "aufenthaltsland" },
-    { "id": "aufenthaltsland", "type": "text", "question": "In welchem Land befindest du dich gerade?", "required": true, "next": "zielland" },
-    { "id": "zielland", "type": "text", "question": "Für welches Land möchtest du Informationen zum Asylverfahren?", "required": true, "next": "minderjaehrig" },
+    {
+      "id": "geschlecht",
+      "type": "radio",
+      "question": "Welches Geschlecht hast Du?",
+      "required": true,
+      "options": [
+        { "label": "Männlich", "value": "m" },
+        { "label": "Weiblich", "value": "w" },
+        { "label": "Divers", "value": "d" },
+        { "label": "Möchte ich nicht sagen", "value": "x" }
+      ],
+      "next": "alter"
+    },
 
-    { "id": "minderjaehrig", "type": "radio", "question": "Bist du unter 18 Jahre alt?", "required": true,
-      "options": [ { "label": "Ja", "value": "ja" }, { "label": "Nein", "value": "nein" } ],
-      "nextMap": { "ja": "minor_unbegleitet", "nein": "fall_auswahl" } },
+    {
+      "id": "alter",
+      "type": "number",
+      "question": "Wie alt bist Du (in vollen Jahren)?",
+      "required": true,
+      "next": "minor_unbegleitet_hint"
+    },
 
-    { "id": "minor_unbegleitet", "type": "radio", "question": "Reist du alleine oder mit einem Elternteil?", "required": true,
-      "options": [ { "label": "Alleine (unbegleitet)", "value": "alleine" }, { "label": "Mit Elternteil", "value": "mit_eltern" } ],
-      "next": "fall_auswahl" },
+    {
+      "id": "minor_unbegleitet_hint",
+      "type": "radio",
+      "question": "Nur wenn Du unter 18 Jahre alt bist: Reist Du unbegleitet?",
+      "required": false,
+      "options": [
+        { "label": "Ja, unbegleitet", "value": "alleine" },
+        { "label": "Nein, mit Elternteil", "value": "mit_eltern" }
+      ],
+      "next": "herkunftsland"
+    },
 
-    { "id": "fall_auswahl", "type": "radio", "question": "Befindest du dich bereits im Zielland?", "required": true,
-      "options": [ { "label": "Ja, ich bin im Zielland", "value": "A" }, { "label": "Nein, ich bin noch außerhalb", "value": "B" } ],
-      "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" } },
+    {
+      "id": "herkunftsland",
+      "type": "radio",
+      "question": "Aus welchem Land kommst Du?",
+      "required": true,
+      "options": [
+        { "label": "🇹🇷 Türkei", "value": "TR" },
+        { "label": "🇸🇾 Syrien", "value": "SY" },
+        { "label": "🇦🇫 Afghanistan", "value": "AF" },
+        { "label": "🇮🇷 Iran", "value": "IR" },
+        { "label": "🇮🇶 Irak", "value": "IQ" }
+      ],
+      "next": "zielland"
+    },
 
-    { "id": "reiseweg_A", "type": "radio", "question": "Wie bist du eingereist?", "required": true,
+    {
+      "id": "zielland",
+      "type": "radio",
+      "question": "In welchem Land möchtest Du Schutz beantragen?",
+      "required": true,
+      "options": [
+        { "label": "🇦🇹 Österreich", "value": "AT" },
+        { "label": "🇧🇪 Belgien", "value": "BE" },
+        { "label": "🇧🇬 Bulgarien", "value": "BG" },
+        { "label": "🇭🇷 Kroatien", "value": "HR" },
+        { "label": "🇨🇾 Zypern", "value": "CY" },
+        { "label": "🇨🇿 Tschechien", "value": "CZ" },
+        { "label": "🇩🇰 Dänemark", "value": "DK" },
+        { "label": "🇪🇪 Estland", "value": "EE" },
+        { "label": "🇫🇮 Finnland", "value": "FI" },
+        { "label": "🇫🇷 Frankreich", "value": "FR" },
+        { "label": "🇩🇪 Deutschland", "value": "DE" },
+        { "label": "🇬🇷 Griechenland", "value": "GR" },
+        { "label": "🇭🇺 Ungarn", "value": "HU" },
+        { "label": "🇮🇪 Irland", "value": "IE" },
+        { "label": "🇮🇹 Italien", "value": "IT" },
+        { "label": "🇱🇻 Lettland", "value": "LV" },
+        { "label": "🇱🇹 Litauen", "value": "LT" },
+        { "label": "🇱🇺 Luxemburg", "value": "LU" },
+        { "label": "🇲🇹 Malta", "value": "MT" },
+        { "label": "🇳🇱 Niederlande", "value": "NL" },
+        { "label": "🇵🇱 Polen", "value": "PL" },
+        { "label": "🇵🇹 Portugal", "value": "PT" },
+        { "label": "🇷🇴 Rumänien", "value": "RO" },
+        { "label": "🇸🇰 Slowakei", "value": "SK" },
+        { "label": "🇸🇮 Slowenien", "value": "SI" },
+        { "label": "🇪🇸 Spanien", "value": "ES" },
+        { "label": "🇸🇪 Schweden", "value": "SE" }
+      ],
+      "next": "im_zielland"
+    },
+
+    {
+      "id": "im_zielland",
+      "type": "radio",
+      "question": "Befindest Du Dich bereits in {{zielland_label}}?",
+      "required": true,
+      "options": [
+        { "label": "Ja, ich bin bereits dort", "value": "A" },
+        { "label": "Nein, ich bin noch außerhalb", "value": "B" }
+      ],
+      "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" }
+    },
+
+    /* ========= Pfad A: bereits im Zielland ========= */
+
+    {
+      "id": "reiseweg_A",
+      "type": "radio",
+      "question": "Wie bist Du eingereist?",
+      "required": true,
       "options": [
         { "label": "Mit Visum", "value": "visum" },
         { "label": "Mit Aufenthaltstitel eines anderen EU-Staates", "value": "aufenthaltstitel" },
         { "label": "Ohne Visum / über Drittstaat / Sonstiges", "value": "ohne" }
       ],
-      "nextMap": { "visum": "visum_aussteller", "aufenthaltstitel": "aufenthaltstitel_aussteller", "ohne": "biometrie_anderswo" } },
+      "nextMap": {
+        "visum": "visum_aussteller",
+        "aufenthaltstitel": "aufenthaltstitel_aussteller",
+        "ohne": "dublin_A"
+      }
+    },
 
-    { "id": "visum_aussteller", "type": "text", "question": "Welches Land hat dein Einreisevisum ausgestellt?", "required": true, "next": "visum_von" },
+    {
+      "id": "visum_aussteller",
+      "type": "radio",
+      "question": "Welches EU-Land hat Dein Einreisevisum ausgestellt?",
+      "required": true,
+      "options": [
+        { "label": "🇦🇹 Österreich", "value": "AT" },
+        { "label": "🇧🇪 Belgien", "value": "BE" },
+        { "label": "🇧🇬 Bulgarien", "value": "BG" },
+        { "label": "🇭🇷 Kroatien", "value": "HR" },
+        { "label": "🇨🇾 Zypern", "value": "CY" },
+        { "label": "🇨🇿 Tschechien", "value": "CZ" },
+        { "label": "🇩🇰 Dänemark", "value": "DK" },
+        { "label": "🇪🇪 Estland", "value": "EE" },
+        { "label": "🇫🇮 Finnland", "value": "FI" },
+        { "label": "🇫🇷 Frankreich", "value": "FR" },
+        { "label": "🇩🇪 Deutschland", "value": "DE" },
+        { "label": "🇬🇷 Griechenland", "value": "GR" },
+        { "label": "🇭🇺 Ungarn", "value": "HU" },
+        { "label": "🇮🇪 Irland", "value": "IE" },
+        { "label": "🇮🇹 Italien", "value": "IT" },
+        { "label": "🇱🇻 Lettland", "value": "LV" },
+        { "label": "🇱🇹 Litauen", "value": "LT" },
+        { "label": "🇱🇺 Luxemburg", "value": "LU" },
+        { "label": "🇲🇹 Malta", "value": "MT" },
+        { "label": "🇳🇱 Niederlande", "value": "NL" },
+        { "label": "🇵🇱 Polen", "value": "PL" },
+        { "label": "🇵🇹 Portugal", "value": "PT" },
+        { "label": "🇷🇴 Rumänien", "value": "RO" },
+        { "label": "🇸🇰 Slowakei", "value": "SK" },
+        { "label": "🇸🇮 Slowenien", "value": "SI" },
+        { "label": "🇪🇸 Spanien", "value": "ES" },
+        { "label": "🇸🇪 Schweden", "value": "SE" }
+      ],
+      "next": "visum_von"
+    },
     { "id": "visum_von", "type": "date", "question": "Visum gültig von", "required": true, "next": "visum_bis" },
     { "id": "visum_bis", "type": "date", "question": "Visum gültig bis", "required": true, "next": "visum_beantragt_am" },
-    { "id": "visum_beantragt_am", "type": "date", "question": "Wann hast du das Visum beantragt?", "required": true, "next": "biometrie_anderswo" },
+    { "id": "visum_beantragt_am", "type": "date", "question": "Wann hast Du das Visum beantragt?", "required": true, "next": "dublin_A" },
 
-    { "id": "aufenthaltstitel_aussteller", "type": "text", "question": "Welches Land hat deinen Aufenthaltstitel ausgestellt?", "required": true, "next": "aufenthaltstitel_bis" },
-    { "id": "aufenthaltstitel_bis", "type": "date", "question": "Bis wann ist der Aufenthaltstitel gültig?", "required": true, "next": "biometrie_anderswo" },
+    {
+      "id": "aufenthaltstitel_aussteller",
+      "type": "radio",
+      "question": "Welches EU-Land hat Deinen Aufenthaltstitel ausgestellt?",
+      "required": true,
+      "options": [
+        { "label": "🇦🇹 Österreich", "value": "AT" },
+        { "label": "🇧🇪 Belgien", "value": "BE" },
+        { "label": "🇧🇬 Bulgarien", "value": "BG" },
+        { "label": "🇭🇷 Kroatien", "value": "HR" },
+        { "label": "🇨🇾 Zypern", "value": "CY" },
+        { "label": "🇨🇿 Tschechien", "value": "CZ" },
+        { "label": "🇩🇰 Dänemark", "value": "DK" },
+        { "label": "🇪🇪 Estland", "value": "EE" },
+        { "label": "🇫🇮 Finnland", "value": "FI" },
+        { "label": "🇫🇷 Frankreich", "value": "FR" },
+        { "label": "🇩🇪 Deutschland", "value": "DE" },
+        { "label": "🇬🇷 Griechenland", "value": "GR" },
+        { "label": "🇭🇺 Ungarn", "value": "HU" },
+        { "label": "🇮🇪 Irland", "value": "IE" },
+        { "label": "🇮🇹 Italien", "value": "IT" },
+        { "label": "🇱🇻 Lettland", "value": "LV" },
+        { "label": "🇱🇹 Litauen", "value": "LT" },
+        { "label": "🇱🇺 Luxemburg", "value": "LU" },
+        { "label": "🇲🇹 Malta", "value": "MT" },
+        { "label": "🇳🇱 Niederlande", "value": "NL" },
+        { "label": "🇵🇱 Polen", "value": "PL" },
+        { "label": "🇵🇹 Portugal", "value": "PT" },
+        { "label": "🇷🇴 Rumänien", "value": "RO" },
+        { "label": "🇸🇰 Slowakei", "value": "SK" },
+        { "label": "🇸🇮 Slowenien", "value": "SI" },
+        { "label": "🇪🇸 Spanien", "value": "ES" },
+        { "label": "🇸🇪 Schweden", "value": "SE" }
+      ],
+      "next": "aufenthaltstitel_bis"
+    },
+    { "id": "aufenthaltstitel_bis", "type": "date", "question": "Aufenthaltstitel gültig bis", "required": true, "next": "dublin_A" },
 
-    { "id": "biometrie_anderswo", "type": "radio", "question": "Wurden dir in einem anderen EU-Staat bereits Fingerabdrücke abgenommen?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein", "value": "false" } ],
-      "next": "asyl_anderswo" },
+    {
+      "id": "dublin_A",
+      "type": "radio",
+      "question": "Wurden Dir in einem anderen EU-Staat Fingerabdrücke abgenommen oder hast Du dort bereits einen Asylantrag gestellt (auch unfreiwillig)?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false },
+        { "label": "Weiß nicht / Unsicher", "value": "wd" }
+      ],
+      "next": "verfahrensstand_A1"
+    },
 
-    { "id": "asyl_anderswo", "type": "radio", "question": "Hast du in einem anderen EU-Staat bereits einen Asylantrag gestellt (auch unfreiwillig)?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein", "value": "false" } ],
-      "next": "asylantrag_gestellt" },
+    {
+      "id": "verfahrensstand_A1",
+      "type": "radio",
+      "question": "Hast Du in {{zielland_label}} bereits einen Asylantrag gestellt?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "nextMap": { "true": "anhoerung_A", "false": "fluchtgruende" }
+    },
 
-    { "id": "asylantrag_gestellt", "type": "radio", "question": "Hast du im Zielland bereits einen Asylantrag gestellt?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein", "value": "false" } ],
-      "nextMap": { "true": "anhoerung", "false": "block_fluchtgruende_entry" } },
+    {
+      "id": "anhoerung_A",
+      "type": "radio",
+      "question": "Hattest Du bereits eine Anhörung?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "nextMap": { "true": "entscheidung_A", "false": "fluchtgruende" }
+    },
 
-    { "id": "anhoerung", "type": "radio", "question": "Hattest du bereits eine Anhörung?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein", "value": "false" } ],
-      "nextMap": { "true": "entscheidung", "false": "block_fluchtgruende_entry" } },
+    {
+      "id": "entscheidung_A",
+      "type": "radio",
+      "question": "Gibt es bereits eine Entscheidung?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "nextMap": { "true": "entscheidung_typ", "false": "fluchtgruende" }
+    },
 
-    { "id": "entscheidung", "type": "radio", "question": "Gibt es bereits eine Entscheidung?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein, noch nicht", "value": "false" } ],
-      "nextMap": { "true": "entscheidung_typ", "false": "block_fluchtgruende_entry" } },
-
-    { "id": "entscheidung_typ", "type": "radio", "question": "Welche Entscheidung hast du erhalten?", "required": true,
+    {
+      "id": "entscheidung_typ",
+      "type": "radio",
+      "question": "Welche Entscheidung hast Du erhalten?",
+      "required": true,
       "options": [
         { "label": "Asylberechtigung", "value": "asyl" },
         { "label": "Flüchtlingsschutz", "value": "gfk" },
@@ -67,14 +266,85 @@
         { "label": "Nationales Abschiebungsverbot", "value": "nab" },
         { "label": "Ablehnung / Unzulässigkeit", "value": "negativ" }
       ],
-      "next": "block_fluchtgruende_entry" },
+      "next": "fluchtgruende"
+    },
 
-    { "id": "block_fluchtgruende_entry", "type": "info",
-      "headline": "Deine Fluchtgründe",
-      "text": "Wähle alle Gründe, die auf dich zutreffen. Danach kannst du Details in deinen Worten ergänzen.",
-      "next": "fluchtgruende" },
+    /* ========= Pfad B: noch außerhalb ========= */
 
-    { "id": "fluchtgruende", "type": "checkbox", "question": "Welche Gründe treffen auf dich zu?", "required": true,
+    {
+      "id": "reiseweg_B_visa_plan",
+      "type": "radio",
+      "question": "Wie beabsichtigst Du nach {{zielland_label}} einzureisen?",
+      "required": true,
+      "options": [
+        { "label": "Mit Visum von {{zielland_label}}", "value": "ja_zielland" },
+        { "label": "Mit Visum eines anderen EU-Staates", "value": "nein_anders" },
+        { "label": "Ohne Visum / Unsicher", "value": "unsicher" }
+      ],
+      "nextMap": {
+        "ja_zielland": "dublin_B",
+        "unsicher": "dublin_B",
+        "nein_anders": "reiseweg_B_aussteller"
+      }
+    },
+
+    {
+      "id": "reiseweg_B_aussteller",
+      "type": "radio",
+      "question": "Welches EU-Land wird voraussichtlich Dein Visum ausstellen?",
+      "required": true,
+      "options": [
+        { "label": "🇦🇹 Österreich", "value": "AT" },
+        { "label": "🇧🇪 Belgien", "value": "BE" },
+        { "label": "🇧🇬 Bulgarien", "value": "BG" },
+        { "label": "🇭🇷 Kroatien", "value": "HR" },
+        { "label": "🇨🇾 Zypern", "value": "CY" },
+        { "label": "🇨🇿 Tschechien", "value": "CZ" },
+        { "label": "🇩🇰 Dänemark", "value": "DK" },
+        { "label": "🇪🇪 Estland", "value": "EE" },
+        { "label": "🇫🇮 Finnland", "value": "FI" },
+        { "label": "🇫🇷 Frankreich", "value": "FR" },
+        { "label": "🇩🇪 Deutschland", "value": "DE" },
+        { "label": "🇬🇷 Griechenland", "value": "GR" },
+        { "label": "🇭🇺 Ungarn", "value": "HU" },
+        { "label": "🇮🇪 Irland", "value": "IE" },
+        { "label": "🇮🇹 Italien", "value": "IT" },
+        { "label": "🇱🇻 Lettland", "value": "LV" },
+        { "label": "🇱🇹 Litauen", "value": "LT" },
+        { "label": "🇱🇺 Luxemburg", "value": "LU" },
+        { "label": "🇲🇹 Malta", "value": "MT" },
+        { "label": "🇳🇱 Niederlande", "value": "NL" },
+        { "label": "🇵🇱 Polen", "value": "PL" },
+        { "label": "🇵🇹 Portugal", "value": "PT" },
+        { "label": "🇷🇴 Rumänien", "value": "RO" },
+        { "label": "🇸🇰 Slowakei", "value": "SK" },
+        { "label": "🇸🇮 Slowenien", "value": "SI" },
+        { "label": "🇪🇸 Spanien", "value": "ES" },
+        { "label": "🇸🇪 Schweden", "value": "SE" }
+      ],
+      "next": "dublin_B"
+    },
+
+    {
+      "id": "dublin_B",
+      "type": "radio",
+      "question": "Wurden Dir in einem anderen EU-Staat Fingerabdrücke abgenommen oder hast Du dort bereits einen Asylantrag gestellt (auch unfreiwillig)?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false },
+        { "label": "Weiß nicht / Unsicher", "value": "wd" }
+      ],
+      "next": "fluchtgruende"
+    },
+
+    /* ========= Gemeinsamer Teil ========= */
+
+    {
+      "id": "fluchtgruende",
+      "type": "checkbox",
+      "question": "Welche Gründe treffen auf Dich zu?",
+      "required": true,
       "options": [
         { "label": "Religion", "value": "religion" },
         { "label": "Nationalität / Ethnie", "value": "nationalitaet" },
@@ -84,91 +354,78 @@
         { "label": "Wehr-/Militärdienst (Verweigerung/Verfolgung)", "value": "wehrdienst" },
         { "label": "Andere Gründe", "value": "andere" }
       ],
-      "next": "flucht_details_freitext" },
+      "next": "quelle_verfolgung"
+    },
 
-    { "id": "flucht_details_freitext", "type": "textarea", "question": "In deinen Worten: Was ist passiert? (Details, Beispiele, Diagnosen)", "required": false, "next": "quelle_verfolgung" },
-
-    { "id": "quelle_verfolgung", "type": "radio", "question": "Von wem geht die Verfolgung aus?", "required": true,
+    {
+      "id": "quelle_verfolgung",
+      "type": "radio",
+      "question": "Von wem geht die Verfolgung aus?",
+      "required": true,
       "options": [
-        { "label": "Staatliche Stellen (Polizei, Geheimdienst, Militär, Gerichte)", "value": "staat" },
-        { "label": "Private/Organisationen (Familie, Clan, Miliz)", "value": "privat" },
-        { "label": "Keine Angabe / Unsicher", "value": "unsicher" }
+        { "label": "Staatliche Stellen (z. B. Polizei, Geheimdienst, Militär, Gerichte)", "value": "staat" },
+        { "label": "Private / Organisationen (z. B. Familie, Clan, Miliz)", "value": "privat" },
+        { "label": "Unsicher / keine Angabe", "value": "unsicher" }
       ],
-      "nextMap": { "privat": "innerstaatlicher_schutz_ja_nein", "unsicher": "innerstaatlicher_schutz_ja_nein", "staat": "flucht_ereignis_datum" } },
+      "next": "freitext_kurz"
+    },
 
-    { "id": "innerstaatlicher_schutz_ja_nein", "type": "radio", "question": "Hast du versucht, innerhalb deines Landes Schutz zu bekommen?", "required": true,
-      "options": [ { "label": "Ja", "value": "ja" }, { "label": "Nein", "value": "nein" }, { "label": "Weiß nicht", "value": "wd" } ],
-      "next": "innerstaatlicher_schutz_details" },
+    {
+      "id": "freitext_kurz",
+      "type": "textarea",
+      "question": "In Deinen Worten: Was ist passiert? (bitte kurz in 3–5 Sätzen)",
+      "required": false,
+      "next": "innerstaatlicher_schutz_ja_nein"
+    },
 
-    { "id": "innerstaatlicher_schutz_details", "type": "textarea", "question": "Kurz erläutern: Was hast du versucht bzw. warum war Schutz im Land nicht möglich?", "required": false, "next": "flucht_ereignis_datum" },
-
-    { "id": "flucht_ereignis_datum", "type": "date", "question": "Wann war das fluchtauslösende Ereignis (oder wann hast du die Flucht entschieden)?", "required": false, "next": "visum_vor_nach_ereignis" },
-
-    { "id": "visum_vor_nach_ereignis", "type": "radio", "question": "Falls du ein Visum hattest: Hast du es vor oder nach dem fluchtauslösenden Ereignis beantragt?", "required": false,
-      "options": [
-        { "label": "Vor dem Ereignis", "value": "vor" },
-        { "label": "Nach dem Ereignis", "value": "nach" },
-        { "label": "Nicht zutreffend / Weiß nicht", "value": "n/a" }
-      ],
-      "next": "papiere_ort" },
-
-    { "id": "papiere_ort", "type": "text", "question": "Wo befinden sich deine Reisepässe oder Ausweise?", "required": false, "next": "beweise_vorhanden" },
-
-    { "id": "beweise_vorhanden", "type": "radio", "question": "Hast du Belege oder Dokumente für deine Angaben?", "required": true,
-      "options": [ { "label": "Ja", "value": "true" }, { "label": "Nein", "value": "false" } ],
-      "nextMap": { "true": "beweise_details", "false": "familie_kontakt" } },
-
-    { "id": "beweise_details", "type": "textarea", "question": "Welche Belege hast du (z. B. Fotos, Urkunden, Bescheide, Chatverläufe)?", "required": false, "next": "familie_kontakt" },
-
-    { "id": "familie_kontakt", "type": "radio", "question": "Hast du Kontakt zu deiner Familie im Herkunftsland?", "required": true,
-      "options": [
-        { "label": "Ja, regelmäßiger Kontakt", "value": "regelmaessig" },
-        { "label": "Selten / unsicher", "value": "selten" },
-        { "label": "Kein Kontakt", "value": "kein" }
-      ],
-      "next": "familie_nachverfolgung" },
-
-    { "id": "familie_nachverfolgung", "type": "radio", "question": "Berichtet deine Familie von Nachfragen/Bedrohungen/Polizeibesuchen nach deiner Ausreise?", "required": true,
-      "options": [
-        { "label": "Ja", "value": "true" },
-        { "label": "Nein", "value": "false" },
-        { "label": "Unklar", "value": "wd" }
-      ],
-      "next": "nachfluchtverhalten" },
-
-    { "id": "nachfluchtverhalten", "type": "radio", "question": "Lebst du Merkmale deiner Überzeugung/Identität jetzt offen aus (z. B. politische Aktivität, religiöse Praxis, LGBTIQ)?", "required": true,
+    {
+      "id": "innerstaatlicher_schutz_ja_nein",
+      "type": "radio",
+      "question": "Hast Du innerhalb Deines Landes Schutz gesucht (z. B. bei Polizei oder durch Umzug)?",
+      "required": true,
       "options": [
         { "label": "Ja", "value": "ja" },
         { "label": "Nein", "value": "nein" },
-        { "label": "Weiß nicht / noch nicht", "value": "wd" }
+        { "label": "Weiß nicht / Unsicher", "value": "wd" }
       ],
-      "next": "tr_uyap_intro" },
+      "next": "innerstaatlicher_schutz_details"
+    },
 
-    { "id": "tr_uyap_intro", "type": "info",
-      "headline": "Nur relevant bei Türkei + staatlicher Verfolgung",
-      "text": "Die folgenden Fragen sind insbesondere relevant, wenn dein Herkunftsland die Türkei ist und die Verfolgung vom Staat ausgeht.",
-      "next": "tr_uyap_edv" },
+    {
+      "id": "innerstaatlicher_schutz_details",
+      "type": "textarea",
+      "question": "Wenn Ja: Was hast Du versucht? – Wenn Nein: Warum war Schutz nicht möglich?",
+      "required": false,
+      "next": "flucht_ereignis_datum"
+    },
 
-    { "id": "tr_uyap_edv", "type": "radio", "question": "Hast du Zugang zu UYAP/E-Devlet (türkisches Justiz-/Bürgerportal) oder Dokumente daraus?", "required": false,
+    {
+      "id": "flucht_ereignis_datum",
+      "type": "date",
+      "question": "Wann war das fluchtauslösende Ereignis (oder der Entschluss zur Flucht)?",
+      "required": false,
+      "next": "visum_vor_nach_ereignis"
+    },
+
+    {
+      "id": "visum_vor_nach_ereignis",
+      "type": "radio",
+      "question": "Falls Du ein Visum oder einen Aufenthaltstitel hattest: Wurde das **vor** oder **nach** dem fluchtauslösenden Ereignis beantragt?",
+      "required": false,
       "options": [
-        { "label": "Ja, Zugang/Dokumente vorhanden", "value": "ja" },
-        { "label": "Nein", "value": "nein" },
+        { "label": "Vor dem Ereignis", "value": "vor" },
+        { "label": "Nach dem Ereignis", "value": "nach" },
         { "label": "Weiß nicht", "value": "wd" }
       ],
-      "nextMap": { "ja": "tr_uyap_dok_typ", "nein": "done_order", "wd": "done_order" } },
+      "next": "abschluss"
+    },
 
-    { "id": "tr_uyap_dok_typ", "type": "checkbox", "question": "Welche UYAP/E-Devlet-Dokumente liegen vor?", "required": false,
-      "options": [
-        { "label": "Anklageschrift / Ermittlungsakte", "value": "anklageschrift" },
-        { "label": "Durchsuchungsbeschluss", "value": "durchsuchung" },
-        { "label": "Haftbefehl", "value": "haftbefehl" },
-        { "label": "Ladung / Vorladung", "value": "ladung" },
-        { "label": "Sonstiges", "value": "sonstiges" }
-      ],
-      "next": "done_order" },
-
-    { "id": "done_order", "type": "info",
-      "headline": "Danke für deine Angaben!",
-      "text": "Du kannst jetzt deine individuelle PDF-Beratung bestellen.<br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>" }
+    {
+      "id": "abschluss",
+      "type": "info",
+      "headline": "Danke für Deine Angaben",
+      "text": "Du kannst jetzt Deine individuelle Einschätzung bestellen. Klicke auf den Button, um Deine anonyme Auswertung (119 €) anzufordern.",
+      "next": null
+    }
   ]
 }
