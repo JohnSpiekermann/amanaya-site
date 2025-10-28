@@ -9,7 +9,6 @@
       "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben – kein Name, kein Geburtsdatum, keine Adresse. Bitte schildere Deine Situation so genau wie möglich.",
       "next": "geschlecht"
     },
-
     {
       "id": "geschlecht",
       "type": "radio",
@@ -21,81 +20,91 @@
         { "label": "Divers", "value": "d" },
         { "label": "Möchte ich nicht sagen", "value": "x" }
       ],
-      "next": "alter"
+      "next": "alter_bucket"
     },
-
     {
-      "id": "alter",
-      "type": "number",
-      "question": "Wie alt bist Du (in vollen Jahren)?",
+      "id": "alter_bucket",
+      "type": "radio",
+      "question": "Wie alt bist Du?",
       "required": true,
-      "next": "minor_unbegleitet_hint"
+      "options": [
+        { "label": "0–17", "value": "0_17" },
+        { "label": "18–25", "value": "18_25" },
+        { "label": "26–42", "value": "26_42" },
+        { "label": "43–55", "value": "43_55" },
+        { "label": "56–72", "value": "56_72" },
+        { "label": "73–99", "value": "73_99" }
+      ],
+      "nextMap": {
+        "0_17": "minor_unbegleitet_hint",
+        "18_25": "herkunftsland",
+        "26_42": "herkunftsland",
+        "43_55": "herkunftsland",
+        "56_72": "herkunftsland",
+        "73_99": "herkunftsland"
+      }
     },
-
     {
       "id": "minor_unbegleitet_hint",
       "type": "radio",
-      "question": "Nur wenn Du unter 18 Jahre alt bist: Reist Du unbegleitet?",
-      "required": false,
+      "question": "Reist Du unbegleitet?",
+      "required": true,
       "options": [
         { "label": "Ja, unbegleitet", "value": "alleine" },
         { "label": "Nein, mit Elternteil", "value": "mit_eltern" }
       ],
       "next": "herkunftsland"
     },
-
     {
       "id": "herkunftsland",
       "type": "radio",
       "question": "Aus welchem Land kommst Du?",
       "required": true,
       "options": [
-        { "label": "🇹🇷 Türkei", "value": "TR" },
-        { "label": "🇸🇾 Syrien", "value": "SY" },
-        { "label": "🇦🇫 Afghanistan", "value": "AF" },
-        { "label": "🇮🇷 Iran", "value": "IR" },
-        { "label": "🇮🇶 Irak", "value": "IQ" }
+        { "label": "Türkei", "value": "TR" },
+        { "label": "Syrien", "value": "SY" },
+        { "label": "Afghanistan", "value": "AF" },
+        { "label": "Iran", "value": "IR" },
+        { "label": "Irak", "value": "IQ" }
       ],
       "next": "zielland"
     },
-
     {
       "id": "zielland",
       "type": "radio",
       "question": "In welchem Land möchtest Du Schutz beantragen?",
       "required": true,
       "options": [
-        { "label": "🇦🇹 Österreich", "value": "AT" },
-        { "label": "🇧🇪 Belgien", "value": "BE" },
-        { "label": "🇧🇬 Bulgarien", "value": "BG" },
-        { "label": "🇭🇷 Kroatien", "value": "HR" },
-        { "label": "🇨🇾 Zypern", "value": "CY" },
-        { "label": "🇨🇿 Tschechien", "value": "CZ" },
-        { "label": "🇩🇰 Dänemark", "value": "DK" },
-        { "label": "🇪🇪 Estland", "value": "EE" },
-        { "label": "🇫🇮 Finnland", "value": "FI" },
-        { "label": "🇫🇷 Frankreich", "value": "FR" },
-        { "label": "🇩🇪 Deutschland", "value": "DE" },
-        { "label": "🇬🇷 Griechenland", "value": "GR" },
-        { "label": "🇭🇺 Ungarn", "value": "HU" },
-        { "label": "🇮🇪 Irland", "value": "IE" },
-        { "label": "🇮🇹 Italien", "value": "IT" },
-        { "label": "🇱🇻 Lettland", "value": "LV" },
-        { "label": "🇱🇹 Litauen", "value": "LT" },
-        { "label": "🇱🇺 Luxemburg", "value": "LU" },
-        { "label": "🇲🇹 Malta", "value": "MT" },
-        { "label": "🇳🇱 Niederlande", "value": "NL" },
-        { "label": "🇵🇱 Polen", "value": "PL" },
-        { "label": "🇵🇹 Portugal", "value": "PT" },
-        { "label": "🇷🇴 Rumänien", "value": "RO" },
-        { "label": "🇸🇰 Slowakei", "value": "SK" },
-        { "label": "🇸🇮 Slowenien", "value": "SI" },
-        { "label": "🇪🇸 Spanien", "value": "ES" },
-        { "label": "🇸🇪 Schweden", "value": "SE" }
+        { "label": "Österreich", "value": "AT" },
+        { "label": "Belgien", "value": "BE" },
+        { "label": "Bulgarien", "value": "BG" },
+        { "label": "Kroatien", "value": "HR" },
+        { "label": "Zypern", "value": "CY" },
+        { "label": "Tschechien", "value": "CZ" },
+        { "label": "Dänemark", "value": "DK" },
+        { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Griechenland", "value": "GR" },
+        { "label": "Ungarn", "value": "HU" },
+        { "label": "Irland", "value": "IE" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Lettland", "value": "LV" },
+        { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" },
+        { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" },
+        { "label": "Polen", "value": "PL" },
+        { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" },
+        { "label": "Slowakei", "value": "SK" },
+        { "label": "Slowenien", "value": "SI" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Schweden", "value": "SE" }
       ],
       "next": "im_zielland"
     },
-
     {
       "id": "im_zielland",
       "type": "radio",
@@ -124,40 +133,39 @@
         "ohne": "dublin_A"
       }
     },
-
     {
       "id": "visum_aussteller",
       "type": "radio",
       "question": "Welches EU-Land hat Dein Einreisevisum ausgestellt?",
       "required": true,
       "options": [
-        { "label": "🇦🇹 Österreich", "value": "AT" },
-        { "label": "🇧🇪 Belgien", "value": "BE" },
-        { "label": "🇧🇬 Bulgarien", "value": "BG" },
-        { "label": "🇭🇷 Kroatien", "value": "HR" },
-        { "label": "🇨🇾 Zypern", "value": "CY" },
-        { "label": "🇨🇿 Tschechien", "value": "CZ" },
-        { "label": "🇩🇰 Dänemark", "value": "DK" },
-        { "label": "🇪🇪 Estland", "value": "EE" },
-        { "label": "🇫🇮 Finnland", "value": "FI" },
-        { "label": "🇫🇷 Frankreich", "value": "FR" },
-        { "label": "🇩🇪 Deutschland", "value": "DE" },
-        { "label": "🇬🇷 Griechenland", "value": "GR" },
-        { "label": "🇭🇺 Ungarn", "value": "HU" },
-        { "label": "🇮🇪 Irland", "value": "IE" },
-        { "label": "🇮🇹 Italien", "value": "IT" },
-        { "label": "🇱🇻 Lettland", "value": "LV" },
-        { "label": "🇱🇹 Litauen", "value": "LT" },
-        { "label": "🇱🇺 Luxemburg", "value": "LU" },
-        { "label": "🇲🇹 Malta", "value": "MT" },
-        { "label": "🇳🇱 Niederlande", "value": "NL" },
-        { "label": "🇵🇱 Polen", "value": "PL" },
-        { "label": "🇵🇹 Portugal", "value": "PT" },
-        { "label": "🇷🇴 Rumänien", "value": "RO" },
-        { "label": "🇸🇰 Slowakei", "value": "SK" },
-        { "label": "🇸🇮 Slowenien", "value": "SI" },
-        { "label": "🇪🇸 Spanien", "value": "ES" },
-        { "label": "🇸🇪 Schweden", "value": "SE" }
+        { "label": "Österreich", "value": "AT" },
+        { "label": "Belgien", "value": "BE" },
+        { "label": "Bulgarien", "value": "BG" },
+        { "label": "Kroatien", "value": "HR" },
+        { "label": "Zypern", "value": "CY" },
+        { "label": "Tschechien", "value": "CZ" },
+        { "label": "Dänemark", "value": "DK" },
+        { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Griechenland", "value": "GR" },
+        { "label": "Ungarn", "value": "HU" },
+        { "label": "Irland", "value": "IE" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Lettland", "value": "LV" },
+        { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" },
+        { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" },
+        { "label": "Polen", "value": "PL" },
+        { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" },
+        { "label": "Slowakei", "value": "SK" },
+        { "label": "Slowenien", "value": "SI" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Schweden", "value": "SE" }
       ],
       "next": "visum_von"
     },
@@ -171,33 +179,33 @@
       "question": "Welches EU-Land hat Deinen Aufenthaltstitel ausgestellt?",
       "required": true,
       "options": [
-        { "label": "🇦🇹 Österreich", "value": "AT" },
-        { "label": "🇧🇪 Belgien", "value": "BE" },
-        { "label": "🇧🇬 Bulgarien", "value": "BG" },
-        { "label": "🇭🇷 Kroatien", "value": "HR" },
-        { "label": "🇨🇾 Zypern", "value": "CY" },
-        { "label": "🇨🇿 Tschechien", "value": "CZ" },
-        { "label": "🇩🇰 Dänemark", "value": "DK" },
-        { "label": "🇪🇪 Estland", "value": "EE" },
-        { "label": "🇫🇮 Finnland", "value": "FI" },
-        { "label": "🇫🇷 Frankreich", "value": "FR" },
-        { "label": "🇩🇪 Deutschland", "value": "DE" },
-        { "label": "🇬🇷 Griechenland", "value": "GR" },
-        { "label": "🇭🇺 Ungarn", "value": "HU" },
-        { "label": "🇮🇪 Irland", "value": "IE" },
-        { "label": "🇮🇹 Italien", "value": "IT" },
-        { "label": "🇱🇻 Lettland", "value": "LV" },
-        { "label": "🇱🇹 Litauen", "value": "LT" },
-        { "label": "🇱🇺 Luxemburg", "value": "LU" },
-        { "label": "🇲🇹 Malta", "value": "MT" },
-        { "label": "🇳🇱 Niederlande", "value": "NL" },
-        { "label": "🇵🇱 Polen", "value": "PL" },
-        { "label": "🇵🇹 Portugal", "value": "PT" },
-        { "label": "🇷🇴 Rumänien", "value": "RO" },
-        { "label": "🇸🇰 Slowakei", "value": "SK" },
-        { "label": "🇸🇮 Slowenien", "value": "SI" },
-        { "label": "🇪🇸 Spanien", "value": "ES" },
-        { "label": "🇸🇪 Schweden", "value": "SE" }
+        { "label": "Österreich", "value": "AT" },
+        { "label": "Belgien", "value": "BE" },
+        { "label": "Bulgarien", "value": "BG" },
+        { "label": "Kroatien", "value": "HR" },
+        { "label": "Zypern", "value": "CY" },
+        { "label": "Tschechien", "value": "CZ" },
+        { "label": "Dänemark", "value": "DK" },
+        { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Griechenland", "value": "GR" },
+        { "label": "Ungarn", "value": "HU" },
+        { "label": "Irland", "value": "IE" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Lettland", "value": "LV" },
+        { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" },
+        { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" },
+        { "label": "Polen", "value": "PL" },
+        { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" },
+        { "label": "Slowakei", "value": "SK" },
+        { "label": "Slowenien", "value": "SI" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Schweden", "value": "SE" }
       ],
       "next": "aufenthaltstitel_bis"
     },
@@ -215,7 +223,6 @@
       ],
       "next": "verfahrensstand_A1"
     },
-
     {
       "id": "verfahrensstand_A1",
       "type": "radio",
@@ -227,7 +234,6 @@
       ],
       "nextMap": { "true": "anhoerung_A", "false": "fluchtgruende" }
     },
-
     {
       "id": "anhoerung_A",
       "type": "radio",
@@ -239,7 +245,6 @@
       ],
       "nextMap": { "true": "entscheidung_A", "false": "fluchtgruende" }
     },
-
     {
       "id": "entscheidung_A",
       "type": "radio",
@@ -251,7 +256,6 @@
       ],
       "nextMap": { "true": "entscheidung_typ", "false": "fluchtgruende" }
     },
-
     {
       "id": "entscheidung_typ",
       "type": "radio",
@@ -283,44 +287,42 @@
         "nein_anders": "reiseweg_B_aussteller"
       }
     },
-
     {
       "id": "reiseweg_B_aussteller",
       "type": "radio",
       "question": "Welches EU-Land wird voraussichtlich Dein Visum ausstellen?",
       "required": true,
       "options": [
-        { "label": "🇦🇹 Österreich", "value": "AT" },
-        { "label": "🇧🇪 Belgien", "value": "BE" },
-        { "label": "🇧🇬 Bulgarien", "value": "BG" },
-        { "label": "🇭🇷 Kroatien", "value": "HR" },
-        { "label": "🇨🇾 Zypern", "value": "CY" },
-        { "label": "🇨🇿 Tschechien", "value": "CZ" },
-        { "label": "🇩🇰 Dänemark", "value": "DK" },
-        { "label": "🇪🇪 Estland", "value": "EE" },
-        { "label": "🇫🇮 Finnland", "value": "FI" },
-        { "label": "🇫🇷 Frankreich", "value": "FR" },
-        { "label": "🇩🇪 Deutschland", "value": "DE" },
-        { "label": "🇬🇷 Griechenland", "value": "GR" },
-        { "label": "🇭🇺 Ungarn", "value": "HU" },
-        { "label": "🇮🇪 Irland", "value": "IE" },
-        { "label": "🇮🇹 Italien", "value": "IT" },
-        { "label": "🇱🇻 Lettland", "value": "LV" },
-        { "label": "🇱🇹 Litauen", "value": "LT" },
-        { "label": "🇱🇺 Luxemburg", "value": "LU" },
-        { "label": "🇲🇹 Malta", "value": "MT" },
-        { "label": "🇳🇱 Niederlande", "value": "NL" },
-        { "label": "🇵🇱 Polen", "value": "PL" },
-        { "label": "🇵🇹 Portugal", "value": "PT" },
-        { "label": "🇷🇴 Rumänien", "value": "RO" },
-        { "label": "🇸🇰 Slowakei", "value": "SK" },
-        { "label": "🇸🇮 Slowenien", "value": "SI" },
-        { "label": "🇪🇸 Spanien", "value": "ES" },
-        { "label": "🇸🇪 Schweden", "value": "SE" }
+        { "label": "Österreich", "value": "AT" },
+        { "label": "Belgien", "value": "BE" },
+        { "label": "Bulgarien", "value": "BG" },
+        { "label": "Kroatien", "value": "HR" },
+        { "label": "Zypern", "value": "CY" },
+        { "label": "Tschechien", "value": "CZ" },
+        { "label": "Dänemark", "value": "DK" },
+        { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Griechenland", "value": "GR" },
+        { "label": "Ungarn", "value": "HU" },
+        { "label": "Irland", "value": "IE" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Lettland", "value": "LV" },
+        { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" },
+        { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" },
+        { "label": "Polen", "value": "PL" },
+        { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" },
+        { "label": "Slowakei", "value": "SK" },
+        { "label": "Slowenien", "value": "SI" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Schweden", "value": "SE" }
       ],
       "next": "dublin_B"
     },
-
     {
       "id": "dublin_B",
       "type": "radio",
@@ -337,20 +339,24 @@
     {
       "id": "fluchtgruende",
       "type": "checkbox",
-      "question": "Welche Gründe treffen auf Dich zu?",
+      "question": "Welche Fluchtgründe treffen auf Dich zu?",
       "required": true,
       "options": [
+        { "label": "Internationaler oder innerstaatlicher Konflikt", "value": "konflikt" },
+        { "label": "Willkürliche Gewalt / Folter", "value": "gewalt_folter" },
         { "label": "Religion", "value": "religion" },
         { "label": "Nationalität / Ethnie", "value": "nationalitaet" },
         { "label": "Politische Überzeugung / Aktivität", "value": "politisch" },
         { "label": "Zugehörigkeit zu einer sozialen Gruppe (z. B. Frauen, LGBTIQ)", "value": "soziale_gruppe" },
         { "label": "Gesundheitliche Gründe", "value": "gesundheit" },
         { "label": "Wehr-/Militärdienst (Verweigerung/Verfolgung)", "value": "wehrdienst" },
+        { "label": "Wirtschaftliche Gründe", "value": "wirtschaft" },
+        { "label": "Familiäre Gründe", "value": "familie" },
+        { "label": "Klimawandel", "value": "klima" },
         { "label": "Andere Gründe", "value": "andere" }
       ],
       "next": "quelle_verfolgung"
     },
-
     {
       "id": "quelle_verfolgung",
       "type": "radio",
@@ -363,7 +369,6 @@
       ],
       "next": "freitext_kurz"
     },
-
     {
       "id": "freitext_kurz",
       "type": "textarea",
@@ -371,11 +376,10 @@
       "required": false,
       "next": "innerstaatlicher_schutz_ja_nein"
     },
-
     {
       "id": "innerstaatlicher_schutz_ja_nein",
       "type": "radio",
-      "question": "Hast Du innerhalb Deines Landes Schutz gesucht (z. B. bei Polizei oder durch Umzug)?",
+      "question": "Hast Du innerhalb von {{herkunftsland_label}} Schutz gesucht (z. B. bei Polizei oder durch Umzug)?",
       "required": true,
       "options": [
         { "label": "Ja", "value": "ja" },
@@ -384,7 +388,6 @@
       ],
       "next": "innerstaatlicher_schutz_details"
     },
-
     {
       "id": "innerstaatlicher_schutz_details",
       "type": "textarea",
@@ -392,33 +395,18 @@
       "required": false,
       "next": "flucht_ereignis_datum"
     },
-
     {
       "id": "flucht_ereignis_datum",
       "type": "date",
       "question": "Wann war das fluchtauslösende Ereignis (oder der Entschluss zur Flucht)?",
       "required": false,
-      "next": "visum_vor_nach_ereignis"
-    },
-
-    {
-      "id": "visum_vor_nach_ereignis",
-      "type": "radio",
-      "question": "Falls Du ein Visum oder einen Aufenthaltstitel hattest: Wurde das **vor** oder **nach** dem fluchtauslösenden Ereignis beantragt?",
-      "required": false,
-      "options": [
-        { "label": "Vor dem Ereignis", "value": "vor" },
-        { "label": "Nach dem Ereignis", "value": "nach" },
-        { "label": "Weiß nicht", "value": "wd" }
-      ],
       "next": "abschluss"
     },
-
     {
       "id": "abschluss",
       "type": "info",
       "headline": "Danke für Deine Angaben",
-      "text": "Du kannst jetzt Deine individuelle Einschätzung bestellen. Klicke auf den Button, um Deine anonyme Auswertung (119 €) anzufordern.",
+      "text": "Du kannst jetzt Deine individuelle Einschätzung bestellen. Klicke auf den Button, um Deine anonyme Auswertung (119 €) anzufordern.<br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>",
       "next": null
     }
   ]
