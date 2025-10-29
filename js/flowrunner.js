@@ -1,4 +1,14 @@
 /* Amanaya Flowrunner – v2.2 (Back-Button fix, sichtbarer Pfad, Platzhalter, robustes Laden) */
+/* Polyfills (wichtig für ältere Browser/Safari/Embedded) */
+(function(){
+  if (!window.CSS) window.CSS = {};
+  if (typeof window.CSS.escape !== "function") {
+    // sehr simple Escape-Variante, reicht für unsere Selektoren
+    window.CSS.escape = function (value) {
+      return String(value).replace(/[^a-zA-Z0-9_\-]/g, '\\$&');
+    };
+  }
+})();
 (async function () {
   // ---- Konfiguration --------------------------------------------------------
   const FLOW_URL     = (window.AMANAYA_FLOW_URL || "/flows/flow.de.json") + "?v=runner22";
