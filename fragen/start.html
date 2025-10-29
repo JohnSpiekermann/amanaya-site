@@ -11,6 +11,7 @@
     header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
     header a{color:var(--brand);text-decoration:none;font-weight:700}
     h1{font-size:20px;margin:0}
+    .diag{font:12px/1.3 system-ui;background:#fff; border:1px dashed #c9bfae; padding:8px 10px; border-radius:8px; margin:0 0 10px 0; color:#6b5d47;}
     .card{background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.06);padding:20px}
     .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:14px;opacity:.8}
     .step h2{margin:.2rem 0 1rem}
@@ -32,13 +33,16 @@
       <span style="opacity:.7">/ Befragung</span>
     </header>
 
+    <!-- Diagnosezeile: zeigt, ob Script und Flow gefunden werden -->
+    <div id="diag" class="diag">Lade…</div>
+
     <div class="card">
       <div class="topbar">
         <div id="progress">–</div>
         <div><a href="/" style="text-decoration:none">Zur Startseite</a></div>
       </div>
 
-      <!-- HIER rendert der Runner die Frage -->
+      <!-- Hier rendert der Runner -->
       <div id="step"></div>
 
       <!-- Navigation -->
@@ -49,7 +53,29 @@
     </div>
   </div>
 
-  <!-- Runner laden (mit Cache-Buster) -->
-  <script src="/js/flowrunner.js?v=runner22" defer></script>
+  <!-- Flow-URL explizit setzen + Diagnose -->
+  <script>
+    window.AMANAYA_FLOW_URL = "/flows/flow.de.json";
+    (function(){
+      const d = document.getElementById('diag');
+      // schneller Netz-Check auf die JSON-Datei
+      fetch(window.AMANAYA_FLOW_URL + '?ping=' + Date.now(), {cache:'no-store'})
+        .then(r => r.text())
+        .then(t => {
+          let ok = false;
+          try { const j = JSON.parse(t); ok = Array.isArray(j) || Array.isArray(j.flow); } catch(e){}
+          d.textContent = ok ? 'Flow gefunden – Runner lädt…' : 'Warnung: Flow erreichbar, aber kein gültiges Array.';
+        })
+        .catch(() => d.textContent = 'Fehler: Flow nicht erreichbar.');
+    })();
+  </script>
+
+  <!-- Runner laden: Querystring bricht Cache; onload/ onerror schreiben Diagnosen -->
+  <script
+    src="/js/flowrunner.js?v=runner22b"
+    defer
+    onload="document.getElementById('diag').textContent='Runner geladen – Rendering startet…';"
+    onerror="document.getElementById('diag').textContent='Fehler: /js/flowrunner.js konnte nicht geladen werden.'">
+  </script>
 </body>
 </html>
