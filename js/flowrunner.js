@@ -376,21 +376,25 @@
   }
 
   // ---- Start ---------------------------------------------------------------
-  try {
-    loadLocal();
-    flow = await loadFlow();
-    afterFlowLoaded();
-  } catch (e) {
-    console.error("[Flowrunner] Fehler beim Laden des Flows:", e);
-    clearLocal();
-    elStep.innerHTML = `<div class="notice error">
-      Der Fragenkatalog konnte nicht geladen werden.
-      <div style="margin-top:.5rem"><button id="reloadFlow">Nochmal versuchen</button></div>
-      <div style="margin-top:.25rem"><small>(Fehlerdetails in der Konsole)</small></div>
-    </div>`;
-    const btn = document.getElementById("reloadFlow");
-    if (btn) btn.addEventListener("click", () => location.reload());
-    elPrev.style.visibility = "hidden";
-    elNext.style.display = "none";
-  }
-})();
+try {
+  loadLocal();
+  const loaded = await loadFlow();
+  // ✅ hier robust zuweisen (Array direkt ODER Objekt mit .flow)
+  flow = Array.isArray(loaded) ? loaded
+       : (Array.isArray(loaded.flow) ? loaded.flow : []);
+
+  afterFlowLoaded();
+} catch (e) {
+  console.error("[Flowrunner] Fehler beim Laden des Flows:", e);
+  clearLocal();
+  elStep.innerHTML = `<div class="notice error">
+    Der Fragenkatalog konnte nicht geladen werden.
+    <div style="margin-top:.5rem"><button id="reloadFlow">Nochmal versuchen</button></div>
+    <div style="margin-top:.25rem"><small>(Fehlerdetails in der Konsole)</small></div>
+  </div>`;
+  const btn = document.getElementById("reloadFlow");
+  if (btn) btn.addEventListener("click", () => location.reload());
+  elPrev.style.visibility = "hidden";
+  elNext.style.display = "none";
+}
+
