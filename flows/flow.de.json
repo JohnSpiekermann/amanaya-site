@@ -372,7 +372,7 @@
     {
       "id": "freitext_kurz",
       "type": "textarea",
-      "question": "In Deinen Worten: Was ist passiert? (bitte kurz in 3–5 Sätzen)",
+      "question": "In Deinen Worten: Was ist passiert?",
       "required": false,
       "next": "innerstaatlicher_schutz_ja_nein"
     },
