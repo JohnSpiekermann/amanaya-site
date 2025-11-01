@@ -6,7 +6,7 @@
       "id": "intro",
       "type": "info",
       "headline": "Anonyme Befragung",
-      "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben. Bitte schildere Deine Situation aber so genau wie möglich.",
+      "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben. Bitte schildere Deine Situation so genau wie möglich.",
       "next": "geschlecht"
     },
     {
@@ -73,7 +73,7 @@
     {
       "id": "zielland",
       "type": "radio",
-      "question": "Für welches Land möchtest Du Informationen zum Asylverfahren?",
+      "question": "In welchem Land möchtest Du Asyl beantragen?",
       "required": true,
       "options": [
         { "label": "Deutschland", "value": "DE" },
@@ -105,8 +105,11 @@
         { "label": "Ja, ich bin bereits dort", "value": "A" },
         { "label": "Nein, ich bin noch außerhalb", "value": "B" }
       ],
+      "onAnswer": { "set": { "im_zielland": "$value" } },
       "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" }
     },
+
+    /* ===== Pfad A: bereits im Zielland ===== */
 
     {
       "id": "reiseweg_A",
@@ -153,6 +156,14 @@
         { "label": "Schweiz", "value": "CH" }
       ],
       "onAnswer": { "set": { "hat_visum": true, "visum_aussteller": "$value" } },
+      "next": "visum_gueltigkeit_A"
+    },
+    {
+      "id": "visum_gueltigkeit_A",
+      "type": "date",
+      "question": "Bis wann ist Dein Visum gültig? (Datum auswählen)",
+      "required": true,
+      "onAnswer": { "set": { "visum_gueltig_bis": "$value" } },
       "next": "biometrie_anderswo"
     },
     {
@@ -191,6 +202,64 @@
       "next": "biometrie_anderswo"
     },
 
+    /* ===== Pfad B: noch außerhalb ===== */
+
+    {
+      "id": "reiseweg_B_visa_plan",
+      "type": "radio",
+      "question": "Wie beabsichtigst Du einzureisen?",
+      "required": true,
+      "options": [
+        { "label": "Mit einem Visum von {{zielland_label}}", "value": "ja_zielland" },
+        { "label": "Mit einem Visum eines anderen Staates (Dublin-Teilnehmer)", "value": "nein_anders" },
+        { "label": "Weiß noch nicht", "value": "unsicher" }
+      ],
+      "onAnswer": {
+        "set": {
+          "hat_visum": { "expr": "$value == 'ja_zielland'" },
+          "visum_aussteller": { "expr": "$value == 'ja_zielland' ? $zielland : null" }
+        }
+      },
+      "nextMap": { "nein_anders": "reiseweg_B_aussteller", "ja_zielland": "biometrie_anderswo", "unsicher": "biometrie_anderswo" }
+    },
+    {
+      "id": "reiseweg_B_aussteller",
+      "type": "radio",
+      "question": "Welches Land wird voraussichtlich Dein Visum ausstellen?",
+      "required": true,
+      "options": [
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Belgien", "value": "BE" }, { "label": "Bulgarien", "value": "BG" },
+        { "label": "Dänemark", "value": "DK" }, { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" }, { "label": "Griechenland", "value": "GR" },
+        { "label": "Irland", "value": "IE" }, { "label": "Kroatien", "value": "HR" },
+        { "label": "Lettland", "value": "LV" }, { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" }, { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" }, { "label": "Österreich", "value": "AT" },
+        { "label": "Polen", "value": "PL" }, { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" }, { "label": "Schweden", "value": "SE" },
+        { "label": "Slowakei", "value": "SK" }, { "label": "Slowenien", "value": "SI" },
+        { "label": "Tschechien", "value": "CZ" }, { "label": "Ungarn", "value": "HU" },
+        { "label": "Zypern", "value": "CY" }, { "label": "Norwegen", "value": "NO" },
+        { "label": "Schweiz", "value": "CH" }
+      ],
+      "onAnswer": { "set": { "visum_aussteller": "$value" } },
+      "next": "visum_gueltigkeit_B"
+    },
+    {
+      "id": "visum_gueltigkeit_B",
+      "type": "date",
+      "question": "Voraussichtlich gültig bis (falls bekannt)",
+      "required": false,
+      "onAnswer": { "set": { "visum_gueltig_bis": "$value" } },
+      "next": "biometrie_anderswo"
+    },
+
+    /* ===== Fingerabdrücke & Asyl in anderem Staat (beide Pfade) ===== */
+
     {
       "id": "biometrie_anderswo",
       "type": "radio",
@@ -213,8 +282,82 @@
         { "label": "Nein", "value": false }
       ],
       "onAnswer": { "set": { "asylantrag_anderswo": "$value" } },
-      "next": "verfahrensstand_A1"
+      "nextMap": { "true": "dublin_land", "false": "router_nach_asyl_anderswo" }
     },
+    {
+      "id": "dublin_land",
+      "type": "radio",
+      "question": "In welchem Land war das?",
+      "required": true,
+      "options": [
+        { "label": "Deutschland", "value": "DE" },
+        { "label": "Frankreich", "value": "FR" },
+        { "label": "Spanien", "value": "ES" },
+        { "label": "Italien", "value": "IT" },
+        { "label": "Belgien", "value": "BE" }, { "label": "Bulgarien", "value": "BG" },
+        { "label": "Dänemark", "value": "DK" }, { "label": "Estland", "value": "EE" },
+        { "label": "Finnland", "value": "FI" }, { "label": "Griechenland", "value": "GR" },
+        { "label": "Irland", "value": "IE" }, { "label": "Kroatien", "value": "HR" },
+        { "label": "Lettland", "value": "LV" }, { "label": "Litauen", "value": "LT" },
+        { "label": "Luxemburg", "value": "LU" }, { "label": "Malta", "value": "MT" },
+        { "label": "Niederlande", "value": "NL" }, { "label": "Österreich", "value": "AT" },
+        { "label": "Polen", "value": "PL" }, { "label": "Portugal", "value": "PT" },
+        { "label": "Rumänien", "value": "RO" }, { "label": "Schweden", "value": "SE" },
+        { "label": "Slowakei", "value": "SK" }, { "label": "Slowenien", "value": "SI" },
+        { "label": "Tschechien", "value": "CZ" }, { "label": "Ungarn", "value": "HU" },
+        { "label": "Zypern", "value": "CY" }, { "label": "Norwegen", "value": "NO" },
+        { "label": "Schweiz", "value": "CH" }
+      ],
+      "onAnswer": { "set": { "dublinland": "$value" } },
+      "next": "dublin_befragt"
+    },
+    {
+      "id": "dublin_befragt",
+      "type": "radio",
+      "question": "Wurdest Du in {{dublinland_label}} zu Deinen Fluchtgründen befragt?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": "ja" },
+        { "label": "Nein", "value": "nein" },
+        { "label": "Weiß nicht", "value": "wd" }
+      ],
+      "onAnswer": { "set": { "dublin_befragt": "$value" } },
+      "nextMap": { "ja": "dublin_entscheidung_bekannt", "nein": "router_nach_asyl_anderswo", "wd": "router_nach_asyl_anderswo" }
+    },
+    {
+      "id": "dublin_entscheidung_bekannt",
+      "type": "radio",
+      "question": "Hast Du hierzu eine Entscheidung erhalten?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": "ja" },
+        { "label": "Nein", "value": "nein" },
+        { "label": "Weiß nicht", "value": "wd" }
+      ],
+      "onAnswer": { "set": { "dublin_entscheidung_bekannt": "$value" } },
+      "nextMap": { "ja": "dublin_entscheidung_typ", "nein": "router_nach_asyl_anderswo", "wd": "router_nach_asyl_anderswo" }
+    },
+    {
+      "id": "dublin_entscheidung_typ",
+      "type": "radio",
+      "question": "Wie hat {{dublinland_label}} entschieden?",
+      "required": true,
+      "options": [
+        { "label": "Flüchtlingsschutz", "value": "gfk" },
+        { "label": "Subsidiärer Schutz", "value": "subs" },
+        { "label": "Nationales Abschiebungsverbot", "value": "nab" },
+        { "label": "Ablehnung", "value": "negativ" }
+      ],
+      "onAnswer": { "set": { "dublin_entscheidung_typ": "$value" } },
+      "next": "router_nach_asyl_anderswo"
+    },
+    {
+      "id": "router_nach_asyl_anderswo",
+      "type": "router",
+      "next": { "expr": "(im_zielland === 'A') ? 'verfahrensstand_A1' : 'fluchtgruende'" }
+    },
+
+    /* ===== Verfahrensstand im Zielland (nur Pfad A) ===== */
 
     {
       "id": "verfahrensstand_A1",
@@ -268,52 +411,7 @@
       "next": "fluchtgruende"
     },
 
-  
-    {
-      "id": "reiseweg_B_visa_plan",
-      "type": "radio",
-      "question": "Wie beabsichtigst Du einzureisen?",
-      "required": true,
-      "options": [
-        { "label": "Mit Visum des Ziellandes", "value": "ja_zielland" },
-        { "label": "Mit Visum eines anderen Staates (Dublin-Teilnehmer)", "value": "nein_anders" },
-        { "label": "Weiß noch nicht", "value": "unsicher" }
-      ],
-      "onAnswer": {
-        "set": {
-          "hat_visum": { "expr": "$value == 'ja_zielland'" },
-          "visum_aussteller": { "expr": "$value == 'ja_zielland' ? $zielland : null" }
-        }
-      },
-      "nextMap": { "nein_anders": "reiseweg_B_aussteller", "ja_zielland": "biometrie_anderswo", "unsicher": "biometrie_anderswo" }
-    },
-    {
-      "id": "reiseweg_B_aussteller",
-      "type": "radio",
-      "question": "Welches Land wird voraussichtlich Dein Visum ausstellen?",
-      "required": true,
-      "options": [
-        { "label": "Deutschland", "value": "DE" },
-        { "label": "Frankreich", "value": "FR" },
-        { "label": "Spanien", "value": "ES" },
-        { "label": "Italien", "value": "IT" },
-        { "label": "Belgien", "value": "BE" }, { "label": "Bulgarien", "value": "BG" },
-        { "label": "Dänemark", "value": "DK" }, { "label": "Estland", "value": "EE" },
-        { "label": "Finnland", "value": "FI" }, { "label": "Griechenland", "value": "GR" },
-        { "label": "Irland", "value": "IE" }, { "label": "Kroatien", "value": "HR" },
-        { "label": "Lettland", "value": "LV" }, { "label": "Litauen", "value": "LT" },
-        { "label": "Luxemburg", "value": "LU" }, { "label": "Malta", "value": "MT" },
-        { "label": "Niederlande", "value": "NL" }, { "label": "Österreich", "value": "AT" },
-        { "label": "Polen", "value": "PL" }, { "label": "Portugal", "value": "PT" },
-        { "label": "Rumänien", "value": "RO" }, { "label": "Schweden", "value": "SE" },
-        { "label": "Slowakei", "value": "SK" }, { "label": "Slowenien", "value": "SI" },
-        { "label": "Tschechien", "value": "CZ" }, { "label": "Ungarn", "value": "HU" },
-        { "label": "Zypern", "value": "CY" }, { "label": "Norwegen", "value": "NO" },
-        { "label": "Schweiz", "value": "CH" }
-      ],
-      "onAnswer": { "set": { "visum_aussteller": "$value" } },
-      "next": "biometrie_anderswo"
-    },
+    /* ===== Fluchtgründe & Plausi ===== */
 
     {
       "id": "fluchtgruende",
@@ -397,6 +495,8 @@
       "onAnswer": { "set": { "nachfluchtverhalten": "$value" } },
       "next": "abschluss_hint"
     },
+
+    /* ===== Ende ===== */
 
     {
       "id": "abschluss_hint",
