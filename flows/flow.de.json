@@ -404,7 +404,6 @@
       "next": "need_nachflucht"
     },
 
-    /* Nur nachflucht fragen, wenn politisch/religion/soziale Gruppe angegeben wurde */
     {
       "id": "need_nachflucht",
       "type": "router",
