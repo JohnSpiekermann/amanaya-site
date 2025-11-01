@@ -5,8 +5,8 @@
     {
       "id": "intro",
       "type": "info",
-      "headline": "Deine anonyme Befragung",
-      "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben – keinen Namen, kein Geburtsdatum, keine Adresse. Antworte so konkret wie möglich.",
+      "headline": "Anonyme Befragung",
+      "text": "Im Folgenden wirst Du zu Deinen Fluchtgründen befragt. Du musst keine persönlichen Daten angeben. Bitte schildere Deine Situation so genau wie möglich.",
       "next": "geschlecht"
     },
     {
@@ -107,18 +107,25 @@
       ],
       "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" }
     },
+
     {
       "id": "reiseweg_A",
       "type": "radio",
       "question": "Wie bist Du eingereist?",
       "required": true,
       "options": [
-        { "label": "Mit Visum", "value": "visum" },
+        { "label": "Mit einem Visum von {{zielland_label}}", "value": "visum_zielland" },
+        { "label": "Mit einem Visum eines anderen Staates", "value": "visum_anders" },
         { "label": "Mit Aufenthaltstitel eines anderen EU-/Dublin-Staates", "value": "aufenthaltstitel" },
         { "label": "Ohne Visum / über Drittstaat / Sonstiges", "value": "ohne" }
       ],
       "onAnswer": { "set": { "reiseweg": "$value" } },
-      "nextMap": { "visum": "visum_details_A", "aufenthaltstitel": "aufenthaltstitel_details_A", "ohne": "verfahrensstand_A1" }
+      "nextMap": {
+        "visum_zielland": "biometrie_anderswo",
+        "visum_anders": "visum_details_A",
+        "aufenthaltstitel": "aufenthaltstitel_details_A",
+        "ohne": "biometrie_anderswo"
+      }
     },
     {
       "id": "visum_details_A",
@@ -146,15 +153,7 @@
         { "label": "Schweiz", "value": "CH" }
       ],
       "onAnswer": { "set": { "hat_visum": true, "visum_aussteller": "$value" } },
-      "next": "visum_zeitraum_A"
-    },
-    {
-      "id": "visum_zeitraum_A",
-      "type": "date",
-      "question": "Bis wann ist Dein Visum gültig? (Datum auswählen)",
-      "required": true,
-      "onAnswer": { "set": { "visum_gueltig_bis": "$value" } },
-      "next": "verfahrensstand_A1"
+      "next": "biometrie_anderswo"
     },
     {
       "id": "aufenthaltstitel_details_A",
@@ -181,8 +180,42 @@
         { "label": "Schweiz", "value": "CH" }
       ],
       "onAnswer": { "set": { "hat_aufenthaltstitel": true, "aufenthaltstitel_aussteller": "$value" } },
+      "next": "aufenthaltstitel_gueltigkeit"
+    },
+    {
+      "id": "aufenthaltstitel_gueltigkeit",
+      "type": "date",
+      "question": "Bis wann ist Dein Aufenthaltstitel gültig? (Datum auswählen)",
+      "required": true,
+      "onAnswer": { "set": { "aufenthaltstitel_bis": "$value" } },
+      "next": "biometrie_anderswo"
+    },
+
+    {
+      "id": "biometrie_anderswo",
+      "type": "radio",
+      "question": "Wurden Dir in einem anderen EU-/Dublin-Staat bereits Fingerabdrücke abgenommen?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "onAnswer": { "set": { "fingerabdruecke_anderswo": "$value" } },
+      "next": "asyl_anderswo"
+    },
+    {
+      "id": "asyl_anderswo",
+      "type": "radio",
+      "question": "Hast Du in einem anderen EU-/Dublin-Staat bereits einen Asylantrag gestellt (auch unfreiwillig)?",
+      "required": true,
+      "options": [
+        { "label": "Ja", "value": true },
+        { "label": "Nein", "value": false }
+      ],
+      "onAnswer": { "set": { "asylantrag_anderswo": "$value" } },
       "next": "verfahrensstand_A1"
     },
+
     {
       "id": "verfahrensstand_A1",
       "type": "radio",
@@ -193,7 +226,7 @@
         { "label": "Nein", "value": false }
       ],
       "onAnswer": { "set": { "asylantrag_gestellt": "$value" } },
-      "nextMap": { "true": "anhoerung_A", "false": "block_fluchtgruende_entry" }
+      "nextMap": { "true": "anhoerung_A", "false": "fluchtgruende" }
     },
     {
       "id": "anhoerung_A",
@@ -205,7 +238,7 @@
         { "label": "Nein", "value": false }
       ],
       "onAnswer": { "set": { "anhoerung": "$value" } },
-      "nextMap": { "true": "entscheidung_A", "false": "block_fluchtgruende_entry" }
+      "nextMap": { "true": "entscheidung_A", "false": "fluchtgruende" }
     },
     {
       "id": "entscheidung_A",
@@ -217,7 +250,7 @@
         { "label": "Nein", "value": false }
       ],
       "onAnswer": { "set": { "entscheidung": "$value" } },
-      "nextMap": { "true": "entscheidung_typ", "false": "block_fluchtgruende_entry" }
+      "nextMap": { "true": "entscheidung_typ", "false": "fluchtgruende" }
     },
     {
       "id": "entscheidung_typ",
@@ -232,8 +265,10 @@
         { "label": "Ablehnung / Unzulässigkeit", "value": "negativ" }
       ],
       "onAnswer": { "set": { "entscheidung_typ": "$value" } },
-      "next": "block_fluchtgruende_entry"
+      "next": "fluchtgruende"
     },
+
+  
     {
       "id": "reiseweg_B_visa_plan",
       "type": "radio",
@@ -250,7 +285,7 @@
           "visum_aussteller": { "expr": "$value == 'ja_zielland' ? $zielland : null" }
         }
       },
-      "nextMap": { "nein_anders": "reiseweg_B_aussteller", "ja_zielland": "block_fluchtgruende_entry", "unsicher": "block_fluchtgruende_entry" }
+      "nextMap": { "nein_anders": "reiseweg_B_aussteller", "ja_zielland": "biometrie_anderswo", "unsicher": "biometrie_anderswo" }
     },
     {
       "id": "reiseweg_B_aussteller",
@@ -277,19 +312,13 @@
         { "label": "Schweiz", "value": "CH" }
       ],
       "onAnswer": { "set": { "visum_aussteller": "$value" } },
-      "next": "block_fluchtgruende_entry"
+      "next": "biometrie_anderswo"
     },
-    {
-      "id": "block_fluchtgruende_entry",
-      "type": "info",
-      "headline": "Deine Fluchtgründe",
-      "text": "Wähle alle Gründe, die auf Dich zutreffen. Danach kannst Du Details ergänzen.",
-      "next": "fluchtgruende"
-    },
+
     {
       "id": "fluchtgruende",
       "type": "checkbox",
-      "question": "Welche Fluchtgründe treffen auf Dich zu?",
+      "question": "Welche Fluchtgründe treffen auf Dich zu? (Mehrfachauswahl möglich)",
       "required": true,
       "options": [
         { "label": "Internationaler oder innerstaatlicher Konflikt", "value": "konflikt" },
@@ -297,9 +326,9 @@
         { "label": "Religion", "value": "religion" },
         { "label": "Nationalität / Ethnie", "value": "nationalitaet" },
         { "label": "Politische Überzeugung / Aktivität", "value": "politisch" },
-        { "label": "Zugehörigkeit zu einer sozialen Gruppe (z. B. Frauen, LGBTIQ)", "value": "soziale_gruppe" },
+        { "label": "Zugehörigkeit zu einer sozialen Gruppe (z. B. Frauen, LGBTIQ+)", "value": "soziale_gruppe" },
         { "label": "Gesundheitliche Gründe", "value": "gesundheit" },
-        { "label": "Wehr-/Militärdienst (Verweigerung/Verfolgung)", "value": "wehrdienst" },
+        { "label": "Wehr-/Militärdienst", "value": "wehrdienst" },
         { "label": "Wirtschaftliche Gründe", "value": "wirtschaft" },
         { "label": "Familiäre Gründe", "value": "familie" },
         { "label": "Klimawandel / Umwelt", "value": "klima" },
@@ -311,7 +340,7 @@
     {
       "id": "flucht_details_freitext",
       "type": "textarea",
-      "question": "In Deinen Worten: Was ist passiert? (Details, Beispiele)",
+      "question": "In Deinen Worten: Was ist passiert? Welche Bedrohung/Gefahr besteht für Dich in {{herkunftsland_label}}? Bitte beschreibe genau.",
       "required": false,
       "onAnswer": { "set": { "flucht_ereignis_beschr": "$value" } },
       "next": "quelle_verfolgung"
@@ -345,7 +374,7 @@
     {
       "id": "innerstaatlicher_schutz_details",
       "type": "textarea",
-      "question": "Bitte kurz erläutern.",
+      "question": { "expr": "(innerstaatlicher_schutz_versucht === 'ja') ? 'Was genau hast Du versucht?' : 'Warum nicht?'" },
       "required": false,
       "onAnswer": { "set": { "innerstaatlicher_schutz_details": "$value" } },
       "next": "need_nachflucht"
@@ -358,7 +387,7 @@
     {
       "id": "plausi_nachflucht",
       "type": "radio",
-      "question": "Lebst Du Merkmale Deiner Überzeugung/Identität jetzt offen aus (z. B. politische Aktivität, religiöse Praxis, LGBTIQ)?",
+      "question": "Lebst Du Merkmale Deiner Überzeugung/Identität jetzt offen aus (z. B. politische Aktivität, religiöse Praxis, LGBTIQ+)?",
       "required": true,
       "options": [
         { "label": "Ja", "value": "ja" },
@@ -368,11 +397,12 @@
       "onAnswer": { "set": { "nachfluchtverhalten": "$value" } },
       "next": "abschluss_hint"
     },
+
     {
       "id": "abschluss_hint",
       "type": "info",
       "headline": "Vielen Dank!",
-      "text": "Du kannst jetzt Deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung.html\">Beratung bestellen (119&nbsp;€)</a>",
+      "text": "Du kannst jetzt Deine individuelle PDF-Beratung bestellen. <br><br><a class=\"btn-primary\" href=\"/beratung\">Beratung bestellen (119&nbsp;€)</a>",
       "next": null
     }
   ]
