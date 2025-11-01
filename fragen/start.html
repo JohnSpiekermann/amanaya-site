@@ -1,162 +1,95 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Amanaya – Befragung</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root {
-      --bg: #f6f1e7;
-      --text: #0f3a6b;
-      --brand: #0f3a6b;
+    :root{
+      --bg:#f6f1e7;           /* beige */
+      --brand:#0f3a6b;        /* amanaya blau */
+      --text:#0f3a6b;
+      --card:#ffffff;
+      --muted:#6c7b8a;
+      --accent:#cbbfae;
     }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:var(--brand);text-decoration:none}
+    .wrap{max-width:880px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
+    header .brand{font-weight:800;font-size:20px;letter-spacing:.3px}
+    header .brand a{display:inline-flex;align-items:center;gap:10px}
+    header .logo{width:28px;height:28px;border-radius:6px;background:var(--brand)}
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+    .card{background:var(--card);border:1px solid #e8e1d6;border-radius:14px;box-shadow:0 1px 4px rgb(0 0 0 / 4%);padding:18px}
+    h1{font-size:22px;margin:0 0 8px}
+    .muted{color:var(--muted);font-size:14px}
 
-    .wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 24px;
-    }
+    /* progress */
+    .prog{height:6px;background:#e9e2d8;border-radius:999px;overflow:hidden;margin:10px 0 18px}
+    .prog > i{display:block;height:100%;width:0;background:var(--brand);transition:width .2s ease}
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
+    /* step layout */
+    .step h2{font-size:20px;line-height:1.2;margin:0 0 14px}
+    .options{display:grid;grid-template-columns:1fr;gap:10px}
+    .opt{border:1px solid #e8e1d6;background:#fff;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+    .opt input[type="radio"], .opt input[type="checkbox"]{width:18px;height:18px}
+    .opt span{display:inline-block}
 
-    header a {
-      color: var(--brand);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 20px;
-    }
+    /* featured first 4 options */
+    .opt--featured{border:2px solid var(--accent);background:#fffefb}
+    .opt--featured span{font-weight:600}
+    @media (hover:hover){ .opt--featured:hover{ transform:scale(1.01); transition:transform .06s ease } }
 
-    h1 {
-      font-size: 20px;
-      margin: 0;
-    }
+    /* textarea, date */
+    textarea, input[type="date"]{width:100%;box-sizing:border-box;border:1px solid #e8e1d6;border-radius:10px;padding:10px;font-size:15px;background:#fff}
 
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
-      padding: 20px;
-    }
+    /* nav buttons */
+    .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+    button{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    button[disabled]{opacity:.5;cursor:not-allowed}
+    .linkbtn{background:#fff;color:var(--brand);border:1px solid var(--brand)}
 
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 14px;
-      opacity: .8;
-    }
-
-    .step h2 {
-      margin: .2rem 0 1rem;
-    }
-
-    .options {
-      display: grid;
-      gap: 10px;
-      margin: .5rem 0;
-    }
-
-    .opt {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      background: #f9f7f3;
-      border: 1px solid #e7e1d6;
-      border-radius: 10px;
-      padding: 10px;
-    }
-
-    textarea,
-    input[type="date"] {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px;
-      border: 1px solid #d9d1c4;
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .help {
-      font-size: 13px;
-      opacity: .8;
-    }
-
-    .nav {
-      display: flex;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    button {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #d9d1c4;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    #next {
-      background: var(--brand);
-      color: #fff;
-      border-color: var(--brand);
-    }
-
-    #progress {
-      font-size: 13px;
-      opacity: .7;
-    }
-
-    .notice.error {
-      background: #fff4f4;
-      border: 1px solid #ffd6d6;
-      color: #7a1f1f;
-      border-radius: 10px;
-      padding: 12px;
+    /* mobile tap improvements */
+    @media (max-width:640px){
+      .wrap{padding:16px}
+      .card{padding:14px}
+      .options{gap:12px}
+      .opt{padding:14px}
+      .opt input[type="radio"], .opt input[type="checkbox"]{width:22px;height:22px}
+      .step h2{font-size:18px}
+      button{padding:12px 16px}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <a href="/"><span>AMANAYA</span></a>
-      <span style="opacity:.7">/ Befragung</span>
+      <div class="logo" aria-hidden="true"></div>
+      <div class="brand"><a href="/">Amanaya</a></div>
     </header>
 
     <div class="card">
-      <div class="topbar">
-        <div id="progress">–</div>
-      </div>
+      <h1>Befragung</h1>
+      <div class="prog"><i id="progress" style="width:0%"></i></div>
 
-      <!-- Hier rendert der Runner -->
-      <div id="step"></div>
+      <div id="step" class="step"></div>
 
-      <!-- Navigation -->
       <div class="nav">
-        <button id="prev" type="button">Zurück</button>
-        <button id="next" type="button">Weiter</button>
+        <button id="prev" class="linkbtn" type="button">Zurück</button>
+        <div>
+          <button id="save" class="linkbtn" type="button">Speichern</button>
+          <button id="next" type="button">Weiter</button>
+        </div>
       </div>
+      <p class="muted" style="margin-top:10px">Du musst keine persönlichen Daten angeben.</p>
     </div>
   </div>
 
-  <!-- Flow-URL explizit setzen -->
   <script>
-    window.AMANAYA_FLOW_URL = "/flows/flow.de.json";
+    window.AMANAYA_FLOW_URL = "/flows/flow.de.json?v=feat1";
+    window.AMANAYA_STORAGE_KEY = "amanaya:flow:de";
   </script>
-
-  <!-- Runner laden -->
-  <script src="/js/flowrunner.js?v=v23" defer></script>
+  <script src="/js/flowrunner.js?v=feat1" defer></script>
 </body>
 </html>
