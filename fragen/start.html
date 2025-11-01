@@ -6,8 +6,8 @@
   <title>Amanaya – Befragung</title>
   <style>
     :root{
-      --bg:#f6f1e7;           /* beige */
-      --brand:#0f3a6b;        /* amanaya blau */
+      --bg:#f6f1e7;
+      --brand:#0f3a6b;
       --text:#0f3a6b;
       --card:#ffffff;
       --muted:#6c7b8a;
@@ -25,32 +25,23 @@
     h1{font-size:22px;margin:0 0 8px}
     .muted{color:var(--muted);font-size:14px}
 
-    /* progress */
-    .prog{height:6px;background:#e9e2d8;border-radius:999px;overflow:hidden;margin:10px 0 18px}
-    .prog > i{display:block;height:100%;width:0;background:var(--brand);transition:width .2s ease}
-
-    /* step layout */
     .step h2{font-size:20px;line-height:1.2;margin:0 0 14px}
     .options{display:grid;grid-template-columns:1fr;gap:10px}
     .opt{border:1px solid #e8e1d6;background:#fff;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
     .opt input[type="radio"], .opt input[type="checkbox"]{width:18px;height:18px}
     .opt span{display:inline-block}
 
-    /* featured first 4 options */
     .opt--featured{border:2px solid var(--accent);background:#fffefb}
     .opt--featured span{font-weight:600}
     @media (hover:hover){ .opt--featured:hover{ transform:scale(1.01); transition:transform .06s ease } }
 
-    /* textarea, date */
     textarea, input[type="date"]{width:100%;box-sizing:border-box;border:1px solid #e8e1d6;border-radius:10px;padding:10px;font-size:15px;background:#fff}
 
-    /* nav buttons */
     .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
     button{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
     button[disabled]{opacity:.5;cursor:not-allowed}
     .linkbtn{background:#fff;color:var(--brand);border:1px solid var(--brand)}
 
-    /* mobile tap improvements */
     @media (max-width:640px){
       .wrap{padding:16px}
       .card{padding:14px}
@@ -71,7 +62,6 @@
 
     <div class="card">
       <h1>Befragung</h1>
-      <div class="prog"><i id="progress" style="width:0%"></i></div>
 
       <div id="step" class="step"></div>
 
@@ -87,9 +77,9 @@
   </div>
 
   <script>
-    window.AMANAYA_FLOW_URL = "/flows/flow.de.json?v=feat1";
+    window.AMANAYA_FLOW_URL = "/flows/flow.de.json?v=fix1";
     window.AMANAYA_STORAGE_KEY = "amanaya:flow:de";
   </script>
-  <script src="/js/flowrunner.js?v=feat1" defer></script>
+  <script src="/js/flowrunner.js?v=fix1" defer></script>
 </body>
 </html>
