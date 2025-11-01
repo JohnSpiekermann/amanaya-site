@@ -1,308 +1,268 @@
-/* Amanaya Flowrunner – v2.3 (diag+polyfills+hard errors) */
-(function(){
-  /* ---- Polyfills ---- */
-  if (!window.CSS) window.CSS = {};
-  if (typeof window.CSS.escape !== "function") {
-    window.CSS.escape = function (value) {
-      return String(value).replace(/[^a-zA-Z0-9_\-]/g, '\\$&');
-    };
+/* Amanaya Flow Runner (featured first-4 + mobile tap tweaks)
+   Requires a flow JSON at window.AMANAYA_FLOW_URL.
+*/
+(async function(){
+  const FLOW_URL   = (window.AMANAYA_FLOW_URL   || "/flows/flow.de.json");
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v3";
+  const elStep = document.getElementById("step");
+  const elPrev = document.getElementById("prev");
+  const elNext = document.getElementById("next");
+  const elSave = document.getElementById("save");
+  const elProg = document.getElementById("progress");
+
+  // which steps get "featured" styling for their first 4 options
+  const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
+
+  let flow, stepsById = new Map();
+  let answers = {};
+  let labels  = {};        // store *_label helper for substitutions
+  let vis = [];            // visible steps in order
+  let idx = 0;             // current index in vis
+
+  // local storage helpers
+  function saveLocal(){
+    localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, idx}));
   }
-  if (!Array.isArray) {
-    Array.isArray = function(arg){ return Object.prototype.toString.call(arg) === "[object Array]"; };
+  function loadLocal(){
+    try{
+      const s = JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
+      if (s && typeof s === "object"){
+        answers = s.answers || {};
+        labels  = s.labels  || {};
+        if (Number.isInteger(s.idx)) idx = s.idx;
+      }
+    }catch(e){}
   }
-})();
 
-/* ---- Global Diagnose auf der Seite ---- */
-function diag(msg){
-  try{
-    var d = document.getElementById("diag");
-    if (d) d.textContent = String(msg);
-  }catch(e){}
-}
-window.addEventListener("error", function(e){
-  diag("JS-Fehler: " + (e && e.message ? e.message : e));
-});
+  // tiny templating for {{var_label}}
+  function substitute(str){
+    if (!str) return "";
+    return String(str).replace(/\{\{(\w+)\}\}/g, (_,k)=>{
+      if (k in labels) return labels[k];
+      if (k in answers) return String(answers[k]);
+      return "";
+    });
+  }
 
-/* ---- Main IIFE ---- */
-(async function () {
-  try {
-    const FLOW_URL    = (window.AMANAYA_FLOW_URL || "/flows/flow.de.json") + "?v=v23_" + Date.now();
-    const STORAGE_KEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v23";
-
-    const elStep = document.getElementById("step");
-    const elPrev = document.getElementById("prev");
-    const elNext = document.getElementById("next");
-    const elProg = document.getElementById("progress");
-
-    function have(id){ return !!document.getElementById(id); }
-    if (!elStep || !elPrev || !elNext || !elProg) {
-      document.body.innerHTML = `
-        <div style="font-family:system-ui;padding:16px;max-width:760px;margin:40px auto;background:#fff4f4;border:1px solid #ffd6d6;border-radius:12px">
-          <h2 style="margin:0 0 8px">Fehlende Halter-Elemente</h2>
-          <p>Erforderlich sind exakt diese IDs:</p>
-          <ul>
-            <li>#step: ${have('step')?'✅':'❌ fehlt'}</li>
-            <li>#prev: ${have('prev')?'✅':'❌ fehlt'}</li>
-            <li>#next: ${have('next')?'✅':'❌ fehlt'}</li>
-            <li>#progress: ${have('progress')?'✅':'❌ fehlt'}</li>
-          </ul>
-        </div>`;
-      return;
-    }
-
-    // Zustand
-    let flow = [];
-    let visibleSteps = [];
-    let visIndex = 0;
-    let answers = {};
-
-    function saveLocal(){
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({visIndex, answers})); }catch(e){}
-    }
-    function loadLocal(){
-      try{
-        const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        if (Number.isInteger(s.visIndex)) visIndex = s.visIndex;
-        if (s.answers && typeof s.answers === "object") answers = s.answers;
-      }catch(e){}
-    }
-    function clearLocal(){ try{ localStorage.removeItem(STORAGE_KEY); }catch(e){} }
-
-    function getAnswer(id){ return answers[id]; }
-    function setAnswer(id,v){ answers[id]=v; saveLocal(); }
-
-    function optionLabelFor(stepId, value){
-      const step = flow.find(s => s.id === stepId);
-      if (!step || !Array.isArray(step.options)) return null;
-      const opt = step.options.find(o => String(o.value) === String(value));
-      return opt ? opt.label : null;
-    }
-    function substitute(s){
-      if (typeof s !== "string") return s;
-      const zl = optionLabelFor("zielland", getAnswer("zielland")) || "";
-      const hl = optionLabelFor("herkunftsland", getAnswer("herkunftsland")) || "";
-      return s.replace(/\{\{\s*zielland_label\s*\}\}/g, zl)
-              .replace(/\{\{\s*herkunftsland_label\s*\}\}/g, hl);
-    }
-
-    function resolveNextId(step){
-      if (!step) return null;
-      if (step.nextMap){
-        const v = getAnswer(step.id);
-        const k = (typeof v === "boolean") ? String(v) : (v ?? "");
-        if (Object.prototype.hasOwnProperty.call(step.nextMap, k)) return step.nextMap[k];
-      }
-      if ((step.type === "router" || step.kind === "router") && step.next && typeof step.next.expr === "string"){
-        try{
-          const evalExpr = step.next.expr.replace(/\$([a-zA-Z0-9_]+)/g, (_, k) => JSON.stringify(answers[k] ?? null));
-          // eslint-disable-next-line no-eval
-          const out = eval(evalExpr);
-          if (typeof out === "string") return out;
-        }catch(e){}
-      }
-      if (step.next) return step.next;
+  // evaluator for simple expressions like used in flow (next routers)
+  function evalExpr(expr){
+    try{
+      return Function(...Object.keys(answers), `return (${expr});`)(...Object.values(answers));
+    }catch(e){
       return null;
     }
+  }
 
-    function computeVisiblePath(){
-      const mapById = new Map(flow.map(s => [s.id, s]));
-      const path = [];
-      let cur = flow[0];
-      const guard = new Set();
-      let loops = 0;
-      while (cur && !guard.has(cur.id) && loops < 1000){
-        path.push(cur);
-        guard.add(cur.id);
-        const nextId = resolveNextId(cur);
-        if (!nextId) break;
-        cur = mapById.get(nextId);
-        loops++;
+  // resolve label for last chosen option of a step
+  function labelFor(stepId, value){
+    const step = stepsById.get(stepId);
+    if (!step || !Array.isArray(step.options)) return null;
+    const opt = step.options.find(o => String(o.value) === String(value));
+    return opt ? opt.label : null;
+  }
+
+  // build map for convenience
+  function indexSteps(flow){
+    stepsById.clear();
+    (flow.flow||[]).forEach(s => stepsById.set(s.id, s));
+  }
+
+  // walk flow to compute currently visible sequence using current answers
+  function computeVisible(){
+    const out = [];
+    let cur = (flow.flow && flow.flow[0]) ? flow.flow[0].id : null;
+    const guard = new Set();
+    while(cur && !guard.has(cur)){
+      guard.add(cur);
+      const s = stepsById.get(cur);
+      if (!s) break;
+      out.push(cur);
+
+      // compute next
+      let next = null;
+      if (s.type === "router" && s.next && s.next.expr){
+        next = evalExpr(s.next.expr);
+      }else if (s.nextMap && answers[s.id] !== undefined){
+        const key = String(answers[s.id]);
+        next = s.nextMap.hasOwnProperty(key) ? s.nextMap[key] : null;
+      }else{
+        next = s.next || null;
       }
-      return path;
+      cur = next || null;
     }
+    return out;
+  }
 
-    function isRequired(step){ return !!step && !!step.required; }
-    function hasValue(step){
-      const v = getAnswer(step.id);
-      if (step.type === "checkbox") return Array.isArray(v) && v.length>0;
-      return v !== undefined && v !== null && v !== "";
+  // validation
+  function isAnswered(step){
+    if (!step.required) return true;
+    const v = answers[step.id];
+    if (step.type === "checkbox") return Array.isArray(v) && v.length>0;
+    return v !== undefined && v !== null && v !== "";
+  }
+
+  // renderers
+  function renderInfo(step){
+    const h = step.headline ? `<h2>${step.headline}</h2>` : "";
+    const t = step.text ? `<p>${substitute(step.text)}</p>` : "";
+    return `<div class="step">${h}${t}</div>`;
+  }
+
+  function renderRadio(step){
+    const isFeaturedList = FEATURE_FIRST4.has(step.id);
+    const opts = (step.options||[]).map((o,i)=>{
+      const checked = String(answers[step.id]) === String(o.value) ? "checked" : "";
+      const cls = "opt" + (isFeaturedList && i < 4 ? " opt--featured" : "");
+      return `
+        <label class="${cls}">
+          <input type="radio" name="${step.id}" value="${o.value}" ${checked} />
+          <span>${substitute(o.label)}</span>
+        </label>`;
+    }).join("");
+    return `
+      <div class="step">
+        ${step.question?`<h2>${substitute(step.question)}</h2>`:""}
+        <div class="options">${opts}</div>
+      </div>`;
+  }
+
+  function renderCheckbox(step){
+    const vals = Array.isArray(answers[step.id]) ? answers[step.id] : [];
+    const opts = (step.options||[]).map((o)=>{
+      const checked = vals.includes(o.value) ? "checked" : "";
+      return `
+        <label class="opt">
+          <input type="checkbox" name="${step.id}" value="${o.value}" ${checked} />
+          <span>${substitute(o.label)}</span>
+        </label>`;
+    }).join("");
+    return `
+      <div class="step">
+        ${step.question?`<h2>${substitute(step.question)}</h2>`:""}
+        <div class="options">${opts}</div>
+      </div>`;
+  }
+
+  function renderTextarea(step){
+    const v = answers[step.id] || "";
+    return `
+      <div class="step">
+        ${step.question?`<h2>${substitute(step.question)}</h2>`:""}
+        <textarea name="${step.id}" rows="6" placeholder="Hier schreiben …">${v !== undefined ? String(v) : ""}</textarea>
+      </div>`;
+  }
+
+  function renderDate(step){
+    const v = answers[step.id] || "";
+    return `
+      <div class="step">
+        ${step.question?`<h2>${substitute(step.question)}</h2>`:""}
+        <input type="date" name="${step.id}" value="${v}" />
+      </div>`;
+  }
+
+  function renderStep(){
+    const stepId = vis[idx];
+    const step = stepsById.get(stepId);
+    if (!step){ elStep.innerHTML = `<p>Fehler: Schritt nicht gefunden.</p>`; return; }
+
+    // progress
+    if (elProg) elProg.style.width = `${Math.round(((idx+1)/vis.length)*100)}%`;
+
+    // choose renderer
+    let html = "";
+    switch(step.type){
+      case "info": html = renderInfo(step); break;
+      case "radio": html = renderRadio(step); break;
+      case "checkbox": html = renderCheckbox(step); break;
+      case "textarea": html = renderTextarea(step); break;
+      case "date": html = renderDate(step); break;
+      case "router": html = renderInfo({headline:"…"}); break;
+      default: html = `<div class="step"><p>Unbekannter Fragetyp: ${step.type}</p></div>`;
     }
+    elStep.innerHTML = html;
 
-    function render(){
-      try{
-        if (!visibleSteps.length){
-          elStep.innerHTML = `<div class="notice error">Der Fragenkatalog konnte nicht geladen werden.</div>`;
-          elPrev.style.visibility = "hidden";
-          elNext.style.display = "none";
-          diag("Render: sichtbarer Pfad leer.");
-          return;
+    // buttons
+    elPrev.disabled = (idx===0);
+    elNext.textContent = (idx === vis.length-1) ? "Fertig" : "Weiter";
+  }
+
+  // read inputs of the current step and store answers + labels
+  function readAndStoreCurrent(){
+    const stepId = vis[idx];
+    const step = stepsById.get(stepId);
+    if (!step) return true;
+
+    if (step.type === "radio"){
+      const sel = elStep.querySelector(`input[type="radio"][name="${step.id}"]:checked`);
+      if (sel){
+        answers[step.id] = (sel.value === "true") ? true : (sel.value === "false" ? false : sel.value);
+        const lab = labelFor(step.id, sel.value);
+        if (lab){
+          labels[`${step.id}_label`] = lab;
+          // special: for some placeholders we also mirror to short vars
+          if (step.id === "zielland"){ labels["zielland_label"] = lab; }
+          if (step.id === "herkunftsland"){ labels["herkunftsland_label"] = lab; }
         }
-        const step = visibleSteps[visIndex];
-        if (!step){
-          visIndex = 0;
-          return render();
-        }
-        diag("Render: " + (step.id || "?"));
-
-        // Buttons
-        elPrev.style.visibility = (visIndex>0) ? "visible" : "hidden";
-        elNext.style.display = "inline-flex";
-        elNext.disabled = false;
-
-        // Inhalt
-        elStep.innerHTML = renderStepHTML(step);
-
-        // Required blocken bis Antwort da
-        if (isRequired(step) && !hasValue(step)) elNext.disabled = true;
-
-        // Inputs binden
-        bindInputs(step);
-
-        // Fortschritt
-        const total = visibleSteps.length || 1;
-        elProg.textContent = (Math.min(visIndex+1,total)) + " / " + total;
-      }catch(e){
-        diag("Render-Fehler: " + (e.message||e));
-        elStep.innerHTML = `<div class="notice error">Render-Fehler: ${e && e.message ? e.message : e}</div>`;
+      }else{
+        delete answers[step.id];
       }
+    }else if (step.type === "checkbox"){
+      const sels = [...elStep.querySelectorAll(`input[type="checkbox"][name="${step.id}"]:checked`)].map(x=>x.value);
+      answers[step.id] = sels;
+    }else if (step.type === "textarea" || step.type === "date"){
+      const el = elStep.querySelector(`[name="${step.id}"]`);
+      if (el) answers[step.id] = el.value || "";
     }
+    saveLocal();
+    return true;
+  }
 
-    function renderStepHTML(step){
-      const t = step.type || step.kind || "info";
-      const q = substitute(step.question || step.headline || "");
-      const hlp = substitute(step.text || "");
-
-      if (t === "info") {
-        return `<div class="step step-info">${q?`<h2>${q}</h2>`:""}${hlp?`<p>${hlp}</p>`:""}</div>`;
-      }
-      if (t === "radio") {
-        const opts = (step.options||[]).map((o,i)=>`
-          <label class="opt">
-            <input type="radio" name="${step.id}" id="${step.id}__${i}" value="${o.value}">
-            <span>${substitute(o.label)}</span>
-          </label>`).join("");
-        return `<div class="step">${q?`<h2>${q}</h2>`:""}<div class="options">${opts}</div>${hlp?`<p class="help">${hlp}</p>`:""}</div>`;
-      }
-      if (t === "checkbox") {
-        const vals = getAnswer(step.id) || [];
-        const opts = (step.options||[]).map((o,i)=>{
-          const checked = (Array.isArray(vals) && vals.includes(o.value)) ? "checked" : "";
-          return `<label class="opt">
-              <input type="checkbox" name="${step.id}" id="${step.id}__${i}" value="${o.value}" ${checked}>
-              <span>${substitute(o.label)}</span>
-            </label>`;
-        }).join("");
-        return `<div class="step">${q?`<h2>${q}</h2>`:""}<div class="options">${opts}</div>${hlp?`<p class="help">${hlp}</p>`:""}</div>`;
-      }
-      if (t === "textarea") {
-        const val = getAnswer(step.id) || "";
-        return `<div class="step">${q?`<h2>${q}</h2>`:""}<textarea id="${step.id}" rows="6" placeholder="Deine Antwort...">${val}</textarea>${hlp?`<p class="help">${hlp}</p>`:""}</div>`;
-      }
-      if (t === "date") {
-        const val = getAnswer(step.id) || "";
-        return `<div class="step">${q?`<h2>${q}</h2>`:""}<input type="date" id="${step.id}" value="${val}">${hlp?`<p class="help">${hlp}</p>`:""}</div>`;
-      }
-      // Unbekannt
-      return `<div class="step step-info">${q?`<h2>${q}</h2>`:""}${hlp?`<p>${hlp}</p>`:""}</div>`;
+  // validate current required
+  function validateCurrent(){
+    const step = stepsById.get(vis[idx]);
+    if (!step || !step.required) return true;
+    const ok = isAnswered(step);
+    if (!ok){
+      elNext.disabled = true;
+      setTimeout(()=>{ elNext.disabled=false; }, 400);
     }
+    return ok;
+  }
 
-    function bindInputs(step){
-      const t = step.type || step.kind || "info";
-      if (t === "radio") {
-        elStep.querySelectorAll(`input[type="radio"][name="${step.id}"]`).forEach(n=>{
-          n.addEventListener("change", ()=>{
-            setAnswer(step.id, cast(n.value));
-            elNext.disabled = isRequired(step) && !hasValue(step);
-          });
-        });
-      }
-      if (t === "checkbox") {
-        elStep.querySelectorAll(`input[type="checkbox"][name="${step.id}"]`).forEach(n=>{
-          n.addEventListener("change", ()=>{
-            const vals = Array.from(elStep.querySelectorAll(`input[type="checkbox"][name="${step.id}"]:checked`)).map(x=>cast(x.value));
-            setAnswer(step.id, vals);
-            elNext.disabled = isRequired(step) && !hasValue(step);
-          });
-        });
-      }
-      if (t === "textarea") {
-        const ta = elStep.querySelector(`#${CSS.escape(step.id)}`);
-        if (ta) ta.addEventListener("input", ()=>{ setAnswer(step.id, ta.value); elNext.disabled = isRequired(step) && !hasValue(step); });
-      }
-      if (t === "date") {
-        const inp = elStep.querySelector(`#${CSS.escape(step.id)}`);
-        if (inp) inp.addEventListener("change", ()=>{ setAnswer(step.id, inp.value); elNext.disabled = isRequired(step) && !hasValue(step); });
-      }
-    }
+  function goto(delta){
+    if (!readAndStoreCurrent()) return;
+    if (delta > 0 && !validateCurrent()) return;
 
-    function cast(v){ if (v==="true") return true; if (v==="false") return false; return v; }
+    // recompute visible sequence (so back/next respects skipped steps)
+    vis = computeVisible();
 
-    function goNext(){
-      const currentId = visibleSteps[visIndex]?.id;
-      visibleSteps = computeVisiblePath();
-      const curStep = visibleSteps.find(s => s.id === currentId);
-      const nextId = curStep ? resolveNextId(curStep) : null;
-      if (nextId){
-        const idx = visibleSteps.findIndex(s => s.id === nextId);
-        visIndex = (idx >= 0 ? idx : Math.min(visIndex + 1, visibleSteps.length - 1));
-      } else {
-        visIndex = Math.min(visIndex + 1, visibleSteps.length - 1);
-      }
-      saveLocal();
-      render();
-    }
-    function goPrev(){
-      visibleSteps = computeVisiblePath();
-      visIndex = Math.max(0, visIndex - 1);
-      saveLocal();
-      render();
-    }
+    let ni = idx + delta;
+    if (ni < 0) ni = 0;
+    if (ni > vis.length-1) ni = vis.length-1;
+    idx = ni;
+    saveLocal();
+    renderStep();
+  }
 
-    elNext.addEventListener("click", goNext);
-    elPrev.addEventListener("click", goPrev);
+  // wire buttons
+  elPrev.addEventListener("click", ()=> goto(-1));
+  elNext.addEventListener("click", ()=> goto(+1));
+  elSave.addEventListener("click", ()=> saveLocal());
 
-    // Load flow
-    diag("Lade Flow…");
-    let loaded;
-    try{
-      const res = await fetch(FLOW_URL, {cache:"no-store"});
-      const txt = await res.text();
-      let json = {};
-      try { json = JSON.parse(txt); } catch(e){
-        elStep.innerHTML = `<div class="notice error">Flow-Datei ist kein gültiges JSON.<br><small>${e.message}</small></div>`;
-        diag("JSON-Fehler: " + e.message);
-        return;
-      }
-      loaded = json;
-    }catch(e){
-      elStep.innerHTML = `<div class="notice error">Flow konnte nicht geladen werden.<br><small>${e.message||e}</small></div>`;
-      diag("Fetch-Fehler: " + (e.message||e));
-      return;
-    }
-
-    flow = Array.isArray(loaded) ? loaded : (Array.isArray(loaded.flow) ? loaded.flow : []);
-    if (!Array.isArray(flow) || !flow.length){
-      elStep.innerHTML = `<div class="notice error">Flow ist leer oder hat kein <code>flow[]</code>-Array.</div>`;
-      diag("Flow leer / kein flow[]");
-      return;
-    }
-
-    loadLocal();
-    visibleSteps = computeVisiblePath();
-    if (!visibleSteps.length) {
-      visibleSteps = [flow[0]];
-      visIndex = 0;
-    } else if (visIndex < 0 || visIndex >= visibleSteps.length){
-      visIndex = 0;
-    }
-    diag("Pfad: " + visibleSteps.length + " Steps – start render");
-    render();
-
-  } catch (e) {
-    diag("Start-Fehler: " + (e && e.message ? e.message : e));
-    try{
-      const el = document.getElementById("step");
-      if (el) el.innerHTML = `<div class="notice error">Start-Fehler:<br><small>${e && e.message ? e.message : e}</small></div>`;
-    }catch(_){}
+  // boot
+  loadLocal();
+  try{
+    const res = await fetch(FLOW_URL, {cache:"no-store"});
+    if (!res.ok) throw new Error("Flow nicht ladbar");
+    flow = await res.json();
+    if (!flow || !Array.isArray(flow.flow)) throw new Error("Ungültiges Flow-Format");
+    indexSteps(flow);
+    // if idx out of range or flow changed, reset
+    vis = computeVisible();
+    if (idx < 0 || idx >= vis.length) idx = 0;
+    renderStep();
+  }catch(e){
+    elStep.innerHTML = `<p>Der Fragenkatalog konnte nicht geladen werden.</p>`;
   }
 })();
