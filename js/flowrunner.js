@@ -1,6 +1,6 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL   || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v5";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v6";
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
@@ -113,8 +113,8 @@
     const step = stepsById.get(stepId);
     if (!step){ elStep.innerHTML = '<p>Fehler: Schritt nicht gefunden.</p>'; return; }
 
-    // Router-Schritte überspringen (keine „Leerfrage“)
-    if (step.type === "router"){ goto(+1); return; }
+    // Router nicht anzeigen – aber NICHT idx verändern. Der Sprung passiert zentral in goto().
+    if (step.type === "router"){ goto(skipDir); return; }
 
     let html = "";
     switch(step.type){
@@ -129,8 +129,23 @@
 
     // Buttons
     elPrev.style.visibility = (idx===0) ? "hidden" : "visible";
-    elNext.textContent = (idx === vis.length-1) ? "Fertig" : (idx===0 ? "Start" : "Weiter");
+
+    // Standard-Beschriftung: Start nur auf erstem sichtbaren Step, sonst Weiter
+    elNext.textContent = (idx===0 ? "Start" : "Weiter");
+
+    // Nur auf der echten Abschlussseite abweichendes Verhalten:
+    if (step.id === "abschluss_hint"){
+      elNext.textContent = "Fertig";
+      elNext.onclick = function(){ location.href = "/beratung"; };
+      return;
+    }
+
+    // Standard-Weiter-Click
+    elNext.onclick = function(){ goto(+1); };
   }
+
+  // Richtung merken, damit Router in renderStep() korrekt übersprungen werden kann
+  let skipDir = +1;
 
   function readAndStoreCurrent(){
     const stepId = vis[idx];
@@ -169,27 +184,39 @@
     return v !== undefined && v !== null && v !== "";
   }
 
-  function goto(delta){
-    readAndStoreCurrent();
-    if (delta > 0 && !validateCurrent()) return;
+  // Helfer: um Router-Schritte in gewünschter Richtung zu überspringen
+  function skipRouters(direction){
+    let safety = 0;
+    while (vis[idx] && stepsById.get(vis[idx]) && stepsById.get(vis[idx]).type === "router" && safety < 50){
+      idx += direction;
+      if (idx < 0) idx = 0;
+      if (idx > vis.length-1) idx = vis.length-1;
+      safety++;
+    }
+  }
 
+  function goto(delta){
+    // Vor dem Wechsel: aktuelle Antwort sichern & ggf. validieren
+    if (delta > 0){
+      readAndStoreCurrent();
+      if (!validateCurrent()) return;
+    }
+
+    // Sichtbaren Pfad neu berechnen (weil Antworten sich geändert haben)
     vis = computeVisible();
+
+    // Zielindex bestimmen
     let ni = idx + delta;
     if (ni < 0) ni = 0;
     if (ni > vis.length-1) ni = vis.length-1;
     idx = ni;
+
+    // Router in Bewegungsrichtung überspringen
+    skipDir = (delta >= 0 ? +1 : -1);
+    skipRouters(skipDir);
+
     saveLocal();
     renderStep();
-
-    // Wenn letzter Schritt und Nutzer klickt „Fertig“ → weiterleiten
-    if (idx === vis.length-1){
-      elNext.onclick = function(){
-        readAndStoreCurrent();
-        location.href = "/beratung";
-      };
-    }else{
-      elNext.onclick = function(){ goto(+1); };
-    }
   }
 
   elPrev.addEventListener("click", function(){ goto(-1); });
@@ -207,6 +234,8 @@
       indexSteps(flow);
       vis = computeVisible();
       if (idx < 0 || idx >= vis.length) idx = 0;
+      // Beim ersten Render nicht auf Routern hängen bleiben
+      skipDir = +1; skipRouters(skipDir);
       renderStep();
     })
     .catch(e=>{
