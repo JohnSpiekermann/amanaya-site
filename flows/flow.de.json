@@ -109,8 +109,7 @@
       "nextMap": { "A": "reiseweg_A", "B": "reiseweg_B_visa_plan" }
     },
 
-    /* ===== Pfad A: bereits im Zielland ===== */
-
+   
     {
       "id": "reiseweg_A",
       "type": "radio",
@@ -202,8 +201,7 @@
       "next": "biometrie_anderswo"
     },
 
-    /* ===== Pfad B: noch außerhalb ===== */
-
+  
     {
       "id": "reiseweg_B_visa_plan",
       "type": "radio",
@@ -258,8 +256,7 @@
       "next": "biometrie_anderswo"
     },
 
-    /* ===== Fingerabdrücke & Asyl in anderem Staat (beide Pfade) ===== */
-
+  
     {
       "id": "biometrie_anderswo",
       "type": "radio",
@@ -357,8 +354,7 @@
       "next": { "expr": "(im_zielland === 'A') ? 'verfahrensstand_A1' : 'fluchtgruende'" }
     },
 
-    /* ===== Verfahrensstand im Zielland (nur Pfad A) ===== */
-
+   
     {
       "id": "verfahrensstand_A1",
       "type": "radio",
@@ -411,8 +407,7 @@
       "next": "fluchtgruende"
     },
 
-    /* ===== Fluchtgründe & Plausi ===== */
-
+   
     {
       "id": "fluchtgruende",
       "type": "checkbox",
@@ -496,8 +491,7 @@
       "next": "abschluss_hint"
     },
 
-    /* ===== Ende ===== */
-
+  
     {
       "id": "abschluss_hint",
       "type": "info",
