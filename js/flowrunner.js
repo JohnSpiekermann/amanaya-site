@@ -1,10 +1,9 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL   || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v4";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v5";
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
-  const elSave = document.getElementById("save");
 
   const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
 
@@ -14,47 +13,34 @@
   let vis = [];
   let idx = 0;
 
-  function saveLocal(){
-    localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, idx}));
-  }
+  function saveLocal(){ localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, idx})); }
   function loadLocal(){
     try{
       const s = JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
-      if (s && typeof s === "object"){
-        answers = s.answers || {};
-        labels  = s.labels  || {};
-        if (Number.isInteger(s.idx)) idx = s.idx;
-      }
+      answers = s.answers || {}; labels = s.labels || {}; if (Number.isInteger(s.idx)) idx = s.idx;
     }catch(e){}
   }
 
-  function substitute(str){
-    if (!str) return "";
-    return String(str).replace(/\{\{(\w+)\}\}/g, function(_,k){
-      if (k in labels) return labels[k];
-      if (k in answers) return String(answers[k]);
-      return "";
-    });
+  function substitute(s){
+    if (!s) return "";
+    return String(s).replace(/\{\{(\w+)\}\}/g, (_,k)=> (k in labels)?labels[k] : (k in answers? String(answers[k]) : ""));
   }
 
   function evalExpr(expr){
     try{
       return Function.apply(null, [...Object.keys(answers), "return ("+expr+");"]).apply(null, Object.values(answers));
-    }catch(e){
-      return null;
-    }
+    }catch(e){ return null; }
   }
 
   function labelFor(stepId, value){
-    const step = stepsById.get(stepId);
-    if (!step || !Array.isArray(step.options)) return null;
-    const opt = step.options.find(function(o){ return String(o.value) === String(value); });
+    const step = stepsById.get(stepId); if (!step || !Array.isArray(step.options)) return null;
+    const opt = step.options.find(o => String(o.value)===String(value));
     return opt ? opt.label : null;
   }
 
   function indexSteps(flowObj){
     stepsById.clear();
-    (flowObj.flow||[]).forEach(function(s){ stepsById.set(s.id, s); });
+    (flowObj.flow||[]).forEach(s=>stepsById.set(s.id,s));
   }
 
   function computeVisible(){
@@ -66,7 +52,6 @@
       const s = stepsById.get(cur);
       if (!s) break;
       out.push(cur);
-
       let next = null;
       if (s.type === "router" && s.next && s.next.expr){
         next = evalExpr(s.next.expr);
@@ -96,7 +81,7 @@
 
   function renderRadio(step){
     const isFeaturedList = FEATURE_FIRST4.has(step.id);
-    const opts = (step.options||[]).map(function(o,i){
+    const opts = (step.options||[]).map((o,i)=>{
       const checked = String(answers[step.id]) === String(o.value) ? "checked" : "";
       const cls = "opt" + (isFeaturedList && i < 4 ? " opt--featured" : "");
       return '<label class="'+cls+'"><input type="radio" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
@@ -106,7 +91,7 @@
 
   function renderCheckbox(step){
     const vals = Array.isArray(answers[step.id]) ? answers[step.id] : [];
-    const opts = (step.options||[]).map(function(o){
+    const opts = (step.options||[]).map(o=>{
       const checked = vals.indexOf(o.value) >= 0 ? "checked" : "";
       return '<label class="opt"><input type="checkbox" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
     }).join("");
@@ -128,20 +113,23 @@
     const step = stepsById.get(stepId);
     if (!step){ elStep.innerHTML = '<p>Fehler: Schritt nicht gefunden.</p>'; return; }
 
-    var html = "";
+    // Router-Schritte überspringen (keine „Leerfrage“)
+    if (step.type === "router"){ goto(+1); return; }
+
+    let html = "";
     switch(step.type){
       case "info": html = renderInfo(step); break;
       case "radio": html = renderRadio(step); break;
       case "checkbox": html = renderCheckbox(step); break;
       case "textarea": html = renderTextarea(step); break;
       case "date": html = renderDate(step); break;
-      case "router": html = renderInfo({headline:"…"}); break;
       default: html = '<div class="step"><p>Unbekannter Fragetyp: '+step.type+'</p></div>';
     }
     elStep.innerHTML = html;
 
-    elPrev.disabled = (idx===0);
-    elNext.textContent = (idx === vis.length-1) ? "Fertig" : "Weiter";
+    // Buttons
+    elPrev.style.visibility = (idx===0) ? "hidden" : "visible";
+    elNext.textContent = (idx === vis.length-1) ? "Fertig" : (idx===0 ? "Start" : "Weiter");
   }
 
   function readAndStoreCurrent(){
@@ -163,7 +151,7 @@
         delete answers[step.id];
       }
     }else if (step.type === "checkbox"){
-      const sels = Array.prototype.slice.call(elStep.querySelectorAll('input[type="checkbox"][name="'+step.id+'"]:checked')).map(function(x){return x.value;});
+      const sels = Array.prototype.slice.call(elStep.querySelectorAll('input[type="checkbox"][name="'+step.id+'"]:checked')).map(x=>x.value);
       answers[step.id] = sels;
     }else if (step.type === "textarea" || step.type === "date"){
       const el = elStep.querySelector('[name="'+step.id+'"]');
@@ -184,6 +172,7 @@
   function goto(delta){
     readAndStoreCurrent();
     if (delta > 0 && !validateCurrent()) return;
+
     vis = computeVisible();
     let ni = idx + delta;
     if (ni < 0) ni = 0;
@@ -191,16 +180,28 @@
     idx = ni;
     saveLocal();
     renderStep();
+
+    // Wenn letzter Schritt und Nutzer klickt „Fertig“ → weiterleiten
+    if (idx === vis.length-1){
+      elNext.onclick = function(){
+        readAndStoreCurrent();
+        location.href = "/beratung";
+      };
+    }else{
+      elNext.onclick = function(){ goto(+1); };
+    }
   }
 
   elPrev.addEventListener("click", function(){ goto(-1); });
   elNext.addEventListener("click", function(){ goto(+1); });
-  elSave.addEventListener("click", function(){ saveLocal(); });
+
+  // Optional: Reset via ?reset=1
+  if (location.search.indexOf("reset=1") >= 0) { try{ localStorage.clear(); }catch(e){} }
 
   loadLocal();
   fetch(FLOW_URL, {cache:"no-store"})
-    .then(function(r){ if(!r.ok) throw new Error("Flow nicht ladbar"); return r.json(); })
-    .then(function(j){
+    .then(r=>{ if(!r.ok) throw new Error("Flow nicht ladbar"); return r.json(); })
+    .then(j=>{
       flow = j;
       if (!flow || !Array.isArray(flow.flow)) throw new Error("Ungültiges Flow-Format");
       indexSteps(flow);
@@ -208,12 +209,8 @@
       if (idx < 0 || idx >= vis.length) idx = 0;
       renderStep();
     })
-    .catch(function(e){
+    .catch(e=>{
       const msg = (e && e.message) ? e.message : String(e);
       elStep.innerHTML = '<div class="step"><h2>Der Fragenkatalog konnte nicht geladen werden.</h2><p style="color:#a00"><strong>Fehler:</strong> '+msg+'</p><p><a href="?reset=1">Lokale Daten löschen</a> und erneut versuchen.</p><p><a href="'+FLOW_URL+'" target="_blank" rel="noopener">Flow-Datei öffnen</a></p></div>';
     });
-
-  if (location.search.indexOf("reset=1") >= 0) {
-    try { localStorage.clear(); } catch(e) {}
-  }
 })();
