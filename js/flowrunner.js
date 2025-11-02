@@ -1,6 +1,6 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL   || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v7";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v8";
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
@@ -35,11 +35,22 @@
     }catch(e){ return null; }
   }
 
+  function getQuestionText(step){
+    // unterstützt: string ODER {expr: "..."}
+    if (!step || step.question == null) return "";
+    if (typeof step.question === "string") return substitute(step.question);
+    if (step.question && typeof step.question === "object" && "expr" in step.question){
+      const val = evalExpr(step.question.expr);
+      return substitute(val != null ? String(val) : "");
+    }
+    return "";
+  }
+
   function labelFor(stepId, value){
     const step = stepsById.get(stepId); if (!step || !Array.isArray(step.options)) return null;
     const opt = step.options.find(o => String(o.value)===String(value));
     return opt ? opt.label : null;
-  }
+    }
 
   function indexSteps(flowObj){
     stepsById.clear();
@@ -70,7 +81,7 @@
   }
 
   function isAnswered(step){
-    if (!step.required) return true;
+    if (!step || !step.required) return true;
     const v = answers[step.id];
     if (step.type === "checkbox") return Array.isArray(v) && v.length>0;
     return v !== undefined && v !== null && v !== "";
@@ -83,32 +94,36 @@
   }
 
   function renderRadio(step){
+    const q = getQuestionText(step);
     const isFeaturedList = FEATURE_FIRST4.has(step.id);
     const opts = (step.options||[]).map((o,i)=>{
       const checked = String(answers[step.id]) === String(o.value) ? "checked" : "";
       const cls = "opt" + (isFeaturedList && i < 4 ? " opt--featured" : "");
       return '<label class="'+cls+'"><input type="radio" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
     }).join("");
-    return '<div class="step">'+(step.question?'<h2>'+substitute(step.question)+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
+    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
   }
 
   function renderCheckbox(step){
+    const q = getQuestionText(step);
     const vals = Array.isArray(answers[step.id]) ? answers[step.id] : [];
     const opts = (step.options||[]).map(o=>{
       const checked = vals.indexOf(o.value) >= 0 ? "checked" : "";
       return '<label class="opt"><input type="checkbox" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
     }).join("");
-    return '<div class="step">'+(step.question?'<h2>'+substitute(step.question)+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
+    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
   }
 
   function renderTextarea(step){
+    const q = getQuestionText(step);
     const v = answers[step.id] || "";
-    return '<div class="step">'+(step.question?'<h2>'+substitute(step.question)+'</h2>':'')+'<textarea name="'+step.id+'" rows="6" placeholder="Hier schreiben …">'+(v!==undefined?String(v):"")+'</textarea></div>';
+    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<textarea name="'+step.id+'" rows="6" placeholder="Hier schreiben …">'+(v!==undefined?String(v):"")+'</textarea></div>';
   }
 
   function renderDate(step){
+    const q = getQuestionText(step);
     const v = answers[step.id] || "";
-    return '<div class="step">'+(step.question?'<h2>'+substitute(step.question)+'</h2>':'')+'<input type="date" name="'+step.id+'" value="'+v+'" /></div>';
+    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<input type="date" name="'+step.id+'" value="'+v+'" /></div>';
   }
 
   function renderStep(){
@@ -116,7 +131,6 @@
     const step = stepsById.get(stepId);
     if (!step){ elStep.innerHTML = '<p>Fehler: Schritt nicht gefunden.</p>'; return; }
 
-    // Router werden nicht dargestellt → in goto() übersprungen
     if (step.type === "router"){ goto(skipDir); return; }
 
     let html = "";
@@ -130,7 +144,6 @@
     }
     elStep.innerHTML = html;
 
-    // Buttons
     elPrev.style.visibility = (idx===0) ? "hidden" : "visible";
     elNext.textContent = (idx===0 ? "Start" : "Weiter");
 
@@ -153,19 +166,14 @@
     if (step.type === "radio"){
       const sel = elStep.querySelector('input[type="radio"][name="'+step.id+'"]:checked');
       if (sel){
-        const before = answers[step.id];
         answers[step.id] = (sel.value === "true") ? true : (sel.value === "false" ? false : sel.value);
-
-        // Labels für Platzhalter
         const lab = labelFor(step.id, sel.value);
         if (lab){
           labels[step.id+"_label"] = lab;
           if (step.id === "zielland"){ labels["zielland_label"] = lab; }
           if (step.id === "herkunftsland"){ labels["herkunftsland_label"] = lab; }
-          if (step.id === "dublin_land" || step.id === "dublinland"){ labels["dublinland_label"] = lab; } // <— NEU
+          if (step.id === "dublin_land" || step.id === "dublinland"){ labels["dublinland_label"] = lab; }
         }
-
-        // Optional: could detect change vs before if needed
       }else{
         delete answers[step.id];
       }
@@ -200,12 +208,10 @@
 
   function goto(delta){
     if (delta > 0){
-      // Vorwärts: Antwort lesen und Pfad NEU berechnen
       readAndStoreCurrent();
       if (!validateCurrent()) return;
-      vis = computeVisible();
+      vis = computeVisible(); // Vorwärts: neu berechnen
     }
-    // Zielindex bewegen
     let ni = idx + delta;
     if (ni < 0) ni = 0;
     if (ni > vis.length-1) ni = vis.length-1;
@@ -230,7 +236,7 @@
       flow = j;
       if (!flow || !Array.isArray(flow.flow)) throw new Error("Ungültiges Flow-Format");
       indexSteps(flow);
-      if (!vis || !vis.length) vis = computeVisible();  // initial berechnen
+      if (!vis || !vis.length) vis = computeVisible();
       if (idx < 0 || idx >= vis.length) idx = 0;
       skipDir = +1; skipRouters(skipDir);
       renderStep();
