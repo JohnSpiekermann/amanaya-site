@@ -1,300 +1,211 @@
 (function(){
-  // === Konfiguration ===
   const FLOW_URL   = (window.AMANAYA_FLOW_URL    || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v10";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v11";
 
-  // === UI-Elemente ===
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
 
-  // 4 Top-Optionen optisch hervorheben
-  const FEATURE_FIRST4 = new Set([
-    "zielland",
-    "visum_details_A",
-    "aufenthaltstitel_details_A",
-    "reiseweg_B_aussteller"
-  ]);
+  // Diese IDs dürfen NICHT "wegrationalisiert" werden (auch wenn optional):
+  const FORCE_SHOW = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
+  // Diese Textareas sollen nicht leer durchgewinkt werden (sanfte Pflicht):
+  const FORCE_REQUIRE = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
 
-  // === State ===
-  let flow = null;
-  const stepsById = new Map();
-  let answers = {};         // id -> value
-  let labels  = {};         // id_label -> label text für Platzhalter
-  let vis     = [];         // sichtbarer Pfad (Array von stepIds) – wird LAZY aufgebaut
-  let idx     = 0;          // aktueller Index im sichtbaren Pfad
+  const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
 
-  // === Persistenz ===
-  function saveLocal(){
-    localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, vis, idx}));
-  }
-  function loadLocal(){
+  let flow=null, stepsById=new Map(), answers={}, labels={}, vis=[], idx=0;
+
+  function save(){ localStorage.setItem(STORAGEKEY, JSON.stringify({answers,labels,vis,idx})); }
+  function load(){
     try{
-      const s = JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
-      answers = s.answers || {};
-      labels  = s.labels  || {};
-      vis     = Array.isArray(s.vis) ? s.vis : [];
-      idx     = Number.isInteger(s.idx) ? s.idx : 0;
+      const s=JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
+      answers=s.answers||{}; labels=s.labels||{}; vis=Array.isArray(s.vis)?s.vis:[]; idx=Number.isInteger(s.idx)?s.idx:0;
     }catch(e){}
   }
-  function hardReset(){
-    try{ localStorage.removeItem(STORAGEKEY); }catch(e){}
-    answers = {}; labels = {}; vis = []; idx = 0;
-  }
+  function reset(){ try{localStorage.removeItem(STORAGEKEY);}catch(e){} answers={};labels={};vis=[];idx=0; }
 
-  // === Hilfen ===
-  function substitute(s){
-    if (!s) return "";
-    return String(s).replace(/\{\{(\w+)\}\}/g, (_,k)=>{
-      if (k in labels)   return labels[k];
-      if (k in answers)  return String(answers[k]);
-      return "";
-    });
-  }
-  function evalExpr(expr){
-    try{
-      return Function.apply(null, [...Object.keys(answers), "return ("+expr+");"])
-                     .apply(null, Object.values(answers));
-    }catch(e){ return null; }
-  }
-  function getQuestionText(step){
-    if (!step || step.question == null) return "";
-    if (typeof step.question === "string") return substitute(step.question);
-    if (typeof step.question === "object" && step.question.expr){
-      const v = evalExpr(step.question.expr);
-      return substitute(v != null ? String(v) : "");
+  function sub(s){ if(!s) return ""; return String(s).replace(/\{\{(\w+)\}\}/g,(_,k)=> (k in labels)?labels[k]:(k in answers?String(answers[k]):"")); }
+  function evalExpr(expr){ try{ return Function.apply(null,[...Object.keys(answers),"return ("+expr+");"]).apply(null,Object.values(answers)); }catch(e){ return null; } }
+  function qText(step){
+    if(!step||step.question==null) return "";
+    if(typeof step.question==="string") return sub(step.question);
+    if(step.question && typeof step.question==="object" && "expr" in step.question){
+      const v=evalExpr(step.question.expr); return sub(v!=null?String(v):"");
     }
     return "";
   }
-  function labelFor(stepId, value){
-    const step = stepsById.get(stepId);
-    if (!step || !Array.isArray(step.options)) return null;
-    const opt = step.options.find(o => String(o.value) === String(value));
-    return opt ? opt.label : null;
+  function optLabel(stepId,val){
+    const s=stepsById.get(stepId); if(!s||!Array.isArray(s.options)) return null;
+    const o=s.options.find(o=>String(o.value)===String(val)); return o?o.label:null;
   }
-  function firstStepId(){
-    return (flow && Array.isArray(flow.flow) && flow.flow.length) ? flow.flow[0].id : null;
-  }
+  function firstId(){ return (flow&&Array.isArray(flow.flow)&&flow.flow.length)?flow.flow[0].id:null; }
 
-  // === Nächsten Schritt aus einem einzelnen Step auflösen (LAZY) ===
-  function resolveNextFrom(step){
-    if (!step) return null;
-
-    // Router: reine Logik
-    if (step.type === "router"){
-      if (step.next && step.next.expr){
-        const nid = evalExpr(step.next.expr);
-        return nid || null;
-      }
-      // Fallback: kein next -> Ende
+  // Nur den nächsten Schritt auflösen (lazy):
+  function nextFrom(step){
+    if(!step) return null;
+    if(step.type==="router"){
+      if(step.next&&step.next.expr){ const nid=evalExpr(step.next.expr); return nid||null; }
       return null;
     }
-
-    // Verzweigungen über nextMap (abhängig von Antwort)
-    if (step.nextMap){
-      const v = answers[step.id];
-      if (v === undefined) return null; // solange nicht beantwortet, nicht weiter auflösen
-      const key = String(v);
-      if (Object.prototype.hasOwnProperty.call(step.nextMap, key)){
-        return step.nextMap[key] || null;
-      }
+    if(step.nextMap){
+      const v=answers[step.id];
+      if(v===undefined) return null;
+      const key=String(v);
+      if(Object.prototype.hasOwnProperty.call(step.nextMap,key)) return step.nextMap[key]||null;
       return null;
     }
-
-    // Linearer next
-    return step.next || null;
+    return step.next||null;
   }
 
-  // === Rendern ===
-  function renderInfo(step){
-    const h = step.headline ? "<h2>"+step.headline+"</h2>" : "";
-    const t = step.text ? "<p>"+substitute(step.text)+"</p>" : "";
-    return '<div class="step">'+h+t+'</div>';
+  // Renderer
+  function renderInfo(s){
+    const h=s.headline?`<h2>${s.headline}</h2>`:"";
+    const t=s.text?`<p>${sub(s.text)}</p>`:"";
+    return `<div class="step">${h}${t}</div>`;
   }
-  function renderRadio(step){
-    const q = getQuestionText(step);
-    const isFeaturedList = FEATURE_FIRST4.has(step.id);
-    const opts = (step.options||[]).map((o,i)=>{
-      const checked = String(answers[step.id]) === String(o.value) ? "checked" : "";
-      const cls = "opt" + (isFeaturedList && i < 4 ? " opt--featured" : "");
-      return '<label class="'+cls+'"><input type="radio" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
+  function renderRadio(s){
+    const q=qText(s), feat=FEATURE_FIRST4.has(s.id);
+    const opts=(s.options||[]).map((o,i)=>{
+      const checked=String(answers[s.id])===String(o.value)?"checked":"";
+      const cls="opt"+(feat&&i<4?" opt--featured":"");
+      return `<label class="${cls}"><input type="radio" name="${s.id}" value="${o.value}" ${checked}/><span>${sub(o.label)}</span></label>`;
     }).join("");
-    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
+    return `<div class="step">${q?`<h2>${q}</h2>`:""}<div class="options">${opts}</div></div>`;
   }
-  function renderCheckbox(step){
-    const q = getQuestionText(step);
-    const vals = Array.isArray(answers[step.id]) ? answers[step.id] : [];
-    const opts = (step.options||[]).map(o=>{
-      const checked = vals.indexOf(o.value) >= 0 ? "checked" : "";
-      return '<label class="opt"><input type="checkbox" name="'+step.id+'" value="'+o.value+'" '+checked+' /><span>'+substitute(o.label)+'</span></label>';
+  function renderCheckbox(s){
+    const q=qText(s), vals=Array.isArray(answers[s.id])?answers[s.id]:[];
+    const opts=(s.options||[]).map(o=>{
+      const checked=vals.indexOf(o.value)>=0?"checked":"";
+      return `<label class="opt"><input type="checkbox" name="${s.id}" value="${o.value}" ${checked}/><span>${sub(o.label)}</span></label>`;
     }).join("");
-    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<div class="options">'+opts+'</div></div>';
+    return `<div class="step">${q?`<h2>${q}</h2>`:""}<div class="options">${opts}</div></div>`;
   }
-  function renderTextarea(step){
-    const q = getQuestionText(step);
-    const v = answers[step.id] || "";
-    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<textarea name="'+step.id+'" rows="6" placeholder="Hier schreiben …">'+(v!==undefined?String(v):"")+'</textarea></div>';
+  function renderTextarea(s){
+    const q=qText(s), v=answers[s.id]||"";
+    return `<div class="step">${q?`<h2>${q}</h2>`:""}<textarea name="${s.id}" rows="6" placeholder="Hier schreiben …">${v!==undefined?String(v):""}</textarea></div>`;
   }
-  function renderDate(step){
-    const q = getQuestionText(step);
-    const v = answers[step.id] || "";
-    return '<div class="step">'+(q?'<h2>'+q+'</h2>':'')+'<input type="date" name="'+step.id+'" value="'+v+'" /></div>';
+  function renderDate(s){
+    const q=qText(s), v=answers[s.id]||"";
+    return `<div class="step">${q?`<h2>${q}</h2>`:""}<input type="date" name="${s.id}" value="${v}"/></div>`;
   }
 
-  function renderStep(){
-    const stepId = vis[idx];
-    const step   = stepsById.get(stepId);
-    if (!step){ elStep.innerHTML = '<div class="step"><p>Fehler: Schritt nicht gefunden.</p></div>'; return; }
+  function render(){
+    const sid=vis[idx], s=stepsById.get(sid);
+    if(!s){ elStep.innerHTML='<div class="step"><p>Fehler: Schritt nicht gefunden.</p></div>'; return; }
 
-    // Router im sichtbaren Pfad nicht rendern → automatisch weiter
-    if (step.type === "router"){ goto(+1, /*fromRouter*/true); return; }
+    if(s.type==="router"){ go(+1,true); return; }
 
-    let html = "";
-    switch(step.type){
-      case "info":     html = renderInfo(step);     break;
-      case "radio":    html = renderRadio(step);    break;
-      case "checkbox": html = renderCheckbox(step); break;
-      case "textarea": html = renderTextarea(step); break;
-      case "date":     html = renderDate(step);     break;
-      default:         html = '<div class="step"><p>Unbekannter Fragetyp: '+step.type+'</p></div>';
+    let html="";
+    switch(s.type){
+      case "info": html=renderInfo(s); break;
+      case "radio": html=renderRadio(s); break;
+      case "checkbox": html=renderCheckbox(s); break;
+      case "textarea": html=renderTextarea(s); break;
+      case "date": html=renderDate(s); break;
+      default: html=`<div class="step"><p>Unbekannter Fragetyp: ${s.type}</p></div>`;
     }
-    elStep.innerHTML = html;
+    elStep.innerHTML=html;
 
-    // Buttons
-    const atStart = (idx === 0);
-    elPrev.style.visibility = atStart ? "hidden" : "visible";
-    elNext.textContent      = atStart ? "Start" : "Weiter";
+    const atStart=(idx===0);
+    elPrev.style.visibility=atStart?"hidden":"visible";
+    elPrev.disabled=atStart;
+    elNext.textContent=atStart?"Start":"Weiter";
 
-    if (step.id === "abschluss_hint"){
-      elNext.textContent = "Fertig";
-      elNext.onclick = function(){ location.href = "/beratung"; };
+    if(s.id==="abschluss_hint"){
+      elNext.textContent="Fertig";
+      elNext.onclick=function(){ location.href="/beratung"; };
       return;
     }
-
-    elNext.onclick = function(){ goto(+1, false); };
+    elNext.onclick=function(){ go(+1,false); };
   }
 
-  // === Lesen/Validieren ===
-  function readAndStoreCurrent(){
-    const stepId = vis[idx];
-    const step   = stepsById.get(stepId);
-    if (!step) return true;
+  function readStore(){
+    const sid=vis[idx], s=stepsById.get(sid); if(!s) return true;
 
-    if (step.type === "radio"){
-      const sel = elStep.querySelector('input[type="radio"][name="'+step.id+'"]:checked');
-      if (sel){
-        // Wert
-        const val = (sel.value === "true") ? true : (sel.value === "false" ? false : sel.value);
-        answers[step.id] = val;
-
-        // Label-Mapping für Platzhalter
-        const lab = labelFor(step.id, sel.value);
-        if (lab){
-          labels[step.id+"_label"] = lab;
-          if (step.id === "zielland")       labels["zielland_label"] = lab;
-          if (step.id === "herkunftsland")  labels["herkunftsland_label"] = lab;
-          if (step.id === "dublin_land" || step.id === "dublinland") labels["dublinland_label"] = lab;
+    if(s.type==="radio"){
+      const sel=elStep.querySelector(`input[type="radio"][name="${s.id}"]:checked`);
+      if(sel){
+        const val=(sel.value==="true")?true:(sel.value==="false"?false:sel.value);
+        answers[s.id]=val;
+        const lab=optLabel(s.id, sel.value);
+        if(lab){
+          labels[s.id+"_label"]=lab;
+          if(s.id==="zielland") labels["zielland_label"]=lab;
+          if(s.id==="herkunftsland") labels["herkunftsland_label"]=lab;
+          if(s.id==="dublin_land"||s.id==="dublinland") labels["dublinland_label"]=lab;
         }
-      }else{
-        delete answers[step.id];
-      }
-    }else if (step.type === "checkbox"){
-      const sels = Array.prototype.slice.call(elStep.querySelectorAll('input[type="checkbox"][name="'+step.id+'"]:checked')).map(x=>x.value);
-      answers[step.id] = sels;
-    }else if (step.type === "textarea" || step.type === "date"){
-      const el = elStep.querySelector('[name="'+step.id+'"]');
-      if (el) answers[step.id] = el.value || "";
+      }else{ delete answers[s.id]; }
+    }else if(s.type==="checkbox"){
+      const sels=[...elStep.querySelectorAll(`input[type="checkbox"][name="${s.id}"]:checked`)].map(x=>x.value);
+      answers[s.id]=sels;
+    }else if(s.type==="textarea"||s.type==="date"){
+      const el=elStep.querySelector(`[name="${s.id}"]`); if(el) answers[s.id]=el.value||"";
     }
-    saveLocal();
-    return true;
-  }
-  function validateCurrent(){
-    const step = stepsById.get(vis[idx]);
-    if (!step || !step.required) return true;
-    const v = answers[step.id];
-    if (step.type === "checkbox") return Array.isArray(v) && v.length>0;
-    return v !== undefined && v !== null && v !== "";
+    save(); return true;
   }
 
-  // === Navigation (LAZY) ===
-  function goto(delta, fromRouter){
-    if (delta > 0){
-      // Vorwärts: Antwort lesen & validieren
-      if (!fromRouter){
-        readAndStoreCurrent();
-        if (!validateCurrent()) return;
+  function isValid(){
+    const s=stepsById.get(vis[idx]); if(!s) return true;
+    const v=answers[s.id];
+    if(FORCE_REQUIRE.has(s.id) && s.type==="textarea"){ return v!=null && String(v).trim().length>0; }
+    if(!s.required) return true;
+    if(s.type==="checkbox") return Array.isArray(v)&&v.length>0;
+    return v!==undefined && v!==null && v!=="";
+  }
+
+  function go(delta, fromRouter){
+    if(delta>0){
+      if(!fromRouter){
+        readStore();
+        if(!isValid()) return;
       }
+      // Pfad hinter aktueller Position abschneiden (wenn in der Mitte verändert):
+      if(idx<vis.length-1) vis=vis.slice(0,idx+1);
 
-      // ggf. Pfad ab hier abschneiden (falls wir in der Mitte ändern)
-      if (idx < vis.length - 1){
-        vis = vis.slice(0, idx + 1);
-      }
-
-      // Nächsten Schritt aus dem aktuellen berechnen
-      const cur = stepsById.get(vis[idx]);
-      let nextId = resolveNextFrom(cur);
-
-      // Router automatisch „durchfahren“ (kann kaskadieren)
-      let safety = 0;
-      while (nextId){
-        const nextStep = stepsById.get(nextId);
-        if (!nextStep) break;
+      // nächsten Schritt ermitteln; Freitexte nicht „überspringen“
+      let cur=stepsById.get(vis[idx]);
+      let nextId=nextFrom(cur);
+      let guard=0;
+      while(nextId){
+        const next=stepsById.get(nextId);
+        if(!next) break;
         vis.push(nextId);
-        if (nextStep.type !== "router") break; // renderbare Frage erreicht
-        // Router sofort weiter auflösen
-        nextId = resolveNextFrom(nextStep);
-        safety++; if (safety > 50) break;
+
+        // Wenn der nächste ein Router ist, gleich weiter auflösen,
+        // aber stoppe sofort, wenn ein FORCE_SHOW-Schritt erreicht wird:
+        if(FORCE_SHOW.has(nextId) && next.type==="textarea") break;
+        if(next.type!=="router") break;
+
+        nextId=nextFrom(next);
+        guard++; if(guard>50) break;
       }
-
-      // Falls kein next ermittelt wurde: stehen bleiben (Ende)
-      if (vis.length === 0){ const start = firstStepId(); if (start) vis = [start]; }
-      if (idx < vis.length - 1) idx++;
-    }else if (delta < 0){
-      // Zurück ohne Neu-Berechnung
-      idx = Math.max(0, idx - 1);
+      if(idx<vis.length-1) idx++;
+    }else if(delta<0){
+      idx=Math.max(0, idx-1);
     }
-
-    saveLocal();
-    renderStep();
+    save(); render();
   }
 
-  // === Initialisierung ===
   (function init(){
-    if (location.search.indexOf("reset=1") >= 0) hardReset();
-
-    loadLocal();
-    fetch(FLOW_URL, {cache:"no-store"})
+    if(location.search.indexOf("reset=1")>=0) reset();
+    load();
+    fetch(FLOW_URL,{cache:"no-store"})
       .then(r=>{ if(!r.ok) throw new Error("Flow nicht ladbar"); return r.json(); })
       .then(j=>{
-        flow = j || {};
-        stepsById.clear();
-        (flow.flow||[]).forEach(s=>stepsById.set(s.id, s));
-
-        if (!vis || !vis.length){
-          const start = firstStepId();
-          if (!start) throw new Error("Flow ist leer.");
-          vis = [start];
-          idx = 0;
-        }else{
-          // Safety: existiert der aktuelle Schritt noch?
-          if (!stepsById.get(vis[idx]||"")){ vis = [firstStepId()]; idx = 0; }
-        }
-
-        saveLocal();
-        renderStep();
+        flow=j||{}; stepsById.clear(); (flow.flow||[]).forEach(s=>stepsById.set(s.id,s));
+        if(!vis.length){ const start=firstId(); if(!start) throw new Error("Flow ist leer."); vis=[start]; idx=0; }
+        // Safety: existiert der aktuelle Schritt?
+        if(!stepsById.get(vis[idx]||"")){ vis=[firstId()]; idx=0; }
+        save(); render();
       })
       .catch(e=>{
-        elStep.innerHTML =
-          '<div class="step">'+
-            '<h2>Der Fragenkatalog konnte nicht geladen werden.</h2>'+
-            '<p style="color:#a00"><strong>Fehler:</strong> '+ (e && e.message ? e.message : String(e)) +'</p>'+
-            '<p><a href="?reset=1">Lokale Daten löschen</a> und erneut versuchen.</p>'+
-            '<p><a href="'+FLOW_URL+'" target="_blank" rel="noopener">Flow-Datei öffnen</a></p>'+
-          '</div>';
+        elStep.innerHTML='<div class="step"><h2>Der Fragenkatalog konnte nicht geladen werden.</h2>'
+          +'<p style="color:#a00"><strong>Fehler:</strong> '+(e&&e.message?e.message:String(e))+'</p>'
+          +'<p><a href="?reset=1">Lokale Daten löschen</a> und erneut versuchen.</p>'
+          +'<p><a href="'+FLOW_URL+'" target="_blank" rel="noopener">Flow-Datei öffnen</a></p></div>';
       });
 
-    // Buttons
-    elPrev.addEventListener("click", function(){ goto(-1, false); });
-    elNext.addEventListener("click", function(){ goto(+1, false); });
+    elPrev.addEventListener("click", ()=>go(-1,false));
+    elNext.addEventListener("click", ()=>go(+1,false));
   })();
 })();
