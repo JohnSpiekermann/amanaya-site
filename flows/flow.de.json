@@ -414,7 +414,7 @@
       "question": "Welche Fluchtgründe treffen auf Dich zu? (Mehrfachauswahl möglich)",
       "required": true,
       "options": [
-        { "label": "Internationaler oder innerstaatlicher Konflikt", "value": "konflikt" },
+        { "label": "Internationaler / innerstaatlicher Konflikt", "value": "konflikt" },
         { "label": "Willkürliche Gewalt / Folter / Todesstrafe", "value": "gewalt" },
         { "label": "Religion", "value": "religion" },
         { "label": "Nationalität / Ethnie", "value": "nationalitaet" },
@@ -452,26 +452,26 @@
       "nextMap": { "privat": "innerstaatlicher_schutz_ja_nein", "unsicher": "innerstaatlicher_schutz_ja_nein", "staat": "need_nachflucht" }
     },
     {
-      "id": "innerstaatlicher_schutz_ja_nein",
-      "type": "radio",
-      "question": "Hast Du innerhalb von {{herkunftsland_label}} versucht, Schutz zu bekommen?",
-      "required": true,
-      "options": [
-        { "label": "Ja", "value": "ja" },
-        { "label": "Nein", "value": "nein" },
-        { "label": "Weiß nicht", "value": "wd" }
-      ],
-      "onAnswer": { "set": { "innerstaatlicher_schutz_versucht": "$value" } },
-      "next": "innerstaatlicher_schutz_details"
-    },
-    {
-      "id": "innerstaatlicher_schutz_details",
-      "type": "textarea",
-      "question": { "expr": "(innerstaatlicher_schutz_versucht === 'ja') ? 'Was genau hast Du versucht?' : 'Warum nicht?'" },
-      "required": false,
-      "onAnswer": { "set": { "innerstaatlicher_schutz_details": "$value" } },
-      "next": "need_nachflucht"
-    },
+  "id": "innerstaatlicher_schutz_ja_nein",
+  "type": "radio",
+  "question": "Hast Du innerhalb von {{herkunftsland_label}} versucht, Schutz zu bekommen?",
+  "required": true,
+  "options": [
+    { "label": "Ja", "value": "ja" },
+    { "label": "Nein", "value": "nein" },
+    { "label": "Weiß nicht", "value": "wd" }
+  ],
+  "onAnswer": { "set": { "innerstaatlicher_schutz_versucht": "$value" } },
+  "nextMap": { "ja": "innerstaatlicher_schutz_details", "nein": "innerstaatlicher_schutz_details", "wd": "need_nachflucht" }
+},
+{
+  "id": "innerstaatlicher_schutz_details",
+  "type": "textarea",
+  "question": { "expr": "(innerstaatlicher_schutz_versucht === 'ja') ? 'Was genau hast Du unternommen?' : 'Warum war das keine Option?'" },
+  "required": false,
+  "onAnswer": { "set": { "innerstaatlicher_schutz_details": "$value" } },
+  "next": "need_nachflucht"
+},
     {
       "id": "need_nachflucht",
       "type": "router",
