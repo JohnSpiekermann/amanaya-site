@@ -1,12 +1,11 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL    || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v14";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v15";
 
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
 
-  // nie wegsparen:
   const FORCE_SHOW    = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
   const FORCE_REQUIRE = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
   const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
@@ -109,12 +108,11 @@
     }
     elStep.innerHTML=html;
 
-    // Back: **immer** anzeigen (außer wirklich am allerersten Intro-Schritt)
+    // Back: nur auf absolut erstem Schritt verstecken, sonst immer klickbar
     const atAbsoluteStart = (idx===0 && vis.length>0 && vis[0]===firstId());
     elPrev.style.visibility = atAbsoluteStart ? "hidden" : "visible";
-    elPrev.disabled = atAbsoluteStart ? true : false;
+    elPrev.disabled = atAbsoluteStart;
 
-    // Button-Text
     elNext.textContent = atAbsoluteStart ? "Start" : "Weiter";
     if(s.id==="abschluss_hint"){
       elNext.textContent="Fertig";
@@ -124,7 +122,7 @@
     }
   }
 
-  // onAnswer.set (inkl. "$value" und {"expr": "..."} )
+  // onAnswer.set (unterstützt "$value" und {"expr": "..."} )
   function applyOnAnswerSet(step, rawValue){
     if(!step || !step.onAnswer || !step.onAnswer.set) return;
     const spec = step.onAnswer.set;
@@ -164,9 +162,8 @@
       rawValue = el ? (el.value||"") : "";
       answers[s.id]=rawValue;
     }
-
     applyOnAnswerSet(s, rawValue);
-    save(); 
+    save();
     return true;
   }
 
@@ -190,6 +187,7 @@
       let cur=stepsById.get(vis[idx]);
       let nextId=nextFrom(cur);
 
+      // Vorwärts: Router automatisch auflösen, bis echter Schritt erreicht
       let guard=0;
       while(nextId){
         const next=stepsById.get(nextId);
@@ -202,8 +200,11 @@
       }
       if(idx<vis.length-1) idx++;
     }else if(delta<0){
-      // Back: ein Schritt zurück, nicht weiter slicen
-      idx=Math.max(0, idx-1);
+      // Rückwärts: so lange zurückspringen, bis ein NICHT-Router erreicht ist
+      if(idx>0) idx--;
+      while(idx>0 && stepsById.get(vis[idx]) && stepsById.get(vis[idx]).type==="router"){
+        idx--;
+      }
     }
     save(); render();
   }
