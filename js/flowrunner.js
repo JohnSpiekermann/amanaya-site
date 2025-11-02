@@ -1,6 +1,6 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL   || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v6";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY|| "amanaya:flow:de") + ":v7";
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
@@ -13,11 +13,14 @@
   let vis = [];
   let idx = 0;
 
-  function saveLocal(){ localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, idx})); }
+  function saveLocal(){ localStorage.setItem(STORAGEKEY, JSON.stringify({answers, labels, idx, vis})); }
   function loadLocal(){
     try{
       const s = JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
-      answers = s.answers || {}; labels = s.labels || {}; if (Number.isInteger(s.idx)) idx = s.idx;
+      answers = s.answers || {};
+      labels  = s.labels  || {};
+      if (Array.isArray(s.vis)) vis = s.vis;
+      if (Number.isInteger(s.idx)) idx = s.idx;
     }catch(e){}
   }
 
@@ -113,7 +116,7 @@
     const step = stepsById.get(stepId);
     if (!step){ elStep.innerHTML = '<p>Fehler: Schritt nicht gefunden.</p>'; return; }
 
-    // Router nicht anzeigen – aber NICHT idx verändern. Der Sprung passiert zentral in goto().
+    // Router werden nicht dargestellt → in goto() übersprungen
     if (step.type === "router"){ goto(skipDir); return; }
 
     let html = "";
@@ -129,22 +132,17 @@
 
     // Buttons
     elPrev.style.visibility = (idx===0) ? "hidden" : "visible";
-
-    // Standard-Beschriftung: Start nur auf erstem sichtbaren Step, sonst Weiter
     elNext.textContent = (idx===0 ? "Start" : "Weiter");
 
-    // Nur auf der echten Abschlussseite abweichendes Verhalten:
     if (step.id === "abschluss_hint"){
       elNext.textContent = "Fertig";
       elNext.onclick = function(){ location.href = "/beratung"; };
       return;
     }
 
-    // Standard-Weiter-Click
     elNext.onclick = function(){ goto(+1); };
   }
 
-  // Richtung merken, damit Router in renderStep() korrekt übersprungen werden kann
   let skipDir = +1;
 
   function readAndStoreCurrent(){
@@ -155,13 +153,19 @@
     if (step.type === "radio"){
       const sel = elStep.querySelector('input[type="radio"][name="'+step.id+'"]:checked');
       if (sel){
+        const before = answers[step.id];
         answers[step.id] = (sel.value === "true") ? true : (sel.value === "false" ? false : sel.value);
+
+        // Labels für Platzhalter
         const lab = labelFor(step.id, sel.value);
         if (lab){
           labels[step.id+"_label"] = lab;
           if (step.id === "zielland"){ labels["zielland_label"] = lab; }
           if (step.id === "herkunftsland"){ labels["herkunftsland_label"] = lab; }
+          if (step.id === "dublin_land" || step.id === "dublinland"){ labels["dublinland_label"] = lab; } // <— NEU
         }
+
+        // Optional: could detect change vs before if needed
       }else{
         delete answers[step.id];
       }
@@ -184,7 +188,6 @@
     return v !== undefined && v !== null && v !== "";
   }
 
-  // Helfer: um Router-Schritte in gewünschter Richtung zu überspringen
   function skipRouters(direction){
     let safety = 0;
     while (vis[idx] && stepsById.get(vis[idx]) && stepsById.get(vis[idx]).type === "router" && safety < 50){
@@ -196,22 +199,18 @@
   }
 
   function goto(delta){
-    // Vor dem Wechsel: aktuelle Antwort sichern & ggf. validieren
     if (delta > 0){
+      // Vorwärts: Antwort lesen und Pfad NEU berechnen
       readAndStoreCurrent();
       if (!validateCurrent()) return;
+      vis = computeVisible();
     }
-
-    // Sichtbaren Pfad neu berechnen (weil Antworten sich geändert haben)
-    vis = computeVisible();
-
-    // Zielindex bestimmen
+    // Zielindex bewegen
     let ni = idx + delta;
     if (ni < 0) ni = 0;
     if (ni > vis.length-1) ni = vis.length-1;
     idx = ni;
 
-    // Router in Bewegungsrichtung überspringen
     skipDir = (delta >= 0 ? +1 : -1);
     skipRouters(skipDir);
 
@@ -222,7 +221,6 @@
   elPrev.addEventListener("click", function(){ goto(-1); });
   elNext.addEventListener("click", function(){ goto(+1); });
 
-  // Optional: Reset via ?reset=1
   if (location.search.indexOf("reset=1") >= 0) { try{ localStorage.clear(); }catch(e){} }
 
   loadLocal();
@@ -232,9 +230,8 @@
       flow = j;
       if (!flow || !Array.isArray(flow.flow)) throw new Error("Ungültiges Flow-Format");
       indexSteps(flow);
-      vis = computeVisible();
+      if (!vis || !vis.length) vis = computeVisible();  // initial berechnen
       if (idx < 0 || idx >= vis.length) idx = 0;
-      // Beim ersten Render nicht auf Routern hängen bleiben
       skipDir = +1; skipRouters(skipDir);
       renderStep();
     })
