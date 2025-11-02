@@ -1,14 +1,14 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL    || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v12";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v13";
 
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
 
-  // Freitexte, die nie "weggespart" werden sollen
+  // Textareas, die niemals "weg-optimiert" werden dürfen
   const FORCE_SHOW    = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
-  // Freitexte sanft verpflichtend (kein leeres Durchklicken)
+  // Optional: sanft verpflichtend (nur leere Enter-Taps verhindern)
   const FORCE_REQUIRE = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
 
   const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
@@ -25,38 +25,53 @@
   }
   function reset(){ try{localStorage.removeItem(STORAGEKEY);}catch(e){} answers={};labels={};vis=[];idx=0; }
 
-  function sub(s){ if(!s) return ""; return String(s).replace(/\{\{(\w+)\}\}/g,(_,k)=> (k in labels)?labels[k]:(k in answers?String(answers[k]):"")); }
-  function evalExpr(expr){ try{ return Function.apply(null,[...Object.keys(answers),"return ("+expr+");"]).apply(null,Object.values(answers)); }catch(e){ return null; } }
+  function sub(str){
+    if(!str) return "";
+    return String(str).replace(/\{\{(\w+)\}\}/g,(_,k)=> (k in labels)?labels[k]:(k in answers?String(answers[k]):""));
+  }
+
+  function evalExpr(expr){
+    try{
+      return Function.apply(null,[...Object.keys(answers),"return ("+expr+");"])
+                     .apply(null,Object.values(answers));
+    }catch(e){ return null; }
+  }
+
   function qText(step){
-    if(!step||step.question==null) return "";
+    if(!step || step.question==null) return "";
     if(typeof step.question==="string") return sub(step.question);
     if(step.question && typeof step.question==="object" && "expr" in step.question){
-      const v=evalExpr(step.question.expr); return sub(v!=null?String(v):"");
+      const v=evalExpr(step.question.expr);
+      return sub(v!=null ? String(v) : "");
     }
     return "";
   }
+
   function optLabel(stepId,val){
     const s=stepsById.get(stepId); if(!s||!Array.isArray(s.options)) return null;
-    const o=s.options.find(o=>String(o.value)===String(val)); return o?o.label:null;
+    const o=s.options.find(o=>String(o.value)===String(val));
+    return o ? o.label : null;
   }
+
   function firstId(){ return (flow&&Array.isArray(flow.flow)&&flow.flow.length)?flow.flow[0].id:null; }
 
   function nextFrom(step){
     if(!step) return null;
     if(step.type==="router"){
-      if(step.next&&step.next.expr){ const nid=evalExpr(step.next.expr); return nid||null; }
+      if(step.next && step.next.expr){ const nid=evalExpr(step.next.expr); return nid || null; }
       return null;
     }
     if(step.nextMap){
       const v=answers[step.id];
       if(v===undefined) return null;
       const key=String(v);
-      if(Object.prototype.hasOwnProperty.call(step.nextMap,key)) return step.nextMap[key]||null;
+      if(Object.prototype.hasOwnProperty.call(step.nextMap,key)) return step.nextMap[key] || null;
       return null;
     }
-    return step.next||null;
+    return step.next || null;
   }
 
+  // ---- Renderer
   function renderInfo(s){
     const h=s.headline?`<h2>${s.headline}</h2>`:"";
     const t=s.text?`<p>${sub(s.text)}</p>`:"";
@@ -104,13 +119,13 @@
     }
     elStep.innerHTML=html;
 
-    // Back-Button: immer aktiv, außer wenn wirklich der erste sichtbare Step
-    const atFirstVisible = (idx <= 0);
-    elPrev.style.visibility = atFirstVisible ? "hidden" : "visible";
-    elPrev.disabled = atFirstVisible;
+    // Back: nur auf dem allerersten Step verstecken
+    const isFirstVisible = (idx===0 && vis.length>0 && vis[0]===firstId());
+    elPrev.style.visibility = isFirstVisible ? "hidden" : "visible";
+    elPrev.disabled = isFirstVisible;
 
     // Weiter/Start/Fertig
-    elNext.textContent = (idx===0 ? "Start" : "Weiter");
+    elNext.textContent = isFirstVisible ? "Start" : "Weiter";
     if(s.id==="abschluss_hint"){
       elNext.textContent="Fertig";
       elNext.onclick=function(){ location.href="/beratung"; };
@@ -119,14 +134,35 @@
     }
   }
 
+  // ---- onAnswer.set auswerten (supports "$value" und {"expr": "..."} )
+  function applyOnAnswerSet(step, rawValue){
+    if(!step || !step.onAnswer || !step.onAnswer.set) return;
+    const setSpec = step.onAnswer.set;
+    Object.keys(setSpec).forEach(k=>{
+      const spec = setSpec[k];
+      if (spec === "$value"){
+        answers[k] = rawValue;
+      } else if (spec && typeof spec === "object" && "expr" in spec){
+        const val = evalExpr(spec.expr);
+        answers[k] = val;
+      } else {
+        // Literal
+        answers[k] = spec;
+      }
+    });
+  }
+
   function readStore(){
     const sid=vis[idx], s=stepsById.get(sid); if(!s) return true;
+
+    let rawValue;
 
     if(s.type==="radio"){
       const sel=elStep.querySelector(`input[type="radio"][name="${s.id}"]:checked`);
       if(sel){
-        const val=(sel.value==="true")?true:(sel.value==="false"?false:sel.value);
-        answers[s.id]=val;
+        rawValue = (sel.value==="true")?true:(sel.value==="false"?false:sel.value);
+        answers[s.id]=rawValue;
+
         const lab=optLabel(s.id, sel.value);
         if(lab){
           labels[s.id+"_label"]=lab;
@@ -134,14 +170,23 @@
           if(s.id==="herkunftsland") labels["herkunftsland_label"]=lab;
           if(s.id==="dublin_land"||s.id==="dublinland") labels["dublinland_label"]=lab;
         }
-      }else{ delete answers[s.id]; }
+      }else{
+        delete answers[s.id];
+      }
     }else if(s.type==="checkbox"){
-      const sels=[...elStep.querySelectorAll(`input[type="checkbox"][name="${s.id}"]:checked`)].map(x=>x.value);
-      answers[s.id]=sels;
+      rawValue=[...elStep.querySelectorAll(`input[type="checkbox"][name="${s.id}"]:checked`)].map(x=>x.value);
+      answers[s.id]=rawValue;
     }else if(s.type==="textarea"||s.type==="date"){
-      const el=elStep.querySelector(`[name="${s.id}"]`); if(el) answers[s.id]=el.value||"";
+      const el=elStep.querySelector(`[name="${s.id}"]`);
+      rawValue = el ? (el.value||"") : "";
+      answers[s.id]=rawValue;
     }
-    save(); return true;
+
+    // Wichtig: erst jetzt onAnswer.set anwenden (damit expr Zugriff auf "answers" hat)
+    applyOnAnswerSet(s, rawValue);
+
+    save(); 
+    return true;
   }
 
   function isValid(){
@@ -159,20 +204,20 @@
         readStore();
         if(!isValid()) return;
       }
-      // Pfad hinter idx kappen (falls in der Mitte geändert)
       if(idx<vis.length-1) vis=vis.slice(0,idx+1);
 
       let cur=stepsById.get(vis[idx]);
       let nextId=nextFrom(cur);
 
-      // Router automatisch auswerten; FORCE_SHOW-Schritte nicht überspringen
       let guard=0;
       while(nextId){
         const next=stepsById.get(nextId);
         if(!next) break;
         vis.push(nextId);
+
         if(FORCE_SHOW.has(nextId) && next.type==="textarea") break;
         if(next.type!=="router") break;
+
         nextId=nextFrom(next);
         guard++; if(guard>50) break;
       }
