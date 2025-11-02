@@ -1,14 +1,14 @@
 (function(){
   const FLOW_URL   = (window.AMANAYA_FLOW_URL    || "/flows/flow.de.json");
-  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v11";
+  const STORAGEKEY = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v12";
 
   const elStep = document.getElementById("step");
   const elPrev = document.getElementById("prev");
   const elNext = document.getElementById("next");
 
-  // Diese IDs dürfen NICHT "wegrationalisiert" werden (auch wenn optional):
-  const FORCE_SHOW = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
-  // Diese Textareas sollen nicht leer durchgewinkt werden (sanfte Pflicht):
+  // Freitexte, die nie "weggespart" werden sollen
+  const FORCE_SHOW    = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
+  // Freitexte sanft verpflichtend (kein leeres Durchklicken)
   const FORCE_REQUIRE = new Set(["flucht_details_freitext","innerstaatlicher_schutz_details"]);
 
   const FEATURE_FIRST4 = new Set(["zielland","visum_details_A","aufenthaltstitel_details_A","reiseweg_B_aussteller"]);
@@ -19,7 +19,8 @@
   function load(){
     try{
       const s=JSON.parse(localStorage.getItem(STORAGEKEY)||"{}");
-      answers=s.answers||{}; labels=s.labels||{}; vis=Array.isArray(s.vis)?s.vis:[]; idx=Number.isInteger(s.idx)?s.idx:0;
+      answers=s.answers||{}; labels=s.labels||{};
+      vis=Array.isArray(s.vis)?s.vis:[]; idx=Number.isInteger(s.idx)?s.idx:0;
     }catch(e){}
   }
   function reset(){ try{localStorage.removeItem(STORAGEKEY);}catch(e){} answers={};labels={};vis=[];idx=0; }
@@ -40,7 +41,6 @@
   }
   function firstId(){ return (flow&&Array.isArray(flow.flow)&&flow.flow.length)?flow.flow[0].id:null; }
 
-  // Nur den nächsten Schritt auflösen (lazy):
   function nextFrom(step){
     if(!step) return null;
     if(step.type==="router"){
@@ -57,7 +57,6 @@
     return step.next||null;
   }
 
-  // Renderer
   function renderInfo(s){
     const h=s.headline?`<h2>${s.headline}</h2>`:"";
     const t=s.text?`<p>${sub(s.text)}</p>`:"";
@@ -92,7 +91,6 @@
   function render(){
     const sid=vis[idx], s=stepsById.get(sid);
     if(!s){ elStep.innerHTML='<div class="step"><p>Fehler: Schritt nicht gefunden.</p></div>'; return; }
-
     if(s.type==="router"){ go(+1,true); return; }
 
     let html="";
@@ -106,17 +104,19 @@
     }
     elStep.innerHTML=html;
 
-    const atStart=(idx===0);
-    elPrev.style.visibility=atStart?"hidden":"visible";
-    elPrev.disabled=atStart;
-    elNext.textContent=atStart?"Start":"Weiter";
+    // Back-Button: immer aktiv, außer wenn wirklich der erste sichtbare Step
+    const atFirstVisible = (idx <= 0);
+    elPrev.style.visibility = atFirstVisible ? "hidden" : "visible";
+    elPrev.disabled = atFirstVisible;
 
+    // Weiter/Start/Fertig
+    elNext.textContent = (idx===0 ? "Start" : "Weiter");
     if(s.id==="abschluss_hint"){
       elNext.textContent="Fertig";
       elNext.onclick=function(){ location.href="/beratung"; };
-      return;
+    }else{
+      elNext.onclick=function(){ go(+1,false); };
     }
-    elNext.onclick=function(){ go(+1,false); };
   }
 
   function readStore(){
@@ -159,23 +159,20 @@
         readStore();
         if(!isValid()) return;
       }
-      // Pfad hinter aktueller Position abschneiden (wenn in der Mitte verändert):
+      // Pfad hinter idx kappen (falls in der Mitte geändert)
       if(idx<vis.length-1) vis=vis.slice(0,idx+1);
 
-      // nächsten Schritt ermitteln; Freitexte nicht „überspringen“
       let cur=stepsById.get(vis[idx]);
       let nextId=nextFrom(cur);
+
+      // Router automatisch auswerten; FORCE_SHOW-Schritte nicht überspringen
       let guard=0;
       while(nextId){
         const next=stepsById.get(nextId);
         if(!next) break;
         vis.push(nextId);
-
-        // Wenn der nächste ein Router ist, gleich weiter auflösen,
-        // aber stoppe sofort, wenn ein FORCE_SHOW-Schritt erreicht wird:
         if(FORCE_SHOW.has(nextId) && next.type==="textarea") break;
         if(next.type!=="router") break;
-
         nextId=nextFrom(next);
         guard++; if(guard>50) break;
       }
@@ -194,7 +191,6 @@
       .then(j=>{
         flow=j||{}; stepsById.clear(); (flow.flow||[]).forEach(s=>stepsById.set(s.id,s));
         if(!vis.length){ const start=firstId(); if(!start) throw new Error("Flow ist leer."); vis=[start]; idx=0; }
-        // Safety: existiert der aktuelle Schritt?
         if(!stepsById.get(vis[idx]||"")){ vis=[firstId()]; idx=0; }
         save(); render();
       })
