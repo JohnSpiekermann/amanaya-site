@@ -1,119 +1,138 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <title>Amanaya – Beratung bestellen</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Individuelle Erstberatung – Amanaya</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#f6f1e7; --text:#0f3a6b; --brand:#0f3a6b; --muted:#4a698a22; }
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    .wrap{max-width:880px;margin:0 auto;padding:32px 20px}
-    header{display:flex;align-items:center;gap:16px;margin:8px 0 24px}
-    .logo{height:56px;width:auto} .brand{font-weight:800;letter-spacing:.3px;font-size:28px}
-    nav a{margin-right:16px;color:var(--text);text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px}
-    nav a:hover{border-color:var(--text)}
-    .card{background:#fff;border:1px solid var(--muted);border-radius:14px;padding:24px;margin:12px 0}
-    h1{margin:.2em 0 .6em 0;font-size:28px;line-height:1.2} .lead{color:#183b66;margin-top:0}
-    label{display:block;font-weight:600;margin:14px 0 6px}
-    input[type="email"]{width:100%;padding:12px 14px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}
-    .btn-primary{display:inline-block;margin-top:16px;padding:12px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-weight:700}
-    .btn-primary:hover{opacity:.92} .notice{font-size:14px;color:#355a84;margin-top:8px}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    footer{margin-top:32px;padding-top:12px;border-top:1px dashed var(--muted);display:flex;gap:16px;flex-wrap:wrap}
-    footer a{color:var(--text);text-decoration:none}
-    @media(min-width:840px){ .grid{grid-template-columns:1.1fr .9fr} }
+    :root{
+      --bg:#f6f1e7;          /* Beige */
+      --text:#0f3a6b;        /* Blau */
+      --accent:#0f3a6b;
+      --muted:#5c718b;
+      --card:#ffffff;
+      --border:#e8e3d8;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Montserrat,system-ui,Arial,sans-serif;
+      background:var(--bg); color:var(--text); line-height:1.5;
+      overflow-x:hidden;
+    }
+    .wrap{max-width:900px; margin:0 auto; padding:24px 20px 80px;}
+    header{display:flex; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap;}
+    header a.brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text)}
+    .logo{height:32px; width:auto; display:block}
+    .brand-name{font-weight:800; letter-spacing:1.5px; font-size:20px}
+    nav.toplinks{margin-left:auto; display:flex; gap:12px; flex-wrap:wrap}
+    nav.toplinks a{color:var(--text); text-decoration:none; font-weight:600}
+    h1{font-size:28px; margin:10px 0 8px; line-height:1.2}
+    p.lead{color:var(--muted); margin:0 0 12px}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin:16px 0; box-shadow:0 1px 0 rgba(0,0,0,.02)}
+    .row{display:flex; flex-direction:column; gap:6px; margin:10px 0}
+    input[type="email"], textarea{
+      width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border);
+      font:inherit; color:var(--text); background:#fff
+    }
+    textarea{min-height:140px; resize:vertical}
+    .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:8px}
+    .btn{appearance:none; border:none; cursor:pointer; text-decoration:none; padding:14px 18px; border-radius:10px; font-weight:600; font-size:16px; display:inline-flex; align-items:center; justify-content:center}
+    .btn-primary{background:var(--accent); color:#fff}
+    .btn-secondary{background:#fff; color:var(--accent); border:1px solid var(--accent)}
+    .hint{font-size:13px; color:var(--muted); margin-top:8px}
+    .sticky-footer{position:fixed; left:0; right:0; bottom:0; background:var(--bg); border-top:1px solid var(--border)}
+    .footer-inner{max-width:900px; margin:0 auto; padding:12px 20px; display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .footer-links{display:flex; gap:12px; flex-wrap:wrap}
+    .footer-links a{color:var(--text); text-decoration:none; font-weight:600}
+    @media (max-width:600px){
+      .brand-name{font-size:18px}
+      h1{font-size:24px}
+      .actions{flex-direction:column}
+      .btn{width:100%}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <a href="/"><img class="logo" src="/logo.png" alt="Amanaya"></a>
-      <div class="brand">AMANAYA</div>
-      <nav style="margin-left:auto">
-        <a href="/asyl">Infos</a><a href="/news">News</a><a href="/faq">FAQ</a><a href="/start">Befragung</a>
+      <a class="brand" href="/">
+        <img class="logo" src="/logo.png" alt="Amanaya Logo">
+        <div class="brand-name">AMANAYA</div>
+      </a>
+      <nav class="toplinks" aria-label="Hauptnavigation">
+        <a href="/asyl">Infos</a>
+        <a href="/news">News</a>
+        <a href="/faq">FAQ</a>
       </nav>
     </header>
 
-    <div class="grid">
-      <section class="card">
-        <h1>Individuelle PDF-Beratung bestellen</h1>
-        <p class="lead">Preis: <strong>119&nbsp;€</strong> · Lieferung per E-Mail innerhalb von <strong>48&nbsp;Stunden</strong>.</p>
+    <h1>Individuelle Erstberatung</h1>
+    <p class="lead">Du erhältst innerhalb von 48&nbsp;Stunden eine schriftliche Einschätzung. Preis: 119&nbsp;€ (Zahlung später – derzeit nur Kontaktaufnahme).</p>
 
-        <form id="orderForm" novalidate>
-          <label for="email">E-Mail-Adresse</label>
-          <input id="email" name="email" type="email" placeholder="z. B. vorname.nachname@mail.de" required>
-          <p class="notice">Wir verwenden deine Antworten aus der Befragung. Du musst nichts erneut ausfüllen.</p>
+    <section class="card">
+      <h2 style="margin-top:0">Kontakt aufnehmen</h2>
+      <form id="beratung-form" action="https://formspree.io/f/xovkzndg" method="POST">
+        <!-- optionaler Redirect nach Erfolg -->
+        <input type="hidden" name="_redirect" value="https://www.amanaya.org/beratung-danke"/>
 
-          <a id="orderBtn" class="btn-primary" href="#" role="button">Kostenpflichtig bestellen (119&nbsp;€)</a>
-          <p class="notice">Mit Klick bestellst du eine individuelle Erstberatung als PDF. Es gelten <a href="/impressum">Impressum</a> &amp; <a href="/datenschutz">Datenschutz</a>.</p>
-        </form>
-      </section>
+        <div class="row">
+          <label for="email"><strong>Deine E-Mail-Adresse</strong></label>
+          <input id="email" name="email" type="email" required placeholder="z. B. dein.name@mail.com"/>
+        </div>
 
-      <aside class="card">
-        <h2 style="font-size:20px;margin-top:0">So läuft es ab</h2>
-        <ol style="margin:0 0 0 18px;padding:0">
-          <li>E-Mail eintragen und Bestellung auslösen.</li>
-          <li>Wir erstellen deine Auswertung auf Basis deiner Antworten.</li>
-          <li>Du erhältst das PDF innerhalb von 48 Stunden per E-Mail.</li>
-        </ol>
-        <p class="notice">Fragen? Schreibe an <a href="mailto:info@amanaya.org">info@amanaya.org</a>.</p>
-      </aside>
+        <div class="row">
+          <label for="notes"><strong>Kurze Nachricht (optional)</strong></label>
+          <textarea id="notes" name="notes" placeholder="Gibt es etwas Wichtiges, das wir wissen sollten?"></textarea>
+        </div>
+
+        <!-- Flow-Antworten (falls vorhanden) werden mitgeschickt -->
+        <input type="hidden" id="flowAnswers" name="flow_answers_json" value=""/>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Jetzt unverbindlich Kontakt aufnehmen</button>
+          <a class="btn btn-secondary" href="/fragen/start">Befragung starten</a>
+        </div>
+        <p class="hint">Datenschutz: Wir erheben keine Klarnamen oder Geburtsdaten. Du kannst später zahlen, wenn alles für dich passt.</p>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2 style="margin-top:0">So geht’s weiter</h2>
+      <ol>
+        <li>Du schickst uns deine E-Mail (und optional eine Nachricht).</li>
+        <li>Wir melden uns zeitnah zurück und erklären den Ablauf & Zahlung.</li>
+        <li>Du erhältst innerhalb von 48&nbsp;Stunden die schriftliche Einschätzung.</li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="/fragen/start">Befragung starten</a>
+        <a href="/asyl">Zu den Infos</a>
+      </div>
+      <div class="footer-links">
+        <a href="/impressum">Impressum</a>
+        <a href="/datenschutz">Datenschutz</a>
+      </div>
     </div>
-
-    <footer>
-      <a href="/impressum">Impressum</a>
-      <a href="/datenschutz">Datenschutz</a>
-      <a href="/start">Befragung starten</a>
-      <a href="/asyl">Zu den Infos</a>
-    </footer>
   </div>
 
   <script>
-    // HIER deine Formspree-URL eintragen:
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xovkzndg";
-    // Dieser Key muss mit dem in /fragen/start.html gesetzten STORAGE_KEY zusammenpassen:
-    const STORAGE_KEY = "amanaya:flow:de:cta1";
-
-    const btn = document.getElementById('orderBtn');
-    const emailInput = document.getElementById('email');
-
-    btn.addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const email = (emailInput.value||"").trim();
-      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if(!ok){ emailInput.focus(); alert('Bitte eine gültige E-Mail-Adresse eingeben.'); return; }
-
-      // Antworten aus dem Fragenflow laden (aus localStorage)
-      let answers = {};
+    (function(){
+      // Flow-Antworten (falls vorhanden) als JSON mitsenden
       try{
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
-        answers = saved.answers || {};
-      }catch(_){}
-
-      // Paket zusammenstellen
-      const payload = {
-        email,
-        createdAt: new Date().toISOString(),
-        source: "amanaya.org",
-        answers
-      };
-
-      try{
-        const res = await fetch(FORMSPREE_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type":"application/json", "Accept":"application/json" },
-          body: JSON.stringify(payload)
-        });
-        if(!res.ok) throw new Error("Request failed");
-        const orderId = "AMN-" + Date.now();
-        localStorage.setItem("amanaya:lastOrderId", orderId);
-        alert("Danke! Wir haben deine Bestellung erhalten. Vorgangsnummer: "+orderId+". Du bekommst die PDF innerhalb von 48 Stunden.");
-        // Optional: window.location.href = "/";
-      }catch(err){
-        console.error(err);
-        alert("Leider hat das Absenden nicht geklappt. Bitte versuche es später erneut oder schreibe an info@amanaya.org.");
-      }
-    });
+        const k = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v15";
+        const local = JSON.parse(localStorage.getItem(k) || "{}");
+        if(local && local.answers){
+          document.getElementById('flowAnswers').value = JSON.stringify(local.answers);
+        }
+      }catch(e){ /* ignorieren */ }
+    })();
   </script>
 </body>
 </html>
