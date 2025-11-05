@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "category": "universal",
+  "rules": [
+
+    {
+      "id": "rule_dublin_visum",
+      "when": {
+        "reiseweg": "visum",
+        "hat_visum": true,
+        "quelle_verfolgung": "staat"
+      },
+      "effect": {
+        "category": "plausibility",
+        "severity": "medium",
+        "text": "Da deine Einreise mit einem Visum erfolgte, obwohl du staatliche Verfolgung angegeben hast, kann die Behörde Zweifel an der Glaubhaftigkeit hegen."
+      }
+    },
+
+    {
+      "id": "rule_dublin_aufenthaltstitel",
+      "when": {
+        "reiseweg": "aufenthaltstitel",
+        "hat_aufenthaltstitel": true
+      },
+      "effect": {
+        "category": "dublin",
+        "severity": "high",
+        "text": "Da du mit einem Aufenthaltstitel eines anderen EU-Staates eingereist bist, ist nach der Dublin-III-Verordnung voraussichtlich dieser Staat zuständig."
+      }
+    },
+
+    {
+      "id": "rule_nachfluchtverhalten",
+      "when": {
+        "nachfluchtverhalten": "ja"
+      },
+      "effect": {
+        "category": "chance",
+        "severity": "medium",
+        "text": "Deine Angaben zeigen, dass du deine Überzeugung oder Identität auch nach der Ausreise offen lebst. Das kann deine Glaubwürdigkeit stärken."
+      }
+    },
+
+    {
+      "id": "rule_belege_fehlen",
+      "when": {
+        "beweise_vorhanden": false
+      },
+      "effect": {
+        "category": "risk",
+        "severity": "high",
+        "text": "Du hast keine Belege oder Dokumente angegeben. Das kann sich negativ auf die Glaubhaftigkeit auswirken. Sammle, wenn möglich, Nachweise."
+      }
+    },
+
+    {
+      "id": "rule_innerstaatlicher_schutz",
+      "when": {
+        "quelle_verfolgung": "privat",
+        "innerstaatlicher_schutz_versucht": "nein"
+      },
+      "effect": {
+        "category": "risk",
+        "severity": "medium",
+        "text": "Wenn du angibst, von privaten Akteuren verfolgt zu werden, kann das BAMF verlangen, dass du zuvor staatlichen Schutz gesucht hast."
+      }
+    }
+  ]
+}
