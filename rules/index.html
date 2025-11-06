@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Amanaya – Rules Checks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f1e7;--brand:#0f3a6b;--text:#0f3a6b;--card:#fff;--border:#ded6c9}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Montserrat,system-ui,sans-serif}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+    header .title{display:flex;gap:12px;align-items:center}
+    header .title span{font-weight:800;letter-spacing:.08em}
+    main{max-width:900px;margin:24px auto;padding:0 16px}
+    h1{font-size:22px;margin:0 0 12px}
+    p.lead{margin:0 0 20px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+    .card h2{font-size:16px;margin:0}
+    .btn{display:inline-block;text-decoration:none;border:1px solid var(--brand);padding:10px 12px;border-radius:10px;font-weight:700;color:var(--brand);background:#fff;text-align:center}
+    .btn:hover{opacity:.9}
+    .status{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:#faf8f4;border:1px dashed var(--border);border-radius:8px;padding:10px;min-height:72px;white-space:pre-wrap}
+    footer{margin:28px 0 40px;text-align:center;font-size:12px;color:#4a5a70}
+    .small{font-size:12px;color:#4a5a70}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <span style="font-weight:800;">AMANAYA</span>
+      <span class="small">Interne Prüfseite</span>
+    </div>
+    <a class="btn" href="/">Zur Startseite</a>
+  </header>
+
+  <main>
+    <h1>Rules-Checks</h1>
+    <p class="lead">Provisorische Entwickleransicht: Prüft, ob die JSON-Dateien erreichbar und gültig sind.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Universal</h2>
+        <a class="btn" href="/rules/check" target="_blank">Seite öffnen</a>
+        <button class="btn" data-check="/rules/universal.json">Schnelltest</button>
+        <div class="status" id="out-universal">Noch kein Test.</div>
+      </section>
+
+      <section class="card">
+        <h2>Dublin</h2>
+        <a class="btn" href="/rules/check-dublin" target="_blank">Seite öffnen</a>
+        <button class="btn" data-check="/rules/dublin.json">Schnelltest</button>
+        <div class="status" id="out-dublin">Noch kein Test.</div>
+      </section>
+
+      <section class="card">
+        <h2>Türkei</h2>
+        <a class="btn" href="/rules/check-tr" target="_blank">Seite öffnen</a>
+        <button class="btn" data-check="/rules/tr.json">Schnelltest</button>
+        <div class="status" id="out-tr">Noch kein Test.</div>
+      </section>
+    </div>
+
+    <footer>Nur für interne Tests – später entfernen.</footer>
+  </main>
+
+  <script>
+    function $(s,root=document){return root.querySelector(s)}
+    function outId(path){
+      if(path.includes("universal")) return "#out-universal";
+      if(path.includes("dublin")) return "#out-dublin";
+      if(path.includes("tr.json")) return "#out-tr";
+      return null;
+    }
+    async function quickCheck(path){
+      const box = $(outId(path));
+      if(!box) return;
+      box.textContent = "Lade "+path+" …";
+      try{
+        const url = path+"?v="+Date.now();
+        const res = await fetch(url);
+        let txt = "Status: "+res.status+" ("+url+")\n";
+        if(!res.ok){ box.textContent = txt + "Fehler beim Laden."; return; }
+        const body = await res.text();
+        txt += "\nErste 300 Zeichen:\n"+body.slice(0,300)+"\n";
+        let json;
+        try{ json = JSON.parse(body); }
+        catch(e){ box.textContent = txt + "❌ JSON-Fehler: "+e.message; return; }
+        const n = (json.rules && Array.isArray(json.rules)) ? json.rules.length : 0;
+        box.textContent = txt + "✅ JSON gültig • "+n+" Regeln gefunden.";
+      }catch(e){
+        box.textContent = "❌ Fehler: "+e.message;
+      }
+    }
+    document.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-check]");
+      if(btn){ quickCheck(btn.getAttribute("data-check")); }
+    });
+  </script>
+</body>
+</html>
