@@ -2,69 +2,104 @@
   "version": "1.0",
   "category": "universal",
   "rules": [
-
     {
-      "id": "rule_dublin_visum",
-      "when": {
-        "reiseweg": "visum",
-        "hat_visum": true,
-        "quelle_verfolgung": "staat"
-      },
-      "effect": {
-        "category": "plausibility",
-        "severity": "medium",
-        "text": "Da deine Einreise mit einem Visum erfolgte, obwohl du staatliche Verfolgung angegeben hast, kann die Behörde Zweifel an der Glaubhaftigkeit hegen."
-      }
+      "id": "pl_legal_exit_vs_state_persecution",
+      "when": { "reiseweg": "visum", "hat_visum": true, "quelle_verfolgung": "staat" },
+      "effect": { "category": "plausibility", "severity": "medium", "text": "Einreise mit Visum trotz staatlicher Verfolgung kann als Plausibilitätsproblem gewertet werden. Erkläre, wie die Visumerteilung möglich war und warum trotzdem Verfolgungsgefahr besteht." }
     },
-
     {
-      "id": "rule_dublin_aufenthaltstitel",
-      "when": {
-        "reiseweg": "aufenthaltstitel",
-        "hat_aufenthaltstitel": true
-      },
-      "effect": {
-        "category": "dublin",
-        "severity": "high",
-        "text": "Da du mit einem Aufenthaltstitel eines anderen EU-Staates eingereist bist, ist nach der Dublin-III-Verordnung voraussichtlich dieser Staat zuständig."
-      }
+      "id": "pl_legal_exit_title",
+      "when": { "reiseweg": "aufenthaltstitel", "hat_aufenthaltstitel": true },
+      "effect": { "category": "plausibility", "severity": "low", "text": "Einreise mit Aufenthaltstitel eines anderen Staates wird häufig kritisch hinterfragt. Zuständigkeit nach Dublin kann betroffen sein." }
     },
-
     {
-      "id": "rule_nachfluchtverhalten",
-      "when": {
-        "nachfluchtverhalten": "ja"
-      },
-      "effect": {
-        "category": "chance",
-        "severity": "medium",
-        "text": "Deine Angaben zeigen, dass du deine Überzeugung oder Identität auch nach der Ausreise offen lebst. Das kann deine Glaubwürdigkeit stärken."
-      }
+      "id": "pl_visa_after_event",
+      "when": { "quelle_verfolgung": "staat" },
+      "expr": "visum_beantragt_am && flucht_ereignis_datum && visum_beantragt_am > flucht_ereignis_datum",
+      "effect": { "category": "plausibility", "severity": "high", "text": "Das Visum wurde nach dem fluchtauslösenden Ereignis beantragt. Das kann die Glaubhaftigkeit schwächen, wenn keine besondere Erklärung vorliegt." }
     },
-
     {
-      "id": "rule_belege_fehlen",
-      "when": {
-        "beweise_vorhanden": false
-      },
-      "effect": {
-        "category": "risk",
-        "severity": "high",
-        "text": "Du hast keine Belege oder Dokumente angegeben. Das kann sich negativ auf die Glaubhaftigkeit auswirken. Sammle, wenn möglich, Nachweise."
-      }
+      "id": "pl_no_docs",
+      "when": { "beweise_vorhanden": false },
+      "effect": { "category": "risk", "severity": "high", "text": "Es wurden keine Belege angegeben. Ohne Dokumente oder objektive Nachweise sinken die Erfolgsaussichten. Versuche, Unterlagen nachzureichen." }
     },
-
     {
-      "id": "rule_innerstaatlicher_schutz",
-      "when": {
-        "quelle_verfolgung": "privat",
-        "innerstaatlicher_schutz_versucht": "nein"
-      },
-      "effect": {
-        "category": "risk",
-        "severity": "medium",
-        "text": "Wenn du angibst, von privaten Akteuren verfolgt zu werden, kann das BAMF verlangen, dass du zuvor staatlichen Schutz gesucht hast."
-      }
+      "id": "pl_docs_types_generic",
+      "when": {},
+      "expr": "beweise_vorhanden === true",
+      "effect": { "category": "chance", "severity": "low", "text": "Vorhandene Belege können die Glaubhaftigkeit stärken. Achte auf Nachvollziehbarkeit, Echtheit und Datumsnähe." }
+    },
+    {
+      "id": "pl_inner_protection_private_no_attempt",
+      "when": { "quelle_verfolgung": "privat", "innerstaatlicher_schutz_versucht": "nein" },
+      "effect": { "category": "risk", "severity": "medium", "text": "Bei Verfolgung durch Private verlangen Behörden oft, dass zunächst staatlicher Schutz gesucht wurde. Fehlt dies, kann das negativ ausgelegt werden." }
+    },
+    {
+      "id": "pl_inner_protection_private_attempted",
+      "when": { "quelle_verfolgung": "privat", "innerstaatlicher_schutz_versucht": "ja" },
+      "effect": { "category": "chance", "severity": "low", "text": "Es wurde staatlicher Schutz versucht. Dokumentierte Versuche (z. B. Anzeigen) können die Glaubhaftigkeit stützen." }
+    },
+    {
+      "id": "pl_delay_between_event_and_departure",
+      "when": {},
+      "expr": "flucht_ereignis_datum && visum_beantragt_am && (new Date(visum_beantragt_am) - new Date(flucht_ereignis_datum)) > 60*24*3600*1000",
+      "effect": { "category": "plausibility", "severity": "low", "text": "Zwischen Ereignis und Visumantrag liegt ein längerer Zeitraum. Behörden prüfen, ob eine akute Verfolgungsgefahr vorlag." }
+    },
+    {
+      "id": "nf_nachflucht_positive",
+      "when": { "nachfluchtverhalten": "ja" },
+      "effect": { "category": "chance", "severity": "medium", "text": "Nachfluchttätigkeiten können Schutzchancen erhöhen, wenn sie glaubhaft, konsistent und öffentlich erkennbar sind." }
+    },
+    {
+      "id": "nf_nachflucht_neutral",
+      "when": { "nachfluchtverhalten": "wd" },
+      "effect": { "category": "plausibility", "severity": "low", "text": "Nachfluchtverhalten unklar. Wird häufig kritisch geprüft. Präzise Angaben helfen." }
+    },
+    {
+      "id": "age_minor_unaccompanied",
+      "when": { "minderjaehrig": true, "unbegleitet": true },
+      "effect": { "category": "chance", "severity": "high", "text": "Unbegleitete Minderjährige genießen besonderen Schutz. Dublin-Überstellungen sind regelmäßig ausgeschlossen. Familienbezug und Kindeswohl stehen im Vordergrund." }
+    },
+    {
+      "id": "age_minor_general",
+      "when": { "minderjaehrig": true },
+      "effect": { "category": "chance", "severity": "medium", "text": "Bei Minderjährigen gelten erleichterte Maßstäbe an Schilderung und Belegen. Eine kindgerechte Anhörung ist zu erwarten." }
+    },
+    {
+      "id": "fg_political",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('politisch')",
+      "effect": { "category": "chance", "severity": "low", "text": "Politische Betätigung kann flüchtlingsrechtlich relevant sein. Wichtig sind konkrete Handlungen, Öffentlichkeit und Reaktionen der Behörden." }
+    },
+    {
+      "id": "fg_religion",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('religion')",
+      "effect": { "category": "chance", "severity": "low", "text": "Religiöse Verfolgung wird anerkannt, wenn Ausübungsverbote, Übergriffe oder behördliche Maßnahmen glaubhaft sind." }
+    },
+    {
+      "id": "fg_social_group_lgbtiq",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('soziale_gruppe')",
+      "effect": { "category": "chance", "severity": "low", "text": "Zugehörigkeit zu einer sozialen Gruppe (z. B. LGBTIQ+) kann relevant sein, wenn staatliche oder duldende Verfolgung droht." }
+    },
+    {
+      "id": "fg_conflict_or_torture",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && (fluchtgruende.includes('konflikt') || fluchtgruende.includes('gewalt_folter'))",
+      "effect": { "category": "chance", "severity": "medium", "text": "Innerstaatlicher oder internationaler Konflikt bzw. drohende Folter kann subsidiären Schutz begründen, abhängig von Region und Intensität." }
+    },
+    {
+      "id": "fg_economic_family_climate",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && (fluchtgruende.includes('wirtschaft') || fluchtgruende.includes('familie') || fluchtgruende.includes('klima'))",
+      "effect": { "category": "risk", "severity": "medium", "text": "Wirtschaftliche, familiäre oder klimabedingte Gründe sind regelmäßig keine asylrelevanten Verfolgungsgründe. Sie können nur ausnahmsweise Abschiebungsverbote begründen." }
+    },
+    {
+      "id": "summary_has_core_data",
+      "when": {},
+      "expr": "herkunftsland && zielland && (fall === 'A' || fall === 'B')",
+      "effect": { "category": "chance", "severity": "low", "text": "Die Kernangaben sind vollständig. Eine konsistente, chronologische Schilderung erhöht die Erfolgsaussichten." }
     }
   ]
 }
