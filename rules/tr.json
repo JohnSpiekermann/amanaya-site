@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "category": "country_TR",
+  "appliesTo": { "herkunftsland": "TR" },
+  "rules": [
+    {
+      "id": "tr_state_persecution_uyap_needed",
+      "when": { "quelle_verfolgung": "staat" },
+      "effect": { "category": "evidence", "severity": "high", "text": "Bei staatlicher Verfolgung in der Türkei sind UYAP/E-Devlet-Einträge (z. B. Anklageschrift, Haftbefehl) besonders wichtig. Prüfe Zugang und sichere Nachweise." }
+    },
+    {
+      "id": "tr_has_uyap_docs",
+      "when": {},
+      "expr": "Array.isArray(tr_uyap_edv_dok_typen) && tr_uyap_edv_dok_typen.length > 0",
+      "effect": { "category": "chance", "severity": "medium", "text": "Es liegen UYAP/E-Devlet-Dokumente vor. Diese stärken in der Regel die Glaubhaftigkeit (Echtheit und Zuordnung beachten)." }
+    },
+    {
+      "id": "tr_no_uyap_docs",
+      "when": { "quelle_verfolgung": "staat" },
+      "expr": "!(Array.isArray(tr_uyap_edv_dok_typen) && tr_uyap_edv_dok_typen.length > 0)",
+      "effect": { "category": "risk", "severity": "medium", "text": "Es wurden keine UYAP/E-Devlet-Unterlagen genannt. Gerichte erwarten bei strafrechtlichen Vorwürfen häufig digitale Nachweise." }
+    },
+    {
+      "id": "tr_political_speech_offenses",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('politisch')",
+      "effect": { "category": "chance", "severity": "low", "text": "Politische Betätigung kann zu Ermittlungen (z. B. Terrorpropaganda, Präsidentenbeleidigung) führen. Belege zu Veröffentlichungen, Demos und Reaktionen der Behörden sind wichtig." }
+    },
+    {
+      "id": "tr_lgbtiq_policing",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('soziale_gruppe')",
+      "effect": { "category": "plausibility", "severity": "low", "text": "LGBTIQ-Versammlungen werden in der Türkei häufig beschränkt. Dokumentierte Eingriffe oder polizeiliche Maßnahmen erhöhen die Relevanz." }
+    },
+    {
+      "id": "tr_kurdish_no_group_persecution",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('nationalitaet')",
+      "effect": { "category": "plausibility", "severity": "low", "text": "Kurdische Zugehörigkeit allein führt nicht automatisch zur Anerkennung. Entscheidend sind individuelle Vorfälle und staatliche Zurechnung." }
+    },
+    {
+      "id": "tr_military_service_generic",
+      "when": {},
+      "expr": "Array.isArray(fluchtgruende) && fluchtgruende.includes('wehrdienst')",
+      "effect": { "category": "risk", "severity": "low", "text": "Wehrdienstverweigerung wird in der Regel nicht als flüchtlingsrelevant anerkannt. Es braucht zusätzliche Umstände (z. B. individuelle Verfolgung, Misshandlungen)." }
+    },
+    {
+      "id": "tr_legal_exit_weakens_state_claim",
+      "when": { "quelle_verfolgung": "staat", "reiseweg": "visum" },
+      "effect": { "category": "plausibility", "severity": "medium", "text": "Legale Ausreise trotz angeblicher staatlicher Verfolgung wird im Türkei-Kontext besonders streng geprüft. Erkläre schlüssig, warum eine Verfolgung dennoch fortbesteht." }
+    },
+    {
+      "id": "tr_family_after_departure_inquiries",
+      "when": {},
+      "expr": "familie_nachverfolgung === true",
+      "effect": { "category": "chance", "severity": "low", "text": "Nachfragen oder Besuche bei der Familie nach der Ausreise sprechen für ein fortbestehendes staatliches Interesse. Belege helfen." }
+    }
+  ]
+}
