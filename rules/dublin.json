@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "category": "dublin",
+  "rules": [
+    {
+      "id": "du_visum_issuer_eq_target",
+      "when": { "reiseweg": "visum", "hat_visum": true },
+      "expr": "visum_aussteller && zielland && visum_aussteller === zielland",
+      "effect": { "category": "dublin", "severity": "high", "text": "Das Einreisevisum wurde vom Zielland ausgestellt. Nach Dublin III spricht dies stark für die Zuständigkeit des Ziellands." }
+    },
+    {
+      "id": "du_visum_issuer_diff_target",
+      "when": { "reiseweg": "visum", "hat_visum": true },
+      "expr": "visum_aussteller && zielland && visum_aussteller !== zielland",
+      "effect": { "category": "dublin", "severity": "high", "text": "Das Visum stammt nicht vom Zielland. Nach Dublin III ist regelmäßig der Visumstaat zuständig (Fristen beachten: typ. 6 Monate nach Ablauf)." }
+    },
+    {
+      "id": "du_title_issuer_diff_target",
+      "when": { "reiseweg": "aufenthaltstitel", "hat_aufenthaltstitel": true },
+      "expr": "aufenthaltstitel_aussteller && zielland && aufenthaltstitel_aussteller !== zielland",
+      "effect": { "category": "dublin", "severity": "high", "text": "Ein anderer Staat hat den Aufenthaltstitel ausgestellt. Nach Dublin III ist dieser Staat regelmäßig zuständig (Fristen beachten: typ. bis 2 Jahre nach Ablauf)." }
+    },
+    {
+      "id": "du_fingerprints_elsewhere",
+      "when": {},
+      "expr": "fingerabdruecke_anderswo === true",
+      "effect": { "category": "dublin", "severity": "medium", "text": "Es wurden Fingerabdrücke in einem anderen EU-/Dublin-Staat aufgenommen. Das spricht für dessen Zuständigkeit." }
+    },
+    {
+      "id": "du_asylum_elsewhere",
+      "when": {},
+      "expr": "asylantrag_anderswo === true",
+      "effect": { "category": "dublin", "severity": "high", "text": "Es wurde bereits in einem anderen Staat Asyl beantragt. Der andere Staat ist regelmäßig zuständig. Prüfe Überstellungsfristen und Ausnahmen." }
+    },
+    {
+      "id": "du_minor_unaccompanied_override",
+      "when": { "minderjaehrig": true, "unbegleitet": true },
+      "effect": { "category": "dublin", "severity": "high", "text": "Unbegleitete Minderjährige: Zuständig ist grundsätzlich der Staat, in dem sie sich aufhalten bzw. in dem sich Familienangehörige aufhalten." }
+    },
+    {
+      "id": "du_both_biometrics_and_visa",
+      "when": { "hat_visum": true },
+      "expr": "fingerabdruecke_anderswo === true",
+      "effect": { "category": "dublin", "severity": "medium", "text": "Sowohl Visum als auch EURODAC-Daten im Ausland: Üblicherweise hat der visumerteilende Staat Priorität, es sei denn, Fristen sind verstrichen." }
+    },
+    {
+      "id": "du_no_indicators",
+      "when": {},
+      "expr": "(!hat_visum && !hat_aufenthaltstitel && fingerabdruecke_anderswo === false && asylantrag_anderswo === false)",
+      "effect": { "category": "dublin", "severity": "low", "text": "Keine klaren Zuständigkeitsindikatoren. Das Zielland könnte zuständig werden (illegale Einreise, Aufenthaltsort, Familienbezug prüfen)." }
+    },
+    {
+      "id": "du_visum_expiry_note",
+      "when": { "hat_visum": true },
+      "effect": { "category": "dublin", "severity": "low", "text": "Bei Visum: Zuständigkeit des ausstellenden Staates kann bis ca. 6 Monate nach Ablauf fortwirken. Fristen prüfen." }
+    },
+    {
+      "id": "du_title_expiry_note",
+      "when": { "hat_aufenthaltstitel": true },
+      "effect": { "category": "dublin", "severity": "low", "text": "Bei Aufenthaltstitel: Zuständigkeit des ausstellenden Staates kann bis ca. 2 Jahre nach Ablauf fortwirken. Fristen prüfen." }
+    }
+  ]
+}
