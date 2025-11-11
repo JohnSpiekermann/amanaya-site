@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Amanaya – Rules Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f1e7;--brand:#0f3a6b;--text:#0f3a6b;--card:#fff;--border:#ded6c9;--muted:#4a5a70}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Montserrat,system-ui,sans-serif}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+    header .title{display:flex;gap:12px;align-items:center}
+    header .title span{font-weight:800;letter-spacing:.08em}
+    main{max-width:1100px;margin:24px auto;padding:0 16px}
+    h1{font-size:22px;margin:0 0 12px}
+    p.lead{margin:0 0 20px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:18px}
+    @media(min-width:920px){.grid{grid-template-columns:360px 1fr}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .card h2{font-size:16px;margin:0 0 10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    label{font-size:12px;color:var(--muted)}
+    input[type=text]{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font:inherit}
+    textarea{width:100%;height:140px;padding:10px;border:1px solid var(--border);border-radius:10px;font:12px ui-monospace,Consolas,monospace}
+    .btn{display:inline-block;text-decoration:none;border:1px solid var(--brand);padding:10px 12px;border-radius:10px;font-weight:700;color:var(--brand);background:#fff;cursor:pointer}
+    .btn.secondary{border-color:#98a6b8;color:#334155}
+    .btn:hover{opacity:.92}
+    .muted{color:var(--muted);font-size:12px}
+    .status{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:#faf8f4;border:1px dashed var(--border);border-radius:8px;padding:10px;white-space:pre-wrap}
+    .cols{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:700px){.cols{grid-template-columns:1fr 1fr}}
+    .hit{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+    .hit .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .pill{display:inline-block;font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--border)}
+    .sev-high{background:#fee2e2}
+    .sev-medium{background:#ffedd5}
+    .sev-low{background:#e0f2fe}
+    .cat{font-weight:700}
+    .group{margin-bottom:18px}
+    details summary{cursor:pointer;font-weight:700}
+    pre.json{background:#0b1726;color:#d1e7ff;border-radius:10px;padding:12px;overflow:auto}
+    footer{margin:28px 0 40px;text-align:center;font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <span>AMANAYA</span>
+      <span class="muted">Rules Preview (intern)</span>
+    </div>
+    <div class="row">
+      <a class="btn secondary" href="/">Startseite</a>
+      <a class="btn secondary" href="/rules">Checks</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Rules-Preview</h1>
+    <p class="lead">Lade Antworten aus dem Fragenflow (localStorage) oder füge JSON ein. Danach werden <strong>universal + dublin + tr</strong> ausgewertet und die Treffer gruppiert angezeigt.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Datenquelle</h2>
+        <div class="row">
+          <label>LocalStorage-Key</label>
+          <input id="lskey" type="text" value="amanaya:flow:de:v2a"/>
+        </div>
+        <div class="row">
+          <button class="btn" id="loadLS">Aus LocalStorage laden</button>
+          <button class="btn secondary" id="clearLS">LocalStorage leeren</button>
+        </div>
+        <div class="row">
+          <label>oder Antworten-JSON einfügen</label>
+          <textarea id="jsonIn" placeholder='{"herkunftsland":"TR","zielland":"DE","fall":"A","reiseweg":"visum","hat_visum":true,"visum_aussteller":"DE","quelle_verfolgung":"staat","fluchtgruende":["politisch"],"nachfluchtverhalten":"ja","fingerabdruecke_anderswo":false,"asylantrag_anderswo":false}'></textarea>
+        </div>
+        <div class="row">
+          <button class="btn" id="useTextarea">Dieses JSON verwenden</button>
+          <button class="btn secondary" id="sample">Beispieldaten laden</button>
+        </div>
+        <details style="margin-top:10px">
+          <summary>Geladene Antworten ansehen</summary>
+          <pre class="json" id="answersView">{}</pre>
+        </details>
+      </section>
+
+      <section class="card">
+        <h2>Rules laden & auswerten</h2>
+        <div class="row">
+          <button class="btn" id="loadRules">Rules laden</button>
+          <button class="btn" id="runEval">Auswerten</button>
+        </div>
+        <div class="status" id="statusBox">Bereit.</div>
+        <div style="margin-top:10px">
+          <label class="muted">Geladene Rule-Sets</label>
+          <div id="ruleMeta" class="muted">–</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Treffer</h2>
+      <div id="hits">Noch keine Auswertung.</div>
+    </section>
+  </main>
+
+  <footer>Nur für interne Nutzung – später entfernen.</footer>
+
+  <script>
+    const state = {
+      answers:{},
+      rules:[],
+      sources:[]
+    };
+
+    function $(s,root=document){return root.querySelector(s)}
+    function setStatus(t){ $("#statusBox").textContent = t }
+    function showAnswers(){
+      $("#answersView").textContent = JSON.stringify(state.answers, null, 2)
+    }
+
+    function normalizeAnswers(raw){
+      if(!raw) return {};
+      if(raw.answers && typeof raw.answers === "object") return raw.answers;
+      return raw;
+    }
+
+    function evalExpr(expr, answers){
+      try{
+        const fn = new Function("a","with(a){ return ("+expr+"); }");
+        return !!fn(answers);
+      }catch(e){ return false; }
+    }
+
+    function matchesWhen(when, answers){
+      if(!when) return true;
+      for(const k of Object.keys(when)){
+        const expected = when[k];
+        if(answers[k] !== expected) return false;
+      }
+      return true;
+    }
+
+    function matchesAppliesTo(rule, answers){
+      const ap = rule.appliesTo;
+      if(!ap) return true;
+      for(const k of Object.keys(ap)){
+        if(answers[k] !== ap[k]) return false;
+      }
+      return true;
+    }
+
+    function severClass(sev){
+      if(sev === "high") return "sev-high";
+      if(sev === "medium") return "sev-medium";
+      return "sev-low";
+    }
+
+    function groupByCategory(hits){
+      const map = {};
+      for(const h of hits){
+        if(!map[h.category]) map[h.category] = [];
+        map[h.category].push(h);
+      }
+      return map;
+    }
+
+    function renderHits(hits){
+      const box = $("#hits");
+      if(!hits.length){ box.innerHTML = "<p class='muted'>Keine Treffer.</p>"; return; }
+      const groups = groupByCategory(hits);
+      const order = ["dublin","plausibility","risk","evidence","chance"];
+      const cats = Object.keys(groups).sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+      let html = "";
+      for(const cat of cats){
+        html += "<div class='group'><h3 class='cat' style='margin:6px 0 10px'>"+cat.toUpperCase()+" ("+groups[cat].length+")</h3>";
+        html += "<div class='cols'>";
+        for(const h of groups[cat]){
+          html += "<div class='hit'>";
+          html += "<div class='top'><div class='pill "+severClass(h.severity)+"'>"+h.severity.toUpperCase()+"</div><div class='muted'>"+(h.source||"")+"</div></div>";
+          html += "<div style='font-weight:700;margin-bottom:6px'>"+h.id+"</div>";
+          html += "<div>"+h.text+"</div>";
+          html += "</div>";
+        }
+        html += "</div></div>";
+      }
+      box.innerHTML = html;
+    }
+
+    async function fetchJson(url){
+      const res = await fetch(url + (url.includes("?")?"&":"?") + "v=" + Date.now());
+      if(!res.ok) throw new Error("HTTP "+res.status+" bei "+url);
+      return await res.json();
+    }
+
+    async function loadAllRules(){
+      setStatus("Lade Rules …");
+      const urls = ["/rules/universal.json","/rules/dublin.json","/rules/tr.json"];
+      const loaded = [];
+      const sources = [];
+      for(const u of urls){
+        try{
+          const j = await fetchJson(u);
+          if(Array.isArray(j.rules)){
+            loaded.push(...j.rules.map(r=>({ ...r, __source: u })));
+            sources.push(u+" • "+j.rules.length+" Regeln");
+          }
+        }catch(e){
+          sources.push(u+" • Fehler");
+        }
+      }
+      state.rules = loaded;
+      state.sources = sources;
+      $("#ruleMeta").textContent = sources.join(" | ");
+      setStatus("Rules geladen: "+loaded.length);
+    }
+
+    function evaluate(){
+      const answers = state.answers || {};
+      const hits = [];
+      for(const r of state.rules){
+        if(!matchesAppliesTo(r, answers)) continue;
+        if(!matchesWhen(r.when, answers)) continue;
+        if(r.expr && !evalExpr(r.expr, answers)) continue;
+        const eff = r.effect || {};
+        hits.push({
+          id: r.id || "rule",
+          category: eff.category || "info",
+          severity: eff.severity || "low",
+          text: eff.text || "(kein Text)",
+          source: r.__source || ""
+        });
+      }
+      renderHits(hits);
+      setStatus("Auswertung abgeschlossen: "+hits.length+" Treffer");
+    }
+
+    $("#loadLS").addEventListener("click", ()=>{
+      const key = $("#lskey").value.trim();
+      try{
+        const raw = JSON.parse(localStorage.getItem(key) || "{}");
+        state.answers = normalizeAnswers(raw);
+        showAnswers();
+        setStatus("Aus LocalStorage geladen.");
+      }catch(e){
+        setStatus("Fehler beim Lesen aus LocalStorage.");
+      }
+    });
+
+    $("#clearLS").addEventListener("click", ()=>{
+      const key = $("#lskey").value.trim();
+      try{ localStorage.removeItem(key); setStatus("Eintrag entfernt: "+key); }catch(e){ setStatus("Konnte nicht entfernen."); }
+    });
+
+    $("#useTextarea").addEventListener("click", ()=>{
+      try{
+        const raw = JSON.parse($("#jsonIn").value || "{}");
+        state.answers = normalizeAnswers(raw);
+        showAnswers();
+        setStatus("JSON übernommen.");
+      }catch(e){
+        setStatus("JSON-Fehler: "+e.message);
+      }
+    });
+
+    $("#sample").addEventListener("click", ()=>{
+      const sample = {
+        herkunftsland:"TR",
+        zielland:"DE",
+        fall:"A",
+        reiseweg:"visum",
+        hat_visum:true,
+        visum_aussteller:"DE",
+        quelle_verfolgung:"staat",
+        fluchtgruende:["politisch","soziale_gruppe"],
+        nachfluchtverhalten:"ja",
+        fingerabdruecke_anderswo:false,
+        asylantrag_anderswo:false,
+        minderjaehrig:false,
+        unbegleitet:false,
+        tr_uyap_edv_dok_typen:["anklageschrift"]
+      };
+      $("#jsonIn").value = JSON.stringify(sample, null, 2);
+      setStatus("Beispiel bereit – „Dieses JSON verwenden“ klicken.");
+    });
+
+    $("#loadRules").addEventListener("click", loadAllRules);
+    $("#runEval").addEventListener("click", evaluate);
+
+    (async function init(){
+      setStatus("Bereit. 1) Antworten laden, 2) Rules laden, 3) Auswerten.");
+    })();
+  </script>
+</body>
+</html>
