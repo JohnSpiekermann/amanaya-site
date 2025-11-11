@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Amanaya – Report Draft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f1e7;--brand:#0f3a6b;--text:#0f3a6b;--card:#fff;--border:#ded6c9;--muted:#4a5a70}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Montserrat,system-ui,sans-serif}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+    header .title{font-weight:800;letter-spacing:.08em}
+    main{max-width:1100px;margin:24px auto;padding:0 16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+    .btn{border:1px solid var(--brand);padding:10px 12px;border-radius:10px;font-weight:700;color:var(--brand);background:#fff;cursor:pointer;text-decoration:none}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}
+    textarea{width:100%;height:400px;padding:10px;border:1px solid var(--border);border-radius:10px;font:12px ui-monospace,Consolas,monospace}
+    .muted{color:var(--muted);font-size:12px}
+    label{font-size:12px;color:var(--muted)}
+    input[type=text]{padding:10px;border:1px solid var(--border);border-radius:10px;font:inherit;width:100%}
+    @media(min-width:700px){.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">AMANAYA</div>
+    <div class="row">
+      <a class="btn" href="/">Startseite</a>
+      <a class="btn" href="/rules/preview">Rules-Preview</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="card cols">
+      <div>
+        <label>LocalStorage-Key</label>
+        <input id="lskey" type="text" value="amanaya:flow:de:v2a"/>
+        <div class="row">
+          <button class="btn" id="load">Antworten laden</button>
+          <button class="btn" id="render">Entwurf erzeugen</button>
+          <button class="btn" id="download">Download TXT</button>
+        </div>
+        <div class="muted">Lädt: /templates/beratung.md, /templates/blocks.de.json und Rules (universal+dublin+tr)</div>
+      </div>
+      <div>
+        <label>Metadaten</label>
+        <div id="meta" class="muted">–</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>Entwurf (Markdown/TXT)</label>
+      <textarea id="out"></textarea>
+    </div>
+  </main>
+
+  <script>
+    const urls = {
+      template: "/templates/beratung.md",
+      blocks: "/templates/blocks.de.json",
+      rules: ["/rules/universal.json","/rules/dublin.json","/rules/tr.json"]
+    };
+    const S = { answers:{}, rules:[], blocks:null, template:"", hits:[] };
+
+    function $(s,root=document){return root.querySelector(s)}
+    function fmtBool(v){ return v===true?"Ja":(v===false?"Nein":"Unklar"); }
+    function today(){ const d=new Date(); return d.toISOString().slice(0,10); }
+    function labelPfad(f){ return f==="A"?"bereits im Zielland":"noch außerhalb"; }
+    function labelReiseweg(r){ if(r==="visum") return "Mit Visum"; if(r==="aufenthaltstitel") return "Mit Aufenthaltstitel"; if(r==="ohne") return "Ohne Visum / Drittstaat / Sonstiges"; return "Unbekannt"; }
+    function labelFG(arr){ return Array.isArray(arr)&&arr.length? arr.join(", ") : "–"; }
+
+    function normalizeAnswers(raw){
+      if(raw && raw.answers) return raw.answers;
+      return raw || {};
+    }
+    async function fetchText(u){ const r=await fetch(u+"?v="+Date.now()); if(!r.ok) throw new Error("HTTP "+r.status+" "+u); return await r.text(); }
+    async function fetchJson(u){ const r=await fetch(u+"?v="+Date.now()); if(!r.ok) throw new Error("HTTP "+r.status+" "+u); return await r.json(); }
+
+    function evalExpr(expr, a){
+      try{ const fn=new Function("a","with(a){return ("+expr+");}"); return !!fn(a); }
+      catch(e){ return false; }
+    }
+    function matches(obj,a){
+      if(!obj) return true;
+      for(const k of Object.keys(obj)){ if(a[k]!==obj[k]) return false; }
+      return true;
+    }
+    function appliesTo(rule,a){
+      const ap=rule.appliesTo; if(!ap) return true;
+      for(const k of Object.keys(ap)){ if(a[k]!==ap[k]) return false; }
+      return true;
+    }
+    function runRules(a){
+      const hits=[];
+      for(const r of S.rules){
+        if(!appliesTo(r,a)) continue;
+        if(!matches(r.when,a)) continue;
+        if(r.expr && !evalExpr(r.expr,a)) continue;
+        hits.push({ id:r.id, cat:(r.effect?.category||"info"), sev:(r.effect?.severity||"low"), text:(r.effect?.text||"") });
+      }
+      return hits;
+    }
+    function group(hits, cat){ return hits.filter(h=>h.cat===cat); }
+    function topSeveritySummary(hits, map){
+      const order=["high","medium","low"];
+      let best=null;
+      for(const sev of order){ if(hits.some(h=>h.sev===sev)){ best=sev; break; } }
+      return best ? (map[best] || "") : "–";
+    }
+
+    function fillTemplate(tpl, a, groups, blocks){
+      const rep = {
+        today: today(),
+        herkunftsland: a.herkunftsland || "–",
+        zielland: a.zielland || "–",
+        alter_label: a.alter_label || (a.alter?String(a.alter):"–"),
+        pfad_label: labelPfad(a.fall),
+        reiseweg_label: labelReiseweg(a.reiseweg),
+        issuer_label: a.visum_aussteller || a.aufenthaltstitel_aussteller || "–",
+        finger_label: fmtBool(a.fingerabdruecke_anderswo),
+        asyl_else_label: fmtBool(a.asylantrag_anderswo),
+        fg_label: labelFG(a.fluchtgruende),
+        nf_label: a.nachfluchtverhalten||"–",
+        dublin_summary: topSeveritySummary(groups.dublin, blocks.summaries.dublin),
+        plausi_summary: topSeveritySummary(groups.plausibility, blocks.summaries.plausibility),
+        evidence_summary: topSeveritySummary(groups.evidence, blocks.summaries.evidence),
+        chance_summary: topSeveritySummary(groups.chance, blocks.summaries.chance),
+        empfehlungen: renderRecommendations(a, blocks)
+      };
+      let out = tpl;
+      for(const k of Object.keys(rep)){
+        out = out.replaceAll("{{"+k+"}}", rep[k]);
+      }
+      function bullets(cat){
+        const arr = groups[cat] || [];
+        if(!arr.length) return "";
+        return arr.map(h => "- "+h.text).join("\n");
+      }
+      out = out.replace("{{#section_dublin}}\n- {{.}}\n{{/section_dublin}}", bullets("dublin"));
+      out = out.replace("{{#section_plausibility}}\n- {{.}}\n{{/section_plausibility}}", bullets("plausibility"));
+      out = out.replace("{{#section_risk}}\n- {{.}}\n{{/section_risk}}", bullets("risk"));
+      out = out.replace("{{#section_evidence}}\n- {{.}}\n{{/section_evidence}}", bullets("evidence"));
+      out = out.replace("{{#section_chance}}\n- {{.}}\n{{/section_chance}}", bullets("chance"));
+      return out;
+    }
+
+    function renderRecommendations(a, blocks){
+      const items = [...(blocks.recommendations.generic||[])];
+      if(a.herkunftsland==="TR"){ items.push(...(blocks.recommendations.TR||[])); }
+      return items.map(x=>"- "+x).join("\n");
+    }
+
+    function downloadTxt(filename, text){
+      const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 200);
+    }
+
+    async function init(){
+      S.template = await fetchText(urls.template);
+      S.blocks = await fetchJson(urls.blocks);
+      const all = [];
+      for(const u of urls.rules){
+        try{ const j = await fetchJson(u); if(Array.isArray(j.rules)) all.push(...j.rules); }catch(e){}
+      }
+      S.rules = all;
+      $("#meta").textContent = `Template ✓ • Blocks: ${S.blocks ? "✓" : "–"} • Rules: ${S.rules.length}`;
+    }
+
+    $("#load").addEventListener("click", ()=>{
+      const key=$("#lskey").value.trim();
+      try{
+        const raw = JSON.parse(localStorage.getItem(key) || "{}");
+        S.answers = normalizeAnswers(raw);
+        // Alterslabel aus Bucket berechnen (falls vorhanden)
+        if(!S.answers.alter_label && typeof S.answers.alter==="number"){
+          const n=S.answers.alter;
+          const bucket = n<18?"0-17": n<=25?"18-25": n<=42?"25-42": n<=55?"42-55": n<=72?"56-72":"73-99";
+          S.answers.alter_label = bucket;
+        }
+        alert("Antworten geladen.");
+      }catch(e){ alert("Konnte Antworten nicht laden."); }
+    });
+
+    $("#render").addEventListener("click", ()=>{
+      if(!S.answers || !S.answers.zielland){ alert("Bitte zuerst Antworten laden."); return; }
+      const h = runRules(S.answers);
+      S.hits = h;
+      const groups = ["dublin","plausibility","risk","evidence","chance"].reduce((m,c)=>{
+        m[c]=h.filter(x=>x.cat===c); return m;
+      }, {});
+      const txt = fillTemplate(S.template, S.answers, groups, S.blocks);
+      $("#out").value = txt;
+    });
+
+    $("#download").addEventListener("click", ()=>{
+      const fn = `Amanaya_Entwurf_${today()}.txt`;
+      downloadTxt(fn, $("#out").value || "");
+    });
+
+    init();
+  </script>
+</body>
+</html>
