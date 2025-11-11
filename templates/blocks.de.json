@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "summaries": {
+    "dublin": {
+      "high": "Es liegen starke Hinweise auf die Zuständigkeit eines anderen Staates vor.",
+      "medium": "Es bestehen Indizien für Dublin-Zuständigkeit; Fristen und Prioritäten prüfen.",
+      "low": "Keine klaren Zuständigkeitsindikatoren; das Zielland könnte zuständig werden."
+    },
+    "plausibility": {
+      "high": "Wesentliche Plausibilitätsrisiken (Zeitpunkte/Belege) sind erklärungsbedürftig.",
+      "medium": "Einige Punkte werden kritisch geprüft (z. B. legale Ausreise, Zeitabstände).",
+      "low": "Kleine Unschärfen – konsistente Darstellung hilft."
+    },
+    "evidence": {
+      "high": "Fehlende Kernbelege schwächen die Erfolgsaussichten deutlich.",
+      "medium": "Belege sind teils vorhanden; Echtheit/Datumsnähe beachten.",
+      "low": "Vorhandene Belege können die Glaubhaftigkeit stützen."
+    },
+    "chance": {
+      "high": "Es liegen starke Chancenmomente vor.",
+      "medium": "Es gibt positive Aspekte, die die Erfolgsaussichten erhöhen können.",
+      "low": "Es bestehen kleinere positive Aspekte."
+    }
+  },
+  "recommendations": {
+    "generic": [
+      "Schilderung chronologisch und widerspruchsfrei vorbereiten.",
+      "Nachweise möglichst aus Primärquellen beibringen (aktenkundige Dokumente).",
+      "Auf Nachfragen zu Reiseweg/Visum vorbereitet sein."
+    ],
+    "TR": [
+      "Prüfe Zugang zu UYAP/E-Devlet (Anklageschrift, Haftbefehl, Ladungen).",
+      "Bei politischer Betätigung: Veröffentlichungen/Demos belegen (Datum, Ort, Links, Zeugen).",
+      "Nachfluchtaktivitäten dokumentieren (Fotos, Vereinsbestätigungen)."
+    ]
+  }
+}
