@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Befragung neu starten – Amanaya</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      try {
+        // Alle Amanaya-Flow-Einträge im LocalStorage entfernen
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("amanaya:flow:de")) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (e) {
+        console.error("Konnte LocalStorage nicht leeren:", e);
+      }
+      // Zur Befragungsstartseite zurück
+      window.location.replace("/fragen/start");
+    })();
+  </script>
+</head>
+<body>
+  <p>Starte neu…</p>
+</body>
+</html>
