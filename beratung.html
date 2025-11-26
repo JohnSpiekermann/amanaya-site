@@ -123,16 +123,35 @@
   </div>
 
   <script>
-    (function(){
-      // Flow-Antworten (falls vorhanden) als JSON mitsenden
-      try{
-        const k = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v15";
-        const local = JSON.parse(localStorage.getItem(k) || "{}");
-        if(local && local.answers){
-          document.getElementById('flowAnswers').value = JSON.stringify(local.answers);
-        }
-      }catch(e){ /* ignorieren */ }
-    })();
-  </script>
+  (function () {
+    try {
+      const key = (window.AMANAYA_STORAGE_KEY || "amanaya:flow:de") + ":v15";
+      const stored = localStorage.getItem(key);
+      if (!stored) return;
+
+      const local = JSON.parse(stored);
+
+      // Wir bauen ein erstes, sanft strukturiertes Objekt
+      const payload = {
+        meta: {
+          version: "1.1",
+          source: "amanaya-beratung.html",
+          zielland_label: local.meta && local.meta.zielland_label ? local.meta.zielland_label : null,
+          herkunftsland_label: local.meta && local.meta.herkunftsland_label ? local.meta.herkunftsland_label : null,
+          timestamp: new Date().toISOString()
+        },
+        // hier liegen alle bisherigen Antworten drin
+        raw_answers: local.answers || null
+      };
+
+      const hiddenField = document.getElementById("flowAnswers");
+      if (hiddenField) {
+        hiddenField.value = JSON.stringify(payload);
+      }
+    } catch (e) {
+      // leise scheitern – der Flow soll niemals daran kaputtgehen
+    }
+  })();
+</script>
 </body>
 </html>
