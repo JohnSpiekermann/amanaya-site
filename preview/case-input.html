@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>Amanaya – case_input Helfer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f1e7;
+      --text:#0f3a6b;
+      --card:#ffffff;
+      --border:#e8e3d8;
+      --muted:#5c718b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Montserrat,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+    .wrap{
+      max-width:960px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+    }
+    h1{font-size:24px; margin:0 0 4px;}
+    p.lead{margin:0 0 16px; color:var(--muted);}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+      margin:16px 0;
+    }
+    label{font-weight:600; display:block; margin-bottom:6px;}
+    textarea{
+      width:100%;
+      min-height:160px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      padding:10px;
+      font-family:ui-monospace,Menlo,monospace;
+      font-size:13px;
+      resize:vertical;
+    }
+    .row{margin:10px 0;}
+    .actions{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;}
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:600;
+      background:var(--text);
+      color:#fff;
+    }
+    button.secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--text);
+    }
+    .hint{font-size:13px; color:var(--muted); margin-top:4px;}
+    .error{
+      color:#b00020;
+      font-size:13px;
+      margin-top:6px;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>case_input Helfer</h1>
+    <p class="lead">
+      Hier kannst du das Feld <code>flow_answers_json</code> aus der Formspree-Mail einfügen
+      und in ein strukturiertes <code>case_input</code> nach Amanaya v1.1 umwandeln.
+    </p>
+
+    <section class="card">
+      <div class="row">
+        <label for="input-json">Eingabe: <code>flow_answers_json</code> (roh)</label>
+        <textarea id="input-json" placeholder='{"meta":{...},"raw_answers":{...}}'></textarea>
+        <p class="hint">
+          Tipp: In der Formspree-Mail nur den JSON-Teil des Feldes
+          <code>flow_answers_json</code> markieren und hier einfügen.
+        </p>
+      </div>
+      <div class="actions">
+        <button id="btn-convert" type="button">In case_input umwandeln</button>
+        <button id="btn-clear" class="secondary" type="button">Alles löschen</button>
+      </div>
+      <div id="error" class="error" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <label for="output-json">Ausgabe: <code>case_input</code></label>
+        <textarea id="output-json" readonly></textarea>
+        <p class="hint">
+          Dieses JSON kannst du im Playground oder in Skripten als <code>case_input</code> verwenden.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/preview/build-case-input.js"></script>
+</body>
+</html>
