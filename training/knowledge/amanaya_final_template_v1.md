@@ -73,11 +73,18 @@ Dieser Abschnitt soll klar, sachlich und juristisch strukturiert sein.
 
 ## 6. Chancen und Risiken
 Bewertung der möglichen Schutzformen:
-- Flüchtlingsschutz (§ 3 AsylG)  
-- Subsidiärer Schutz (§ 4 AsylG)  
-- Nationales Abschiebungsverbot (§ 60 AufenthG)  
-- Einschätzung der Erfolgswahrscheinlichkeit  
-- Zentrale, im Verfahren entscheidende Argumente  
+
+### Flüchtlingsschutz (internationaler Schutz – Flüchtlingsstatus)
+Bewertung, ob individuelle Verfolgung im Sinne der Qualifikationsrichtlinie wahrscheinlich ist.
+
+### Subsidiärer Schutz
+Bewertung, ob eine erhebliche Gefahr ernsthaften Schadens nach Art. 15 Qualifikationsrichtlinie vorliegt.
+
+### Humanitärer Schutz aus nationalen Gründen
+Bewertung der Möglichkeit, dass nationale Schutzmechanismen greifen (z. B. medizinische Gründe, außergewöhnliche Härte, besondere Schutzbedarfe). Die konkrete Ausgestaltung variiert je nach EU-Mitgliedstaat.
+
+### Gesamteinschätzung
+Zusammenfassung der Chancen und Risiken ohne Prozentangaben.
 
 Dieser Abschnitt soll eine klare Orientierung geben, aber keine Prozentangaben enthalten.
 
