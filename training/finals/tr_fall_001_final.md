@@ -1,4 +1,4 @@
-# Amanaya – Türkei Fall 001 (Draft)
+# Amanaya – Türkei Fall 001 (Final)
 Erstellt am: 2025-12-02  
 Herkunftsland: Türkei  
 Kategorie: Diskriminierung / Kurdische Herkunft / Konfliktangaben
@@ -25,17 +25,18 @@ Da keine Hinweise auf eine Asylantragstellung oder Fingerabdrücke in anderen EU
 
 ---
 
-## 3. Fluchtgründe und Gefährdung
+## 3. Dublin / Zuständigkeit
+Da keine Hinweise auf Fingerabdrücke, Visum oder frühere Asylanträge in anderen EU-Staaten bestehen, ist Deutschland für das Asylverfahren zuständig. Dublin-Fragen spielen hier keine Rolle.
+
+---
+
+## 4. Fluchtgründe und Gefährdung
 Die kurdische Herkunft allein führt nicht zu einer Anerkennung als Flüchtling. Entscheidend sind individuelle Maßnahmen, die gegen dich persönlich gerichtet waren, wie etwa Festnahmen, Verhöre, Drohungen, Verfahren oder Überwachung. Nach deinen Angaben gab es solche Ereignisse bisher nicht.
 
 Diskriminierung im Alltag, Arbeitslosigkeit oder Perspektivlosigkeit gelten rechtlich nicht als Verfolgung. Auch eine Teilnahme an politischen Aktivitäten oder Protesten wurde nicht geschildert. Ohne eine konkrete Verbindung zu staatlichen Maßnahmen ist der Schutzgrund zu unspezifisch.
 
 ---
 
-## 4. Dublin / Zuständigkeit
-Da keine Hinweise auf Fingerabdrücke, Visum oder frühere Asylanträge in anderen EU-Staaten bestehen, ist Deutschland für das Asylverfahren zuständig. Dublin-Fragen spielen hier keine Rolle.
-
----
 
 ## 5. Plausibilität
 Die Darstellung der Fluchtgründe bleibt zu allgemein. Es fehlen:
